@@ -1,0 +1,39 @@
+<!DOCTYPE html> 
+<html>
+<head>
+<title>Skyline75489</title>
+ <meta charset='utf-8'>
+<link rel="stylesheet" href="http://yandex.st/highlightjs/8.0/styles/default.min.css">
+<link rel="stylesheet" href="./static/main.css">
+</head>
+<body>
+
+<div class="wrapper">
+<div class="header">
+	<span class="blog-name">Skyline75489</span>
+
+<a class="nav" href="index.html">Home</a>
+<a class="nav" href="about.html">About</a>
+</div>
+<div class="content">
+
+<h1>试着升级了一下系统内核，可惜问题多多</h1>
+
+<p>前两天Linux内核爆出了 <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2014-0196">CVE-201400196</a>，我用的还是3.5.0的老内核，会受到漏洞影响。于是我想是不是该升级一下内核了，就去下载了最新的3.14.4内核，准备升级一下。</p>
+
+<p>安装什么的还是挺顺利的，都要感谢dpkg包管理系统。安装过程中报了几个错，但是不影响安装，所以我也没注意。重启之后我傻眼了，网卡驱动不能用了！网卡驱动是我自己编译的一个kernel module。于是我想着重新编译一下，结果编译出错。。。我就汗了。</p>
+
+<p>看来以后升级内核之前还得考虑一下需要用的 kernel module支持不支持这么新的内核。我主要用的一个是Paragon的ntfs驱动，还有刚才提到的网卡驱动，都不支持最新的内核。所以我只能放弃了。</p>
+
+<p>Ubuntu系的系统升级内核不会删除原来的内核，而是备份了一份。所以回滚内核也很简单，只要把新安装的内核apt-get remove一下就行了。给Ubuntu点个赞。升级和回滚内核跟安装和卸载普通软件没什么区别，基本没什么危险性，只是浪费了一些折腾的时间而已。</p>
+
+<p>我一直很想升级到Linux Mint 17 Qiana（不是“钱啊”，人家读“琪亚娜”）。不过想到升级之后又要重新装各种东西，实在是略显烦躁。可能是真的过了折腾的年纪了吧。</p>
+
+
+</div>
+</div>
+<script src="http://yandex.st/highlightjs/8.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+</body>
+
+</html>
