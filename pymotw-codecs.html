@@ -38,6 +38,81 @@
 
 <p>西方语言最常见的编码是<code>UTF-8</code>和<code>UTF-16</code>，它们分别使用1个和2个字节来表示字符。其他编码更适合存储那些字符本身需要多于2字节码点表示的语言。</p>
 
+<p><strong>请参看</strong>:</p>
+
+<p>想了解更多关于Unicode的信息，请参考本部分最后的引用来源。Python的 <a href="http://docs.python.org/howto/unicode">Unicode HOWTO</a>尤其值得阅读。</p>
+
+<h4>Encodings</h4>
+
+<p>理解编码最好的方法便是看看同一个字符串，在不同编码下产生的不同字节序列。下面的例子使用这个函数来格式化字节字符串，使其更容易阅读。</p>
+
+<pre><code class="python">
+import binascii
+
+def to_hex(t, nbytes):
+    &quot;Format text t as a sequence of nbyte long values separated by spaces.&quot;
+    chars_per_item = nbytes * 2
+    hex_version = binascii.hexlify(t)
+    num_chunks = len(hex_version) / chars_per_item
+    def chunkify():
+        for start in xrange(0, len(hex_version), chars_per_item):
+            yield hex_version[start:start + chars_per_item]
+    return &#39; &#39;.join(chunkify())
+
+if __name__ == &#39;__main__&#39;:
+    print to_hex(&#39;abcdef&#39;, 1)
+    print to_hex(&#39;abcdef&#39;, 2)
+</code></pre>
+
+<p>这个函数使用<code>binascii</code>来得到输入字符串的16进制表示，然后在每nbytes字节之前插入一个空格。</p>
+
+<pre><code class="bash">$ python codecs_to_hex.py
+61 62 63 64 65 66
+6162 6364 6566
+</code></pre>
+
+<p>第一个编码示范从打印文本&#39;pi: π&#39;开始。使用<code>unicode</code>类的<code>repr</code>表示， &#39;π&#39;这个字符被替换成了Unicode码点\u03c0。接下来两行代码把分别这个字符串编码成<code>UTF-8</code>和<code>UTF-16</code>，然后展示了编码结果的16进制表示。</p>
+
+<pre><code class="python">from codecs_to_hex import to_hex
+
+text = u&#39;pi: π&#39;
+print &#39;Raw   :&#39;, repr(text)
+print &#39;UTF-8 :&#39;, to_hex(text.encode(&#39;utf-8&#39;), 1)
+print &#39;UTF-16:&#39;, to_hex(text.encode(&#39;utf-16&#39;), 2)
+
+</code></pre>
+
+<p>将<code>unicode</code>字符串编码的结果是一个<code>str</code>对象。</p>
+
+<pre><code class="bash">$ python codecs_encodings.py
+
+Raw   : u&#39;pi: \u03c0&#39;
+UTF-8 : 70 69 3a 20 cf 80
+UTF-16: fffe 7000 6900 3a00 2000 c003
+</code></pre>
+
+<p>给出一个编码字节的序列作为<code>str</code>实例，<code>decode()</code>方法可以将他们转换成码点，并且返回<code>unicode</code>实例。</p>
+
+<pre><code class="python">from codecs_to_hex import to_hex
+
+text = u&#39;pi: π&#39;
+encoded = text.encode(&#39;utf-8&#39;)
+decoded = encoded.decode(&#39;utf-8&#39;)
+
+print &#39;Original :&#39;, repr(text)
+print &#39;Encoded  :&#39;, to_hex(encoded, 1), type(encoded)
+print &#39;Decoded  :&#39;, repr(decoded), type(decoded)
+
+</code></pre>
+
+<p>编码的选择并不影响输出类型。</p>
+
+<pre><code class="bash">$ python codecs_decode.py
+Original : u&#39;pi: \u03c0&#39;
+Encoded  : 70 69 3a 20 cf 80 &lt;type &#39;str&#39;&gt;
+Decoded  : u&#39;pi: \u03c0&#39; &lt;type &#39;unicode&#39;&gt;
+</code></pre>
+
 
 </div>
 </div>
