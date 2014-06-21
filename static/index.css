@@ -1,3 +1,7 @@
+* {
+	box-sizing: border-box;
+}
+
 .wrapper {
     margin: 2em auto;
 	width: 35em;
