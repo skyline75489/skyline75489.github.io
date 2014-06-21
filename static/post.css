@@ -1,6 +1,6 @@
 .wrapper {
-    margin-left: 20%;
-    margin-right: 20%;
+    margin: 2em auto;
+	width: 35em;
     border-color: #DDD;
     border-style: solid;
     border-width: 1px;
@@ -46,9 +46,18 @@ a.nav:visited {
     color: #000;
 }
 
+pre {
+	background: #f8f8f8;
+	border: 1px solid #ccc;
+	line-height: 1.428571429;
+	word-break: break-all;
+	word-wrap: break-word;
+	font-size: 13px;
+	overflow: auto;
+	border-radius: 3px;
+}
+
 code {
-	margin: 0 2px;
-	padding: 0 5px;
 	border: 1px solid #eaeaea;
 	background-color: #f8f8f8;
 	border-radius: 3px;
