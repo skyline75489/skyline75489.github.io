@@ -1,0 +1,51 @@
+<!DOCTYPE html> 
+<html>
+<head>
+<title>Skyline75489</title>
+ <meta charset='utf-8'>
+<link rel="stylesheet" href="https://yandex.st/highlightjs/8.0/styles/default.min.css">
+<link rel="stylesheet" href="./static/post.css">
+</head>
+<body>
+
+<div class="wrapper">
+<div class="header">
+	<span class="blog-name">Skyline75489</span>
+
+<a class="nav" href="index.html">Home</a>
+<a class="nav" href="about.html">About</a>
+</div>
+<div class="content">
+
+<h1>PyMOTW(3)——文件访问</h1>
+
+<p>Python标准库包含了大量的工具，用于处理文件，文件名，和文件内容。</p>
+
+<h3>3.1 文件名</h3>
+
+<p>想要访问文件，首先需要得到文件名。Python使用字符串来表示文件名，同时提供了用于从<code>os.path</code>的标准平台无关的组件中创建文件名的方法。使用<code>listdir()</code>来列出一个目录中的内容，或者使用glob从模式中创建一系列文件名。使用<code>fnmatch</code>可以对文件名进行过滤。</p>
+
+<h3>3.2 元数据</h3>
+
+<p>当你得到文件的名字之后，你可以通过<code>os.stat()</code>和<code>stat</code>中的常量来查看文件的其他属性，如权限，文件大小等等。</p>
+
+<h3>3.3 读取文件</h3>
+
+<p>如果你在写一个过滤器程序，需要一行一行处理文本输入，<code>fileinput</code>提供了一个简单的框架供你使用。<code>fileinput</code> API迭代<code>input()</code>生成器，每次<code>yield</code>便处理一行。生成器处理文件名的命令行参数解析，或者直接从<code>sys.stdin</code>中读取数据。你的用户可以很容易的使用这个灵活的工具，从文件读取数据或者作为管道的一部分。</p>
+
+<h3>3.4 临时文件</h3>
+
+<p>有一些情况下，在把文件移动到永久存储位置之前，你需要创建用于临时存储数据的草稿文件，这种情况下，<code>tempfile</code>会非常有用。它提供了可以安全创建临时文件和目录的类。文件和目录的名称确保不会冲突，同时添加了随机函数使其不容易被猜到。</p>
+
+<h3>3.5 文件和目录</h3>
+
+<p>很多时候，你需要把文件当成一个整体来处理，并不关心里面的内容。<code>shutil</code>模块提供了高层的文件操作功能，例如复制文件和目录，设置权限等。</p>
+
+
+</div>
+</div>
+<script src="https://yandex.st/highlightjs/8.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+</body>
+
+</html>

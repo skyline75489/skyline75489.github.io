@@ -1,0 +1,57 @@
+<!DOCTYPE html> 
+<html>
+<head>
+<title>Skyline75489</title>
+ <meta charset='utf-8'>
+<link rel="stylesheet" href="https://yandex.st/highlightjs/8.0/styles/default.min.css">
+<link rel="stylesheet" href="./static/post.css">
+</head>
+<body>
+
+<div class="wrapper">
+<div class="header">
+	<span class="blog-name">Skyline75489</span>
+
+<a class="nav" href="index.html">Home</a>
+<a class="nav" href="about.html">About</a>
+</div>
+<div class="content">
+
+<h1>PyMOTW(2)——内存数据结构</h1>
+
+<p>Python提供了若干种标准程序数据结构作为内建类型（<code>list</code>，<code>tuple</code>，<code>dictionary</code>和<code>set</code>）。大部分应用程序不需要额外的数据结构了，如果真的需要，标准库也提供了解决办法。</p>
+
+<h3>2.1 array</h3>
+
+<p>对于大量的数据，使用<code>array</code>可能比使用<code>list</code>效率更高。因为<code>array</code>限制使用单一的数据类型，相比通用的<code>list</code>，它具有更密集的内存表示。一个额外的好处是，<code>array</code>可以使用很多和<code>list</code>相同的方法进行操作，所以在你的应用中使用array来替换<code>list</code>，很可能不需要太多更改。</p>
+
+<h3>2.2 排序</h3>
+
+<p>如果你需要维护一个排序<code>list</code>，尝试一下<code>heapq</code>。使用<code>heapq</code>的函数从<code>list</code>里添加和删除元素，你可以开销较小的情况下维护一个排序<code>list</code>。</p>
+
+<p>另一个选择是<code>bisect</code>。<code>bisect</code>使用二叉搜索为新元素找到插入位置。也可以用它来给一个经常变化的<code>list</code>进行排序。</p>
+
+<h3>2.3 Queue</h3>
+
+<p>尽管内置的<code>list</code>可以使用<code>insert()</code>和<code>pop()</code>方法来模拟队列，它并不是线程安全的。如果你需要不同线程之间的有序通信，你应该使用<code>Queue.multiproceeing</code>，其中包含了可以跨进程的<code>Queue</code>实现，这样可以让跨模块的移植变得更加容易。</p>
+
+<h3>2.4 collections</h3>
+
+<p>模块<code>collections</code>包含了若干数据结构，它们扩展了其他模块中的那些结构。例如，<code>Deque</code>是一个双向队列，允许在任意一端添加和删除元素。<code>defaultdict</code>是一个当键缺失时可以返回默认值的<code>dict</code>。<code>nametuple</code>扩展了普通<code>tuple</code>，在数字索引之外，给每个元素添加了一个属性名字。</p>
+
+<h3>2.5 数据解码</h3>
+
+<p>如果你需要处理从其他应用程序传来的数据，一个二进制文件或者一段流数据，你会发现<code>struct</code>很有用，它可以把数据解码成Python的原生类型，使它们变得更容易操作</p>
+
+<h3>2.6 自定义变量类型</h3>
+
+<p>最后，如果现有的类型不能满足你的需求，你可以继承某个原生类型然后定制它。使用<code>collections</code>中定义的抽象基类，你也可以从头开始创建一个类型。</p>
+
+
+</div>
+</div>
+<script src="https://yandex.st/highlightjs/8.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+</body>
+
+</html>
