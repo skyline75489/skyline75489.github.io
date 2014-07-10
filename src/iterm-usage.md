@@ -8,32 +8,32 @@ iTerm2新手技巧
 
 #### 窗口操作
 
-* **新建窗口**：Command + N
-* **关闭窗口**：Shift + Command + W
-* **窗口之间切换**
-     * **前一个窗口**： Command + `
-     * **后一个窗口**：Command + ~ 
-     * **进入窗口1，2，3...**： Option + Command + 窗口编号
+* 新建窗口：Command + N
+* 关闭窗口：Shift + Command + W
+* 窗口之间切换
+     * 前一个窗口： Command + `
+     * 后一个窗口：Command + ~ 
+     * 进入窗口1，2，3...： Option + Command + 窗口编号
 
 
 #### 标签页操作
 
-* **新建标签页**：Command + T
-* **关闭标签页**： Command + W
-* **标签页之间切换**
-    * **前一个标签页**： Command + 左方向键，Shift + Command + [ 
-    * **后一个标签页**： Command + 右方向键，Shitf + Command + ]
-    * **进入标签页1，2，3...**：  Command + 标签页编号
-* **Expose 标签页**： Option + Command + E（将标签页打撒到全屏，并可以全局搜索所有的标签页）
+* 新建标签页：Command + T
+* 关闭标签页： Command + W
+* 标签页之间切换
+    * 前一个标签页： Command + 左方向键，Shift + Command + [ 
+    * 后一个标签页： Command + 右方向键，Shitf + Command + ]
+    * 进入标签页1，2，3...：  Command + 标签页编号
+* Expose 标签页： Option + Command + E（将标签页打撒到全屏，并可以全局搜索所有的标签页）
 
 #### 面板操作
 
-* **垂直分割**：Command + D
-* **水平分割**： Shift + Command + D
-* **面板之间切换** 
-    * **前一个面板**： Command + [
-    * **后一个面板**： Command + ]
-    * **切换到上/下/左/右面板**：Option + Command + 上下左右方向键
+* 垂直分割：Command + D
+* 水平分割： Shift + Command + D
+* 面板之间切换 
+    * 前一个面板： Command + [
+    * 后一个面板： Command + ]
+    * 切换到上/下/左/右面板：Option + Command + 上下左右方向键
 
 有了面板分割功能，你可以把终端搞成这样：
 
@@ -42,17 +42,17 @@ iTerm2新手技巧
 看起来很像是Vim的分屏功能，但是使用范围更广了。
 
 #### 其他操作
-* **支持自定义全局快捷键用于显示和隐藏iTerm2**   
+* 支持自定义全局快捷键用于显示和隐藏iTerm2
 
 Preference -> Keys
 
 ![全局](../img/iterm-usage/iterm2.png)
 
-* **进入和退出全屏**：Command + Enter
-* **查看当前终端中光标的位置**：Command + /
-* **命令自动补全**：Command + ;（很少用这个，还是感觉Zsh的补全更好用）
-* **开启和关闭背景半透明**：Command + u
-* **清屏（重置当前终端）**：Command + r
+* 进入和退出全屏：Command + Enter
+* 查看当前终端中光标的位置：Command + /
+* 命令自动补全：Command + ;（很少用这个，还是感觉Zsh的补全更好用）
+* 开启和关闭背景半透明：Command + u
+* 清屏（重置当前终端）：Command + r
 
 ### 特色功能
 
