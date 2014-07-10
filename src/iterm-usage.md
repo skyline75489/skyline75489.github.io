@@ -28,8 +28,8 @@ iTerm2新手技巧
 
 #### 面板操作
 
-* **垂直分割** Command + D
-* **水平分割** Shift + Command + D
+* **垂直分割**：Command + D
+* **水平分割**： Shift + Command + D
 * **面板之间切换** 
     * **前一个面板**： Command + [
     * **后一个面板**： Command + ]
@@ -43,6 +43,8 @@ iTerm2新手技巧
 
 #### 其他操作
 * **支持自定义全局快捷键用于显示和隐藏iTerm2**   
+
+Preference -> Keys
 
 ![全局](../img/iterm-usage/iterm2.png)
 
