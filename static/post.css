@@ -17,11 +17,6 @@ body {
     min-width: 700px !important;
 }
 
-.post-time {
-	font-size: 10px;
-	color: red;
-}
-
 a.nav:visited {
 	color: #000;
 }
