@@ -8,15 +8,15 @@ LineBreak方式总共有下面六种：
 
 #### 1.NSLineBreakByWordWrapping
   
-  这个主要是UILabel本身设置行数的大于1，并且换行的时候，有点像是CSS里的word-break的意思。这个主要针对英语这类语言，单词比较长，如果一个单词换行的时候被折成两个会显得不好看，使用这个设置就能避免这种现象。
+  这个主要是UILabel本身设置行数的大于1，需要换行的时候使用，有点像是CSS里的word-break的意思。这个主要针对英语这类语言，单词比较长，如果一个单词换行的时候被折成两个会显得不好看，使用这个设置就能避免这种现象。
   
   ![1](./img/uilabel-linebreak/1.png)
   
-  上面这个lineNumber 设置为2，设置为1是不会换行的。设置为0也可以，代表没有行数限制。
+  上面这个LineNumber 设置为2，设置为1是不会换行的。设置为0也可以，代表没有行数限制。
   
 #### 2.NSLineBreakByCharWrapping 
   
-  和WordWrapping类似都是用于多行显示的，这个是直接在字母的地方砍掉，出来的效果就是这样的：
+  和WordWrapping类似，这个是直接在字母的地方砍掉，出来的效果就是这样的：
   
   ![2](./img/uilabel-linebreak/2.png)
   
