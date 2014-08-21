@@ -12,13 +12,14 @@
 
 ### 1.安装DNSMasq和DNSCrypt
 
-   使用 Homebrew 安装
+使用 Homebrew 安装
 
-   ```
-  $ brew install dnsmasq
-  $ brew install dnscrypt-proxy
-  ```
-   装DNSMasq的时候这一步问题不大，但是安装DNSCrypt的时候，我发现DNSCrypt已经被墙了。没办法，只能先使用Wallproxy翻出去，把源码下载下来，然后在Downloads目录用```python -m SimpleHTTPServer```开一个本地服务器，然后再使用```brew edit dnscrypt-proxy```把Formula里的下载地址改成本地的地址，然后再执行install，才把DNSCrypt安装上。
+```
+$ brew install dnsmasq
+$ brew install dnscrypt-proxy
+```
+
+装DNSMasq的时候这一步问题不大，但是安装DNSCrypt的时候，我发现DNSCrypt已经被墙了。没办法，只能先使用Wallproxy翻出去，把源码下载下来，然后在Downloads目录用```python -m SimpleHTTPServer```开一个本地服务器，然后再使用```brew edit dnscrypt-proxy```把Formula里的下载地址改成本地的地址，然后再执行install，才把DNSCrypt安装上。
 
 ### 2.配置
 
