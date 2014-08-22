@@ -28,7 +28,8 @@ $ brew install dnscrypt-proxy
 配置DNSMasq，修改 /usr/local/etc/dnsmasq.conf
 
 ```
-# 不读取有关解析的配置文件（默认使用/etc/revolve.conf中的上游服务器地址进行解析，这里我们把地址直接写在配置文件里，所以不需要这个了)
+# 不读取有关解析的配置文件，默认使用/etc/revolve.conf中的上游服务器地址进行解析
+# 这里我们把地址直接写在配置文件里，所以不需要这个了
 no-resolv
 # 不检查有关解析的配置文件更新（原因同上）
 no-poll
@@ -40,6 +41,8 @@ addn-hosts=/usr/local/etc/dnsmasq.hosts
 server=127.0.0.1#40
 # 缓存大小，默认是150，调大点应该没坏处
 cache-size=2000
+# 启用DNSSEC代理，应该能增强安全性吧
+proxy-dnssec
 # 可以自行参照man DNSMasq里的内容继续添加别的参数
 ```
 
