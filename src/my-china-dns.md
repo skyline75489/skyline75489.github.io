@@ -43,7 +43,7 @@ server=127.0.0.1#40
 cache-size=2000
 # 启用DNSSEC代理，应该能增强安全性吧
 proxy-dnssec
-# 可以自行参照man DNSMasq里的内容继续添加别的参数
+# 可以自行参照man dnsmasq里的内容继续添加别的参数
 ```
 
 配置DNSCrypt，上面提到的Gist里把配置写在了 /Library/LaunchDaemons/homebrew.mxcl.dnscrypt-proxy.plist。可能是我安装的时候有问题，我没找到这个文件。经我自己的测试发现，使用launchctl启动DNSCrypt可能会出现DNSCrypt不停重启的情况。所以我们直接在后面使用命令行参数启动DNSCrypt。
