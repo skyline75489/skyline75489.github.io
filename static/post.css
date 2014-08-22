@@ -55,7 +55,7 @@ a.nav:visited {
 }
 
 pre {
-	background: #f8f8f8;
+	background: #f0f0f0;
 	border: 1px solid #ccc;
 	line-height: 1.428571429;
 	word-break: break-all;
@@ -67,7 +67,6 @@ pre {
 
 code {
 	border: 1px solid #eaeaea;
-	background-color: #f8f8f8;
 	border-radius: 3px;
 	text-shadow: none;
 	font-family: Menlo, Droid Sans Mono, Consolas, Monospace;
