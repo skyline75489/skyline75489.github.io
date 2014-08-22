@@ -55,23 +55,20 @@ addn-hosts=/usr/local/etc/dnsmasq.hosts
 server=127.0.0.1#40
 # 缓存大小，默认是150，调大点应该没坏处
 cache-size=2000
+# 可以自行参照man DNSMasq里的内容继续添加别的参数
 </code></pre>
 
-<p>配置DNSCrypt，参照上面提到的Gist，编辑 /Library/LaunchDaemons/homebrew.mxcl.dnscrypt-proxy.plist。可能是我安装的时候有问题，我没找到这个文件，只能自己新建了一个。</p>
-
-<p>这个plist里比较重要的有--local-address，使用的端口号是40，也就是我们上面DNSMasq的上游地址。还有那三个解析服务器相关的值，那个Gist里使用的是OpenDNS的地址，我感觉OpenDNS太出名，容易被封，就在 <a href="https://github.com/jedisct1/dnscrypt-proxy/blob/master/dnscrypt-resolvers.csv">https://github.com/jedisct1/dnscrypt-proxy/blob/master/dnscrypt-resolvers.csv</a> 里随便挑了一个能Ping通的。我试了几个，Ping值都在300，400毫秒左右，反正有缓存，查询速度慢点也没什么关系。</p>
+<p>配置DNSCrypt，上面提到的Gist里把配置写在了 /Library/LaunchDaemons/homebrew.mxcl.dnscrypt-proxy.plist。可能是我安装的时候有问题，我没找到这个文件。经我自己的测试发现，使用launchctl启动DNSCrypt可能会出现DNSCrypt不停重启的情况。所以我们直接在后面使用命令行参数启动DNSCrypt。</p>
 
 <h3>3.启动服务</h3>
 
-<p>按道理执行下面的命令可以启动DNSCrypt</p>
+<p>执行下面的命令可以启动DNSCrypt</p>
 
-<pre><code>$ sudo launchctl stop homebrew.mxcl.dnscrypt-proxy &amp;&amp; sudo launchctl start homebrew.mxcl.dnscrypt-proxy
+<pre><code>$ sudo /usr/local/sbin/dnscrypt-proxy --local-address=127.0.0.1:40 --edns-payload-size=4096 --user=nobody --resolver-address=77.66.84.233:443 --provider-name=2.dnscrypt-cert.resolver2.dnscrypt.eu --provider-key=3748:5585:E3B9:D088:FD25:AD36:B037:01F5:520C:D648:9E9A:DD52:1457:4955:9F0A:9955 --daemonize
+
 </code></pre>
 
-<p>可能还是我安装的时候没装好的问题，launchctl找不到对应的plist，没办法只能通过下面的命令启动</p>
-
-<pre><code>$ sudo launchctl load /Library/LaunchDaemons/homebrew.mxcl.dnscrypt-proxy.plist
-</code></pre>
+<p>参数里面比较重要的有--local-address，使用的端口号是40，也就是我们上面DNSMasq的上游地址。还有那三个解析服务器相关的值，那个Gist里使用的是OpenDNS的地址，我感觉OpenDNS太出名，容易被封，就在 <a href="https://github.com/jedisct1/dnscrypt-proxy/blob/master/dnscrypt-resolvers.csv">https://github.com/jedisct1/dnscrypt-proxy/blob/master/dnscrypt-resolvers.csv</a> 里随便挑了一个能Ping通的。我试了几个，Ping值都在300，400毫秒左右，反正有缓存，查询速度慢点也没什么关系。daemonize表示以Daemon的方式启动，可以先不加这个参数试一下能不能正确启动，如果可以再加上它。</p>
 
 <p>然后启动DNSMasq并清除系统DNS缓存</p>
 
