@@ -45,14 +45,14 @@ Macbook Air, GFW，东软实训及其它
 
 附几张东软园区的照片，风景真的挺好的
 
-![1](./img/trivia1/1.JPG)
+![1](../img/trivia1/1.JPG)
 
-![2](./img/trivia1/2.JPG)
+![2](../img/trivia1/2.JPG)
 
-![3](./img/trivia1/3.JPG)
+![3](../img/trivia1/3.JPG)
 
-![4](./img/trivia1/4.JPG)
+![4](../img/trivia1/4.JPG)
 
-![5](./img/trivia1/5.JPG)
+![5](../img/trivia1/5.JPG)
 
-![6](./img/trivia1/6.JPG)
+![6](../img/trivia1/6.JPG)
