@@ -17,7 +17,9 @@
 </div>
 <div class="content">
 
-<h1>我的DNS解决方案</h1>
+<h1>我(以前)的DNS解决方案</h1>
+
+<p><strong>如果你也觉得下面的这些步骤实在很繁琐，请移步<a href="simpledns-the-proxy-dns-server.html">这里</a></strong></p>
 
 <p>在中国这片神奇的土地上，网络自由是如此的可遇不可求。连DNS解析这样一个基础服务，都变成了网络封锁的目标。各种DNS劫持，污染，让人烦不胜烦。于是我开始寻找一个不受别人监视的，自由的DNS解决方案。</p>
 
@@ -39,7 +41,7 @@ $ brew install dnscrypt-proxy
 
 <h3>2.配置</h3>
 
-<p>这个部分是最麻烦的，因为需要根据地址不同，把国内地址和国外地址区分对待。幸亏有好心人做了一些工作，极大的减少我们的工作量。   <a href="https://github.com/felixonmars/dnsmasq-china-list">https://github.com/felixonmars/dnsmasq-china-list</a> 这个项目维护了一份中国地区大部分网站的地址。这个列表来可以帮助DNSMasq判断应该把DNS请求发向哪里。我们先要把里面的两个配置文件下载下来，创建 /usr/local/etc/dnsmasq.d 文件夹，把两个配置文件放到里面。</p>
+<p>这个部分是最麻烦的，因为需要根据地址不同，把国内地址和国外地址区分对待。幸亏有好心人做了一些工作，极大的减少我们的工作量。<a href="https://github.com/felixonmars/dnsmasq-china-list">这个项目</a>维护了一份中国地区大部分网站的地址。这个列表来可以帮助DNSMasq判断应该把DNS请求发向哪里。我们先要把里面的两个配置文件下载下来，创建 /usr/local/etc/dnsmasq.d 文件夹，把两个配置文件放到里面。</p>
 
 <p>配置DNSMasq，修改 /usr/local/etc/dnsmasq.conf</p>
 
@@ -71,7 +73,7 @@ proxy-dnssec
 
 </code></pre>
 
-<p>参数里面比较重要的有--local-address，使用的端口号是40，也就是我们上面DNSMasq的上游地址。还有那三个解析服务器相关的值，那个Gist里使用的是OpenDNS的地址，我感觉OpenDNS太出名，容易被封，就在 <a href="https://github.com/jedisct1/dnscrypt-proxy/blob/master/dnscrypt-resolvers.csv">https://github.com/jedisct1/dnscrypt-proxy/blob/master/dnscrypt-resolvers.csv</a> 里随便挑了一个能Ping通的。我试了几个，Ping值都在300，400毫秒左右，反正有缓存，查询速度慢点也没什么关系。daemonize表示以Daemon的方式启动，可以先不加这个参数试一下能不能正确启动，如果可以再加上它。</p>
+<p>参数里面比较重要的有--local-address，使用的端口号是40，也就是我们上面DNSMasq的上游地址。还有那三个解析服务器相关的值，那个Gist里使用的是OpenDNS的地址，我感觉OpenDNS太出名，容易被封，就在<a href="https://github.com/jedisct1/dnscrypt-proxy/blob/master/dnscrypt-resolvers.csv">这个地方</a>随便挑了一个能Ping通的。我试了几个，Ping值都在300，400毫秒左右，反正有缓存，查询速度慢点也没什么关系。daemonize表示以Daemon的方式启动，可以先不加这个参数试一下能不能正确启动，如果可以再加上它。</p>
 
 <p>然后启动DNSMasq并清除系统DNS缓存</p>
 
