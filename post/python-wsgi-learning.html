@@ -19,7 +19,7 @@
 
 <h1>Python WSGI学习笔记</h1>
 
-<p>WSGI的具体内容就不在这里赘述了，官方的<a href="http://legacy.python.org/dev/peps/pep-0333/">PEP 333</a>和<a href="http://legacy.python.org/dev/peps/pep-3333/">PEP 3333</a>说的很详细，不想看英文文档的可以看看<a href="https://jasonlvhit.github.io/articles/wsgi/">这篇文章</a>，我感觉写的挺简单易懂的。简单来说，WSGI规范把Web组件分成了三个部分，从上到下分别是Application/Framework，Middleware，和Server/Gateway，其中Middleware并不是必需的。有了这三个部分，就可以构建一个完整的Web应用。我主要从下面这几个方面说一下我自己的体会。</p>
+<p>WSGI的具体内容就不在这里赘述了，官方的<a href="http://legacy.python.org/dev/peps/pep-0333/">PEP 333</a>和<a href="http://legacy.python.org/dev/peps/pep-3333/">PEP 3333</a>说的很详细，不想看英文文档的可以看看<a href="http://svsr.sinaapp.com/post/5">这篇文章</a>，我感觉写的挺简单易懂的。简单来说，WSGI规范把Web组件分成了三个部分，从上到下分别是Application/Framework，Middleware，和Server/Gateway，其中Middleware并不是必需的。有了这三个部分，就可以构建一个完整的Web应用。我主要从下面这几个方面说一下我自己的体会。</p>
 
 <h3>组件之间的高度解耦</h3>
 
