@@ -1,0 +1,58 @@
+<!DOCTYPE html> 
+<html>
+<head>
+<title>Skyline75489</title>
+ <meta charset='utf-8'>
+<link rel="stylesheet" href="https://yandex.st/highlightjs/8.0/styles/default.min.css">
+<link rel="stylesheet" href="../static/post.css">
+</head>
+<body>
+
+<div class="wrapper">
+<div class="header">
+	<span class="blog-name">Skyline75489</span>
+
+<a class="nav" href="../index.html">Home</a>
+<a class="nav" href="about.html">About</a>
+</div>
+<div class="content">
+
+<h1>Mac OS X上编译thttpd</h1>
+
+<p><a href="http://acme.com/software/thttpd/">thttpd</a>是我偶尔在网上闲逛找到的一个微型HTTP服务器，两三千行C代码便实现了对于HTTP/1.1的支持，使用的是select异步。</p>
+
+<p>这货应该是很久没更新了，不支持在Mac OS X上直接编译。直接<code>./configure</code>会报错，在网上查了一下东西，发现需要执行</p>
+
+<pre><code>./configure --prefix=/usr/local/thttpd --host=freebsd
+</code></pre>
+
+<p>虽然还是会报错，但是不影响configure的，configure完就可以<code>make</code>,<code>make install</code>了。</p>
+
+<p>安装完成之后，直接在命令行里输入./thttpd，不能够正常启动，需要给他配置文件，新建一个配置文件<code>/usr/local/thttpd/conf/thttpd.conf</code></p>
+
+<p>输入</p>
+
+<pre><code>host=127.0.0.1
+port=8080
+user=thttpd
+logfile=/usr/local/thttpd/log/thttpd.log
+pidfile=/usr/local/thttpd/log/thttpd.pid
+dir=/usr/local/thttpd/www/
+cgipat=**.cgi|**.pl
+</code></pre>
+
+<p>然后再执行</p>
+
+<pre><code>./thttpd -C /usr/locat/thttpd/conf/thttpd/conf
+</code></pre>
+
+<p>就可以正常运行了。thttpd对于资源消耗的控制还是比较优秀的，大概也就Apache的十分之一吧，当个小型Web Server应该没什么问题。</p>
+
+
+</div>
+</div>
+<script src="https://yandex.st/highlightjs/8.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+</body>
+
+</html>

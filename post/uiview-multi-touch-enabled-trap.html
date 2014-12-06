@@ -1,0 +1,40 @@
+<!DOCTYPE html> 
+<html>
+<head>
+<title>Skyline75489</title>
+ <meta charset='utf-8'>
+<link rel="stylesheet" href="https://yandex.st/highlightjs/8.0/styles/default.min.css">
+<link rel="stylesheet" href="../static/post.css">
+</head>
+<body>
+
+<div class="wrapper">
+<div class="header">
+	<span class="blog-name">Skyline75489</span>
+
+<a class="nav" href="../index.html">Home</a>
+<a class="nav" href="about.html">About</a>
+</div>
+<div class="content">
+
+<h1>解决UIView不响应多点触控的问题</h1>
+
+<p>在键盘开发中一个基本的需求是键盘对触控响应要迅速。因为按键特别快时很容易造成前一个触摸还没有离开屏幕，下一个按键就已经touchDown了，为了避免按键时的卡顿感，需要键盘能够对应多点触控做出响应。</p>
+
+<p>我们键盘的基本布局是，整个键盘是一个UIView，各个按键是它的Subview。我们刚开始在实现响应区域的时候遇到了一个很令人不解的问题。当一个手指按在一个按键上时，不松开，然后再按下一个另一个按键，此时touchesBegan并不会调用。这导致我们没办法处理上面提到的情况，于是我们的键盘在快速按键时有明显的卡顿感。</p>
+
+<p>查阅了很多文档，也没有找到有关问题的答案。最后在一个很隐蔽的StackOverflow的问题的评论里（抱歉那个问题的链接我已经找不到了），有人提到需要把Subview的<code>userInteractionEnabled</code>设置成<code>NO</code>，这样才能够正常响应多点触控事件。于是照他的方法试了一下，果真如此。把UIView的Subview链中除了顶层的UIView之外，其他的Subview以及Subview的Subview全都设置 </p>
+
+<pre><code class="objective-c">self.userInteractionEnabled = NO;
+</code></pre>
+
+<p>然后UIView就可以正常响应多点触控了。</p>
+
+
+</div>
+</div>
+<script src="https://yandex.st/highlightjs/8.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+</body>
+
+</html>
