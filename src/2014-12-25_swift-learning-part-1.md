@@ -81,7 +81,7 @@ println(possibleString!)///必须使用!才能取出String值，不然打印出�
 
 ```?```可以简单的认为是声明变量为Optional，```!```用于强制unwrap一个Optional。
 
-然后是`let`关键字可用于Optional Binding，就是这种写法：
+然后是```let```关键字可用于Optional Binding，就是这种写法：
 
 ```swift
 if let constantName = someOptional {
