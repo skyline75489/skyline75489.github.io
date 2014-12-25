@@ -89,11 +89,11 @@ let message = &quot;\(multiplier) times 2.5 is \(Double(multiplier) * 2.5)&quot;
 println(possibleString!)///必须使用!才能取出String值，不然打印出的是一个Optional值
 </code></pre>
 
-<pre><code class="?```可以简单的认为是声明变量为Optional，```!```用于强制unwrap一个Optional。">
-然后是```let```关键字可用于Optional Binding，就是这种写法：
+<p>简单来说，<code>?</code>用来声明变量为Optional，<code>!</code>用于强制unwrap一个Optional。</p>
 
-```swift
-if let constantName = someOptional {
+<p>然后是<code>let</code>关键字可用于Optional Binding，就是这种写法：</p>
+
+<pre><code class="swift">if let constantName = someOptional {
     statements
 }
 </code></pre>
