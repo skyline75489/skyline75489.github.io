@@ -68,7 +68,7 @@ let multiplier = 3let message = "\(multiplier) times 2.5 is \(Double(multiplier
 
 ### Optional与Unwrap
 
-Optional大概是Swift里最有特色的”特色“了，苹果为这个特色也准备了很多语法糖。关于Optional的具体含义和用法可以参考[这篇文章](http://onevcat.com/2014/06/walk-in-swift/)，这里只简单讲一下语法上的内容。
+Optional大概是Swift里最有特色的一个特色了，苹果为这个特色也准备了很多语法糖。关于Optional的具体含义和用法可以参考[这篇文章](http://onevcat.com/2014/06/walk-in-swift/)，这里只简单讲一下语法上的内容。
 
 首先是大量的```?```和```!```使用，刚开始看起来会让人摸不着头脑，明白的话好理解了。
 
