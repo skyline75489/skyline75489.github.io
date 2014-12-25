@@ -9,7 +9,7 @@ Swift语言的起源啊之类的废话就不说了，直接上干货。这一篇
 
 Swift语言并不是像C/C++，Java那样完全忽视空格，Swift对空格的使用有一定的要求，但是又不像Python对缩进的要求那么严格。
 
-运算符不能直接跟在变量或常量的后面，按照[Stackoverflow上的说法](https://stackoverflow.com/questions/24134354/swift-error-prefix-postfix-is-reserved)，是为了区分前缀运算符和后缀运算符，避免写出```++i++```这样的代码。看起来很美好，但是实际使用中还是有一些别扭，例如下面的代码会报错（注意空格）：
+在Swift中，运算符不能直接跟在变量或常量的后面。按照[Stackoverflow上的说法](https://stackoverflow.com/questions/24134354/swift-error-prefix-postfix-is-reserved)，是为了区分前缀运算符和后缀运算符，避免写出```++i++```这样的代码。看起来很美好，但是实际使用中还是有一些别扭，例如下面的代码会报错（注意空格）：
 
 ```swift
 let a= 1 + 2
@@ -39,8 +39,8 @@ error: consecutive statements on a line must be separated by ';'
 只有这样写才不会报错：
 
 ```swift
-let a = 1 + 2; //编码规范推荐使用这种写法
-let b = 3+4
+let a = 1 + 2;  // 编码规范推荐使用这种写法
+let b = 3+4	// 这样也是OK的
 ```
 
 ### 全新的字符串处理
@@ -98,3 +98,31 @@ if err := file.Chmod(0664); err != nil {
 ```
 不过由于Optional的特性，Swift中不再需要```err != nil```这一句了，显得更简洁一些。
 
+
+### 运算符
+
+Swift的运算符和C基本是一样的，不过Swift的取余运算是可用于浮点数的。这种运算符我真的是第一次见到：
+
+```swift
+let a = 10 % 3    // a = 1
+let b = 10.8 % 3  // b = 1.8000000000000007
+```
+
+这里%运算符的作用不再是取模了，官方文档特意强调了这一点，它的作用就是取余。
+
+### For In 与 Range
+
+Swift引入了很多语言中都有的For In语法和Range语法，使得遍历操作变得很方便：
+
+```swift
+for index in 1...5 {
+    println("\(index) times 5 is \(index * 5)")
+}
+// 1 times 5 is 5
+// 2 times 5 is 10
+// 3 times 5 is 15
+// 4 times 5 is 20
+// 5 times 5 is 25
+```
+
+```1...5```表示全闭，可以用```1..<5```表示半开半闭，也就是不包括5。这里注意一点，有些资料比较旧，使用的是旧的写法```1..5```，这种写法在新版本的Xcode上是不能通过编译的。
