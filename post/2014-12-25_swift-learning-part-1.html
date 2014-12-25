@@ -1,0 +1,118 @@
+<!DOCTYPE html> 
+<html>
+<head>
+<title>Skyline75489</title>
+ <meta charset='utf-8'>
+<link rel="stylesheet" href="https://yandex.st/highlightjs/8.0/styles/default.min.css">
+<link rel="stylesheet" href="../static/post.css">
+</head>
+<body>
+
+<div class="wrapper">
+<div class="header">
+	<span class="blog-name">Skyline75489</span>
+
+<a class="nav" href="../index.html">Home</a>
+<a class="nav" href="about.html">About</a>
+</div>
+<div class="content">
+
+<h1>Swift学习笔记——语法初探</h1>
+
+<p>最近闲了一些，打算系统地学习一下Swift语言，写一个系列日志来记录一下学习中的心得和体会，也起到监督自己的作用。</p>
+
+<p>Swift语言的起源啊之类的废话就不说了，直接上干货。这一篇日志主要讲一下Swift语法上的一些特点。</p>
+
+<h3>&quot;强制&quot;空格</h3>
+
+<p>Swift语言并不是像C/C++，Java那样完全忽视空格，Swift对空格的使用有一定的要求，但是又不像Python对缩进的要求那么严格。</p>
+
+<p>运算符不能直接跟在变量或常量的后面，按照<a href="https://stackoverflow.com/questions/24134354/swift-error-prefix-postfix-is-reserved">Stackoverflow上的说法</a>，是为了区分前缀运算符和后缀运算符，避免写出<code>++i++</code>这样的代码。看起来很美好，但是实际使用中还是有一些别扭，例如下面的代码会报错（注意空格）：</p>
+
+<pre><code class="swift">let a= 1 + 2
+</code></pre>
+
+<p>错误信息是：</p>
+
+<pre><code class="plaintext">error: prefix/postfix &#39;=&#39; is reserved
+</code></pre>
+
+<p>意思大概是等号直接跟在前面或后面这种用法是保留的。</p>
+
+<p>下面的代码还是会报错（继续注意空格）：</p>
+
+<pre><code class="swift">let a = 1+ 2
+</code></pre>
+
+<p>错误信息是：</p>
+
+<pre><code class="plaintext">error: consecutive statements on a line must be separated by &#39;;&#39;
+</code></pre>
+
+<p>这是因为Swift认为到<code>1+</code>这个语句就结束了，<code>2</code>就是下一个语句了。</p>
+
+<p>只有这样写才不会报错：</p>
+
+<pre><code class="swift">let a = 1 + 2; //编码规范推荐使用这种写法
+let b = 3+4
+</code></pre>
+
+<h3>全新的字符串处理</h3>
+
+<p>Swift的字符串是全Unicode的，于是就产生了在网上流传的用Emoji表情写的代码（用中文写的话，岂不就是传说中的“中文编程”了？）</p>
+
+<pre><code class="swift">let wiseWords = &quot;\&quot;Imagination is more important than knowledge\&quot; - Einstein&quot;
+// &quot;Imagination is more important than knowledge&quot; - Einstein
+let dollarSign = &quot;\x24&quot;        // $,  Unicode scalar U+0024
+let blackHeart = &quot;\u2665&quot;      // ♥,  Unicode scalar U+2665
+let sparklingHeart = &quot;\U0001F496&quot;  // 💖, Unicode scalar U+1F496”
+</code></pre>
+
+<p>由于这个特点，Swift中字符串不再使用length来获得属性，而是使用全局方法<code>countElements</code>，这样能使不同语言的字符串都得到正确的长度结果。</p>
+
+<p>同时，Swift还带来了全新的构建字符串的方式——字符串插值，简化了字符串的构建操作。</p>
+
+<pre><code class="swift">let multiplier = 3
+let message = &quot;\(multiplier) times 2.5 is \(Double(multiplier) * 2.5)&quot;
+</code></pre>
+
+<p>最感人的是对字符串可变性的处理。Swift中使用<code>let</code>和<code>var</code>来区分可变字符串和不可变字符串，不再使用<code>NSString</code>和<code>NSMutableString</code>。同时字符串的拼接可以像Python一样直接使用加号，判断两个字符串是否相等也可以直接使用等号，终于可以告别<code>[str1 isEqualToString:str2]</code>和<code>[str1 stringByAppendingString:str2]</code>这种繁琐的语法了。</p>
+
+<h3>Optional与Unwrap</h3>
+
+<p>Optional大概是Swift里最有特色的”特色“了，苹果为这个特色也准备了很多语法糖。关于Optional的具体含义和用法可以参考<a href="http://onevcat.com/2014/06/walk-in-swift/">这篇文章</a>，这里只简单讲一下语法上的内容。</p>
+
+<p>首先是大量的<code>?</code>和<code>!</code>使用，刚开始看起来会让人摸不着头脑，明白的话好理解了。</p>
+
+<pre><code class="swift">let possibleString: String? = &quot;An optional string.&quot;///这个String可以是nil
+
+println(possibleString!)///必须使用!才能取出String值，不然打印出的是一个Optional值
+</code></pre>
+
+<pre><code class="?```可以简单的认为是声明变量为Optional，```!```用于强制unwrap一个Optional。">
+然后是`let`关键字可用于Optional Binding，就是这种写法：
+
+```swift
+if let constantName = someOptional {
+    statements
+}
+</code></pre>
+
+<p>这种写法类似于Go语言，可以在if语句执行之前做一个赋值操作：</p>
+
+<pre><code class="go">if err := file.Chmod(0664); err != nil {
+    log.Print(err)
+    return err
+}
+</code></pre>
+
+<p>不过由于Optional的特性，Swift中不再需要<code>err != nil</code>这一句了，显得更简洁一些。</p>
+
+
+</div>
+</div>
+<script src="https://yandex.st/highlightjs/8.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+</body>
+
+</html>
