@@ -38,4 +38,20 @@ a[4..6] = [12, 13, 14] // a = [1, 2, 3, 4, 12, 12, 14, 7]
 
 不过Swift中并不支持Python中负数下标这种用法，例如a[:-2]。
 
-(To Be Continued)
+遍历数组可以使用for in，同时也可以使用```enumerate```来同时得到下标和值。（这个用法跟Python真是太像了，可以说是一模一样）
+
+```swift
+for (index, val) in enmerate(c) {
+	println("Item:\(index) \(val)")
+}
+/* 打印出
+Item:0:4
+Item:1:5
+Item:2:6
+Item:3:7
+*/
+```
+
+### 字典
+
+和数组类型一样，字典类型的键和值的类型也必须是确定的。Swift在类型安全上的要求还是挺严格的。
