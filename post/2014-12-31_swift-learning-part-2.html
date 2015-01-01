@@ -70,6 +70,18 @@ Item:3:7
 
 <p>和数组类型一样，字典类型的键和值的类型也必须是确定的。Swift在类型安全上的要求还是挺严格的。</p>
 
+<pre><code class="swift">var abbr = [&quot;BJ&quot;:&quot;Beijing&quot;, &quot;HRB&quot;:&quot;Harbin&quot;] // abbr:[String:String]
+</code></pre>
+
+<p>字典的声明，初始化，赋值之类的操作没有什么可写的，都比较简单。字典的更新比较有意思，使用<code>updateValue</code>可以对字典中的某个键对应的值进行更新，它的返回值是一个Optional，如果这个键不存在，则返回nil，否则它返回更新之前的旧值，这样可以很方便的检查是否是真的进行了更新。字典的删除操作<code>
+removeValueForKey</code>也具有类似的行为。</p>
+
+<pre><code class="swift">abbr.updateValue(&quot;Hello&quot;, forKey: &quot;BJ&quot;) // 返回值为String? = &quot;Beijing&quot;
+abbr.updateValue(&quot;Hello&quot;, forKey: &quot;BY&quot;) // 返回值为String? = nil
+</code></pre>
+
+<p>只有实现了<code>Hashable</code> protocol的类型才可以作为字典的键（类似于Python的<code>__hash__</code>魔法方法），所有的Swift基本类型都是hashable的，如整型，浮点，字符串等。</p>
+
 
 </div>
 </div>
