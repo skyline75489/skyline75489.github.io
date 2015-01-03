@@ -5,8 +5,10 @@ Mac OS X上编译thttpd
 
 这货应该是很久没更新了，不支持在Mac OS X上直接编译。直接```./configure```会报错，在网上查了一下东西，发现需要执行
    
-   
-    ./configure --prefix=/usr/local/thttpd --host=freebsd
+
+```plaintext   
+./configure --prefix=/usr/local/thttpd --host=freebsd
+```
 
 虽然还是会报错，但是不影响configure的，configure完就可以```make```,```make install```了。
 
@@ -14,17 +16,20 @@ Mac OS X上编译thttpd
 
 输入
 
-    host=127.0.0.1
-    port=8080
-    user=thttpd
-    logfile=/usr/local/thttpd/log/thttpd.log
-    pidfile=/usr/local/thttpd/log/thttpd.pid
-    dir=/usr/local/thttpd/www/
-    cgipat=**.cgi|**.pl
+```plaintext
+host=127.0.0.1
+port=8080
+user=thttpd
+logfile=/usr/local/thttpd/log/thttpd.log
+pidfile=/usr/local/thttpd/log/thttpd.pid
+dir=/usr/local/thttpd/www/
+cgipat=**.cgi|**.pl
+```
 
 然后再执行
-    
-    ./thttpd -C /usr/locat/thttpd/conf/thttpd/conf
-    
+
+```plaintext    
+./thttpd -C /usr/locat/thttpd/conf/thttpd/conf
+```
     
 就可以正常运行了。thttpd对于资源消耗的控制还是比较优秀的，大概也就Apache的十分之一吧，当个小型Web Server应该没什么问题。
