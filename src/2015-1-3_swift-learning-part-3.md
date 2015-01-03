@@ -44,9 +44,9 @@ swap(&intA, &intB) // 调用，类似使用引用传值
 
 需要注意，```inout```关键字不能与```var```或者```let```同时使用，也不能有默认值。
 
-### 真 · 函数
+### 真·函数
 
-和Python，Scala等一样，Swift中，函数是第一等公民，可以像变量那样用于赋值，Swift支持高阶函数，函数可以当做别的函数的参数进行传递，也可以在函数中嵌套函数。
+和Python，Scala等一样，Swift中，函数是第一等公民，可以像变量那样用于赋值。
 
 ```swift
 func addTwoInt(a: Int, b: Int) {
@@ -57,6 +57,11 @@ var myAddFunc:(Int, Int) -> Int = addTwoInt
 
 myAddFunc(4, 5) // 9
 
+```
+
+Swift也支持高阶函数与函数嵌套，函数可以当做别的函数的参数进行传递，也可以作为返回值。
+
+```swift
 func makeIncre(n:Int) -> (Int) -> Int {
 	func addN(a:Int) -> Int{
 		return a + n
@@ -73,5 +78,32 @@ addTwo(6) // 8
 
 ## 闭包
 
-闭包类似于Objectivc-C里的Block，以及别的语言中的lambda，本质上就是一个小的匿名函数。
+闭包类似于Objectivc-C里的Block，以及别的语言中的lambda，本质上就是一个小的匿名函数。相比OC中的Block，Swift中闭包的写法显得更加简单和友好。
 
+```swift
+func backwards(s1: String, s2: String) {
+	return s1 > s2
+}
+
+sorted(names, backwards) // 使用函数
+
+// 使用闭包
+sorted(names, { (s1: String, s2: String) -> Bool in
+    return s1 > s2 
+})
+
+// 可以省略类型
+sorted(names, { s1, s2 in return s1 > s2 })
+
+// 当闭包只有一个表达式时，还可以省略return
+sorted(names, { s1, s2 in s1 > s2 })
+
+// 还可以在表达式中直接使用简化的参数名，类似shell脚本
+sorted(names, { $0 > $1 })
+
+// 终极简化版，直接使用内置String类型的>符号来代替闭包
+sorted(names, >)
+
+// 当闭包是函数的最后一个参数时，可以把闭包写在函数体外面
+sorted(names) { $0 > $1 }
+```
