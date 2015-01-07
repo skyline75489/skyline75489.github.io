@@ -72,3 +72,22 @@ class Person {
 
 willSet 和 didSet在每次属性赋值时都会被调用，不管新值是否与旧值相同，但是在init函数中给属性赋值时则不会被调用。
 
+
+### 使用下标访问属性
+
+Swift提供了subscript语法，可以使用下标来访问类的属性，类似于Python中的``__getitem__``
+
+
+```swift
+class Dict {
+	subscript(key: String) -> String {
+		get {
+		// 取值
+		}
+		
+		set(newValue) {
+		// 赋值
+		}
+}
+```
+
