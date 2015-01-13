@@ -1,7 +1,7 @@
 Swift学习笔记(四)——类与对象
 ========================
 
-Swift对面向对象提供了良好的支持，下面说几个比较有意思的特性。
+Swift对面向对象提供了良好的支持，下面介绍几个其独有的特性。
 
 ### 懒加载属性
 
@@ -26,7 +26,7 @@ renderer.loader.loadData()
 
 ### 属性计算与属性观察器
 
-类似于C#和Python中的@property，Swift也支持给属性赋值或者取出值时进行计算：
+类似于C#和Python中的```@property```，Swift也支持给属性赋值或者取出值时进行计算：
 	
 
 ```swift
@@ -91,3 +91,30 @@ class Dict {
 }
 ```
 
+### Convenience初始化器
+
+Swift支持两个层次的初始化，一种叫做Designated，另一张叫做Convenience，顾名思义，是一种用于方便初始化过程的初始化器。
+
+```swift
+class Person {
+	var name: String
+	init(name: String) {
+		self.name = name
+	}
+	convenience init() {
+		self.init(name: "Unknown")
+	}
+}
+```
+
+例如上面的代码，我们便可以使用无参数的init来快速初始化一个Person实例。
+
+你可能要问，为什么不在原来的init里使用默认参数，而是单独再加一个初始化函数呢？我个人的理解是，当初始化参数比较多，而且类型不同时，使用默认参数会使得初始化函数变得过于复杂，而且可读性差。使用Convenicence可以把这些参数全部解耦到不同的函数里，使得代码更加漂亮。例如SwiftJSON里就大量地使用了这一特性:
+
+```swift
+public convenience init(url:String) {//...}
+public convenience init(nsurl:NSURL) {//...}
+public convenience init(data:NSData) {//...}
+```
+
+有了这些初始化函数，我们就可以很方便地使用String,URL,NSData等来构造JSON对象。

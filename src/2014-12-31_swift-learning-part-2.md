@@ -60,8 +60,7 @@ Item:3:7
 var abbr = ["BJ":"Beijing", "HRB":"Harbin"] // abbr:[String:String]
 ```
 
-字典的声明，初始化，赋值之类的操作没有什么可写的，都比较简单。字典的更新比较有意思，使用```updateValue```可以对字典中的某个键对应的值进行更新，它的返回值是一个Optional，如果这个键不存在，则返回nil，否则它返回**更新之前的旧值**，这样可以很方便的检查是否真的进行了更新。字典的删除操作```
-removeValueForKey```也具有类似的行为。
+字典的声明，初始化，赋值之类的操作没有什么可写的，都比较简单。字典的更新比较有意思，使用```updateValue```可以对字典中的某个键对应的值进行更新，它的返回值是一个Optional，如果这个键不存在，则返回nil，否则它返回**更新之前的旧值**，这样可以很方便的检查是否真的进行了更新。字典的删除操作```removeValueForKey```也具有类似的行为。
 
 ```swift
 abbr.updateValue("Hello", forKey: "BJ") // 返回值为String? = "Beijing"

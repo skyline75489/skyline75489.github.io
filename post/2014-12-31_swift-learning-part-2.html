@@ -73,8 +73,7 @@ Item:3:7
 <pre><code class="swift">var abbr = [&quot;BJ&quot;:&quot;Beijing&quot;, &quot;HRB&quot;:&quot;Harbin&quot;] // abbr:[String:String]
 </code></pre>
 
-<p>字典的声明，初始化，赋值之类的操作没有什么可写的，都比较简单。字典的更新比较有意思，使用<code>updateValue</code>可以对字典中的某个键对应的值进行更新，它的返回值是一个Optional，如果这个键不存在，则返回nil，否则它返回<strong>更新之前的旧值</strong>，这样可以很方便的检查是否真的进行了更新。字典的删除操作<code>
-removeValueForKey</code>也具有类似的行为。</p>
+<p>字典的声明，初始化，赋值之类的操作没有什么可写的，都比较简单。字典的更新比较有意思，使用<code>updateValue</code>可以对字典中的某个键对应的值进行更新，它的返回值是一个Optional，如果这个键不存在，则返回nil，否则它返回<strong>更新之前的旧值</strong>，这样可以很方便的检查是否真的进行了更新。字典的删除操作<code>removeValueForKey</code>也具有类似的行为。</p>
 
 <pre><code class="swift">abbr.updateValue(&quot;Hello&quot;, forKey: &quot;BJ&quot;) // 返回值为String? = &quot;Beijing&quot;
 abbr.updateValue(&quot;Hello&quot;, forKey: &quot;BY&quot;) // 返回值为String? = nil
