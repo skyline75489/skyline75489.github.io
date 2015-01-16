@@ -55,7 +55,7 @@ class Square {
 }
 ```
 
-除了 set 和 get ，Swift还提供了更细粒度的对于属性值变化的观察方法——属性观察器 willSet 和 didSet ：
+除了 set 和 get ，Swift还提供了更细粒度的针对属性值变化的观察方法——属性观察器 willSet 和 didSet ：
 
 ```swift
 class Person {
@@ -118,3 +118,25 @@ public convenience init(data:NSData) {//...}
 ```
 
 有了这些初始化函数，我们就可以很方便地使用String,URL,NSData等来构造JSON对象。
+
+### 与Struct的区别
+
+和C#之类的现代高级语言一样，Swift的结构体类型也是可以在其中定义属性和方法的，用法与类相似：
+
+```swift
+struct A{
+     var a = 10;
+     func sayHello() {
+         println("hello")
+     }
+}
+```
+
+类和结构体的主要区别有以下几点：
+
+* 结构体是值类型，类是引用类型，这是最大也是最重要的区别了
+* 结构体有自动生成的成员初始化函数(Memberwise Initializer)，类没有
+* 类可以使用deinit函数做反初始化，结构体不可以
+* 类支持方法继承和重载，结构体不支持
+
+简单说来，结构体更适合用来封装若干简单的数据，例如CGRect之类。如果需要太多的逻辑和操作，还是用类更合适。
