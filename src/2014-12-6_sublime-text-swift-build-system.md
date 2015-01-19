@@ -1,13 +1,13 @@
-使用Sublime Text 2 编译并执行Swift程序
+使用 Sublime Text 编译并执行Swift程序
 ===================================
 
 最近稍微闲了一些，打算学习一下Swift。刚开始在Playground里打代码，虽然Playground看起来挺炫酷的，但是总是感觉一边写代码另一边会有点卡，偶尔还崩溃几次也让人挺心烦的。在命令行下是可以使用```swiftc```或者```swift```命令直接编译执行Swift代码的，但是效率实在是不高。
 
-以前学Python的时候Sublime Text可以作为很好的轻量级IDE，因为它内置了Build系统，可以直接用快捷键编译执行Python代码。既然Python没问题，Swift想必也是OK的，
+以前学Python的时候 Sublime Text 可以作为很好的轻量级IDE，因为它内置了Build系统，可以直接用快捷键编译执行Python代码。既然Python没问题，Swift想必也是OK的，
 
-首先装一个Swift的高亮插件，没有高亮的代码实在看不下去，直接在Package Control里搜Swift第一个就可以。
+首先装一个Swift的高亮插件，没有高亮的代码实在看不下去，直接在Package Control里搜Swift第一个就可以。如果还是没有自动高亮的话，打开一个Swift文件，选择 View -> Syntax -> Open all with current extension as... ，再选择Swift就可以了。 
 
-然后打开Sublime Text，选择 Tools -> Build System -> New Build System，输入下面的内容
+然后打开 Sublime Text，选择 Tools -> Build System -> New Build System，输入下面的内容
 
     {
 	    "cmd": ["swift", "${file}"],
