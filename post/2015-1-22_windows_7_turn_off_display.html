@@ -1,0 +1,44 @@
+<!DOCTYPE html> 
+<html>
+<head>
+<title>Skyline75489</title>
+ <meta charset='utf-8'>
+<link rel="stylesheet" href="../static/styles/github.css">
+<link rel="stylesheet" href="../static/post.css">
+</head>
+<body>
+
+<div class="wrapper">
+<div class="header">
+	<span class="blog-name">Skyline75489</span>
+
+<a class="nav" href="../index.html">Home</a>
+<a class="nav" href="about.html">About</a>
+</div>
+<div class="content">
+
+<h1>如何在Windows上通过软件关闭显示器</h1>
+
+<p>有的时候我们需要电脑长期进行工作，不进入休眠，此时可以进入电源选项，选择永不休眠。此时如果我们希望关闭显示器，却没有一个办法可以直接关闭，只能在电源选项里设定5分钟，或者10分钟之后关闭显示器。</p>
+
+<p>据我的了解，Windows自己确实没有提供快速关闭显示器这个功能，在笔记本电脑上一般有关闭显示器的功能键，配合Fn键使用可以做到关闭显示器的效果。在台式机上最简单的办法就是关闭显示器的电源了。除了这些办法之外，其实我们是可以通过软件来关闭显示器的。</p>
+
+<p>首先我们需要一个免费的命令行工具 NirCmd，从它的<a href="http://www.nirsoft.net/utils/nircmd.html">官网</a>可以下载到。它是一个单文件命令行程序，可以通过命令行完成很多任务，例如弹出光驱，设置音量，关机，重启等等，官网里列出了很多，其中就包含我们需要的关闭显示器功能。</p>
+
+<p>下载完成后，以管理员身份运行它，会打开一个小窗口，点击“Copy To Windows Directory&quot;，然后就可以在Cmd里使用它了，输入：</p>
+
+<pre><code class="plaintext">nircmd monitor off
+</code></pre>
+
+<p>就可以关闭显示器了。把上面的这句话保存成”关闭显示器.bat&quot;放在桌面上，以后想关闭显示器的话，直接双击它就可以了。</p>
+
+<p>如果你需要更高级的功能，如定时，使用热键等，可以试试<a href="http://www.dekisoft.com/mou.php">Monitor Off</a>，这是一个专门用于关闭显示器的小工具，支持很多自定义功能。</p>
+
+
+</div>
+</div>
+<script src="../static/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+</body>
+
+</html>
