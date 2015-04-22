@@ -13,4 +13,10 @@
 [![Weibo](../img/about/Weibo_32x32.png)](
 http://weibo.com/ljk321)
 
+<p>
+<a href="http://stackoverflow.com/users/3562486/skyline75489">
+<img src="http://stackoverflow.com/users/flair/3562486.png" width="208" height="58" alt="profile for skyline75489 at Stack Overflow, Q&amp;A for professional and enthusiast programmers" title="profile for skyline75489 at Stack Overflow, Q&amp;A for professional and enthusiast programmers">
+</a>
+</p>
+
 </center>
