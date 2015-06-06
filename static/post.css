@@ -72,6 +72,7 @@ pre {
 
 pre code {
     white-space: pre;
+    display: block;
 }
 
 code, tt {
