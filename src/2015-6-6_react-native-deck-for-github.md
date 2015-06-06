@@ -5,16 +5,16 @@ React Native 开发中遇到的一些坑（持续更新）
 
 1. 升级 React Native 导致程序无法启动
     
-   在从 0.4.1 版本向 0.4.2 升级的过程中，不管是使用 `npm update` 还是重新 `npm install` 都会报 `failed to parse query: unknown expression term 'dirname'` 导致 packager 无法启动，重新用 `react-native init` 创建新项目也不行。我向 React Native 官方提了 [issue](https://github.com/facebook/react-native/issues/1213)，也没有得到好的答复，反倒是路过的群众在 issue 下面提出了解决办法——重新安装 watchman:
+    在从 0.4.1 版本向 0.4.2 升级的过程中，不管是使用 `npm update` 还是重新 `npm install` 都会报 `failed to parse query: unknown expression term 'dirname'` 导致 packager 无法启动，重新用 `react-native init` 创建新项目也不行。我向 React Native 官方提了 [issue](https://github.com/facebook/react-native/issues/1213)，也没有得到好的答复，反倒是路过的群众在 issue 下面提出了解决办法——重新安装 watchman:
        
-   ```plaintext
-   brew uninstall watchman
-   brew install --HEAD watchman
-   ```
+    ```plaintext
+    brew uninstall watchman
+    brew install --HEAD watchman
+    ```
    
-   亲测可行（不愧是高手在民间），看 issue 里官方的意思看样子也不打算再管这个问题了，有解决方案就得了。
+    亲测可行（不愧是高手在民间），看 issue 里官方的意思看样子也不打算再管这个问题了，有解决方案就得了。
    
-   最近想从 0.4.4 升级到 0.5.0，不出意外也崩溃了，报找不到 `docblock.js` ，目前还没有找到解决办法，只能继续用 0.4.4 了。
+    最近想从 0.4.4 升级到 0.5.0，不出意外也崩溃了，报找不到 `docblock.js` ，目前还没有找到解决办法，只能继续用 0.4.4 了。
    
 2. props 的可变性问题
 
