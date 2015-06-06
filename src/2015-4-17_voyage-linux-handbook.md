@@ -21,8 +21,10 @@ Voyage 安装好之后自己就已经配置好 SSH 的 Server 了，因此我们
 
 首先执行
 
-    remountrw
-    
+```nohighlight
+remountrw
+```
+ 
 以读写模式加载文件系统，不然我们没办法修改配置文件，然后找到 `/etc/init.d/voyage-util`，在 110 行左右有类似如下的代码：
 
 ```nohighlight

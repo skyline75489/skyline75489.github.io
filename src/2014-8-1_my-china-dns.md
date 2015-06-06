@@ -15,7 +15,7 @@
 
 使用 Homebrew 安装
 
-```
+```nohighlight
 $ brew install dnsmasq
 $ brew install dnscrypt-proxy
 ```
@@ -28,7 +28,7 @@ $ brew install dnscrypt-proxy
 
 配置DNSMasq，修改 /usr/local/etc/dnsmasq.conf
 
-```
+```nohighlight
 # 不读取有关解析的配置文件，默认使用/etc/revolve.conf中的上游服务器地址进行解析
 # 这里我们把地址直接写在配置文件里，所以不需要这个了
 no-resolv
@@ -54,7 +54,7 @@ proxy-dnssec
 
 执行下面的命令可以启动DNSCrypt
 
-```
+```nohighlight
 $ sudo /usr/local/sbin/dnscrypt-proxy --local-address=127.0.0.1:40 --edns-payload-size=4096 --user=nobody --resolver-address=77.66.84.233:443 --provider-name=2.dnscrypt-cert.resolver2.dnscrypt.eu --provider-key=3748:5585:E3B9:D088:FD25:AD36:B037:01F5:520C:D648:9E9A:DD52:1457:4955:9F0A:9955 --daemonize
 
 ```
@@ -64,7 +64,7 @@ $ sudo /usr/local/sbin/dnscrypt-proxy --local-address=127.0.0.1:40 --edns-payloa
 
 然后启动DNSMasq并清除系统DNS缓存
 
-```
+```nohighlight
 $ sudo launchctl stop homebrew.mxcl.dnsmasq
 $ sudo launchctl start homebrew.mxcl.dnsmasq
 $ sudo killall -HUP mDNSResponder
@@ -72,7 +72,7 @@ $ sudo killall -HUP mDNSResponder
 
 然后就可以查询一下，看看效果了
 
-```
+```nohighlight
 $ nslookup www.facebook.com
 Server:		127.0.0.1
 Address:	127.0.0.1#53
