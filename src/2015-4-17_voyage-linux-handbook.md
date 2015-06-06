@@ -25,28 +25,36 @@ Voyage 安装好之后自己就已经配置好 SSH 的 Server 了，因此我们
     
 以读写模式加载文件系统，不然我们没办法修改配置文件，然后找到 `/etc/init.d/voyage-util`，在 110 行左右有类似如下的代码：
 
-    echo -n "Remounting / as read-only ..."
-    /usr/local/bin/remountro
-    echo "Done."
-    
+```nohighlight
+echo -n "Remounting / as read-only ..."
+/usr/local/bin/remountro
+echo "Done."
+```
+
 这段代码就是用来将文件系统挂载成只读的，将它注释掉，下次启动时系统就变成可读写的了。
 
 接下来我们可以开始配置这个虚拟机环境，在配置之前建议新建一个普通用户，不要直接使用 root 用户。之后和 Ubuntu 一样，进行配置开发环境，修改软件源等操作。在配置 git 的过程中我遇到了一些坑，顺便在这里也记录一下。
 
 Debian Wheezy 主仓库里的 Git 版本是 1.7 的，已经有些老了，可以在 `sources.list` 里加入：
 
-    deb http://http.debian.net/debian wheezy-backports main
-    
+```nohighlight
+deb http://http.debian.net/debian wheezy-backports main
+```
+
 然后使用
 
-    sudo apt-get wheezy-backports install git
+```nohighlight
+sudo apt-get wheezy-backports install git
+```
 
 来安装比较新的版本，我装上的版本是 1.9.1
 
 使用 `git clone` 时可能会报 `Permission Denied(Public Key)`，如果使用的是 HTTPS， 有可能是因为没有安装必要的证书，需要使用下面的命令来安装证书：
 
-    sudo apt-get install ca-certificates
-    
+```nohighlight
+sudo apt-get install ca-certificates
+```
+
 如果使用的是 SSH，有可能是没有正确配置 SSH。根据 [Github 的帮助文档](https://help.github.com/articles/error-permission-denied-publickey/) 对 SSH 进行配置。核心的步骤就是使用 `eval "$(ssh-agent -s)"` 启动 ssh-agent，然后使用 `ssh-add` 添加证书。
     
     

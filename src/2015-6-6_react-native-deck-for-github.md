@@ -40,11 +40,12 @@ React Native 开发中遇到的一些坑（持续更新）
 	```
 
     会报
-        
-        Error: Invariant Violation: setProps(...): 
-        Cannot update during an existing state transition (such as within `render`). 
-        Render methods should be a pure function of props and state.
-
+    
+    ```nohighlight   
+    Error: Invariant Violation: setProps(...): 
+    Cannot update during an existing state transition (such as within `render`). 
+    Render methods should be a pure function of props and state.
+    ```
 
     大体意思就是在 render 这种需要 props 和 state 进行渲染的方法中，不能再对 props 和 state 进行更新。我的理解是，React 会在 props 和 state 改变的时候调用 render 进行 DOM diff 然后渲染，如果在渲染过程中再对 props 和 state 进行更改，就陷入死循环了。
     

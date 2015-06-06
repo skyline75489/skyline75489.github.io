@@ -9,7 +9,7 @@
 
 下载完成后，以管理员身份运行它，会打开一个小窗口，点击“Copy To Windows Directory"，然后就可以在Cmd里使用它了，输入：
 
-```plaintext
+```nohighlight
 nircmd monitor off
 ```
 

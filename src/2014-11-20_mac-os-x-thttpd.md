@@ -6,7 +6,7 @@ Mac OS X上编译thttpd
 这货应该是很久没更新了，不支持在Mac OS X上直接编译。直接```./configure```会报错，在网上查了一下东西，发现需要执行
    
 
-```plaintext   
+```nohighlight   
 ./configure --prefix=/usr/local/thttpd --host=freebsd
 ```
 
@@ -16,7 +16,7 @@ Mac OS X上编译thttpd
 
 输入
 
-```plaintext
+```nohighlight
 host=127.0.0.1
 port=8080
 user=thttpd
@@ -28,7 +28,7 @@ cgipat=**.cgi|**.pl
 
 然后再执行
 
-```plaintext    
+```nohighlight    
 ./thttpd -C /usr/locat/thttpd/conf/thttpd/conf
 ```
     
