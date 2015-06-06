@@ -50,14 +50,13 @@ React Native 开发中遇到的一些坑（持续更新）
     大体意思就是在 render 这种需要 props 和 state 进行渲染的方法中，不能再对 props 和 state 进行更新。我的理解是，React 会在 props 和 state 改变的时候调用 render 进行 DOM diff 然后渲染，如果在渲染过程中再对 props 和 state 进行更改，就陷入死循环了。
     
     
-    不仅仅是直接用 `setProps` 不可以，调用可能会改变当前 state 的函数也是不可以的，例如在 [EventRow.js](https://github.com/skyline75489/Deck/blob/master/App/Components/EventRow.js) 中，当用户点击仓库名或者用户名时，如果使用下面的代码：
+    不仅仅是直接用 `setProps` 不可以，调用可能会改变当前 state 的函数也是不可以的，例如在 [EventRow.js](https://github.com/skyline75489/Deck/blob/master/App/Components/EventRow.js#L50) 中，当用户点击仓库名或者用户名时，如果使用下面的代码：
     
     ```javascript
     var action = <View style={styles.action}>
                    <Text>{actionDescription}</Text>
                    <TouchableOpacity onPress={this.goToUser(this.props.data.name)}><Text>data.payload.member.login</Text></TouchableOpacity>
                  <Text> to </Text>
-     
     ```
     
     同样会报
