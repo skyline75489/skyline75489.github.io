@@ -26,7 +26,7 @@
 
 <p>在从 0.4.1 版本向 0.4.2 升级的过程中，不管是使用 <code>npm update</code> 还是重新 <code>npm install</code> 都会报 <code>failed to parse query: unknown expression term &#39;dirname&#39;</code> 导致 packager 无法启动，重新用 <code>react-native init</code> 创建新项目也不行。我向 React Native 官方提了 <a href="https://github.com/facebook/react-native/issues/1213">issue</a>，也没有得到好的答复，反倒是路过的群众在 issue 下面提出了解决办法——重新安装 watchman:</p>
 
-<pre><code class="plaintext">brew uninstall watchman
+<pre><code class="nohighlight">brew uninstall watchman
 brew install --HEAD watchman
 </code></pre>
 
@@ -75,7 +75,7 @@ Render methods should be a pure function of props and state.
 
 <p>同样会报</p>
 
-<pre><code>Error: Invariant Violation: setState(...): Cannot update ...
+<pre><code class="nohighlight">Error: Invariant Violation: setState(...): Cannot update ...
 </code></pre>
 
 <p>因为 <code>this.goToUser</code> 实际上会调用 <code>navigator.push</code>，导致当前 View 的 state 改变。</p>
@@ -85,7 +85,7 @@ Render methods should be a pure function of props and state.
 
 <p>在 <a href="https://github.com/skyline75489/Deck">Deck</a>，只在 Dashboard 中进行操作，View 的 push 和 pop 都没有问题。如果进入次级 View 中，再点击 Me 进行 Tab 切换，再次回到 Dashboard 之后会发现 Back 按钮不好用了，更诡异的是，用拖拽的方式还能够正常返回。更更诡异的是，对 Me 这个 Tab 做相同的操作不会出现问题，更更更诡异的是，如果不是切换到 Me，而是切换到另两个 Tab，也不会出现问题。。。</p>
 
-<p>其实在点按仓库名或者用户名之后，底部的 Tab 导航应该是隐藏的，可惜这个功能现在还没有实现，有人已经提了 <a href="https://github.com/facebook/react-native/issues/1489">issue</a>.</p></li>
+<p>其实在点按仓库名或者用户名之后，底部的 Tab 导航应该是隐藏的，可惜这个功能现在还没有实现，有人已经提了 <a href="https://github.com/facebook/react-native/issues/1489">issue</a>。</p></li>
 <li><p>AlertIOS 导致高 CPU 占用</p>
 
 <p>在 <a href="https://github.com/skyline75489/Deck/blob/master/App/Components/RepoDetail.js#L197">这里</a> 有一行 AlertIOS 弹出的消息，在我测试的过程中不知道为什么会导致程序 CPU 占用率飙涨到 100%，整个应用近乎卡死。任务监视器显示有一个 <code>backboardd</code> 进程在狂消耗 CPU，搜索了半天也没有解决方案。</p></li>

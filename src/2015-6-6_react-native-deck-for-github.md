@@ -7,7 +7,7 @@ React Native 开发中遇到的一些坑（持续更新）
     
     在从 0.4.1 版本向 0.4.2 升级的过程中，不管是使用 `npm update` 还是重新 `npm install` 都会报 `failed to parse query: unknown expression term 'dirname'` 导致 packager 无法启动，重新用 `react-native init` 创建新项目也不行。我向 React Native 官方提了 [issue](https://github.com/facebook/react-native/issues/1213)，也没有得到好的答复，反倒是路过的群众在 issue 下面提出了解决办法——重新安装 watchman:
        
-    ```plaintext
+    ```nohighlight
     brew uninstall watchman
     brew install --HEAD watchman
     ```
@@ -61,8 +61,10 @@ React Native 开发中遇到的一些坑（持续更新）
     
     同样会报
     
-        Error: Invariant Violation: setState(...): Cannot update ...
-        
+    ```nohighlight
+    Error: Invariant Violation: setState(...): Cannot update ...
+    ```
+    
     因为 `this.goToUser` 实际上会调用 `navigator.push`，导致当前 View 的 state 改变。
     
     目前的解决方案是将 `TouchableOpacity` 再封装一层，得到 `TouchableLink`，然后将函数传递进去，这样处理将 state 改变放到下层的控件，就不会再报错了，具体的原因还有待深入研究。
@@ -72,7 +74,7 @@ React Native 开发中遇到的一些坑（持续更新）
 
     在 [Deck](https://github.com/skyline75489/Deck)，只在 Dashboard 中进行操作，View 的 push 和 pop 都没有问题。如果进入次级 View 中，再点击 Me 进行 Tab 切换，再次回到 Dashboard 之后会发现 Back 按钮不好用了，更诡异的是，用拖拽的方式还能够正常返回。更更诡异的是，对 Me 这个 Tab 做相同的操作不会出现问题，更更更诡异的是，如果不是切换到 Me，而是切换到另两个 Tab，也不会出现问题。。。
     
-    其实在点按仓库名或者用户名之后，底部的 Tab 导航应该是隐藏的，可惜这个功能现在还没有实现，有人已经提了 [issue](https://github.com/facebook/react-native/issues/1489).
+    其实在点按仓库名或者用户名之后，底部的 Tab 导航应该是隐藏的，可惜这个功能现在还没有实现，有人已经提了 [issue](https://github.com/facebook/react-native/issues/1489)。
     
 4. AlertIOS 导致高 CPU 占用
 
