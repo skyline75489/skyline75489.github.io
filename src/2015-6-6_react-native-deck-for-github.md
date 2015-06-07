@@ -30,7 +30,7 @@ React Native 开发中遇到的一些坑（持续更新）
 	  render: function() {
 	    return (
           <View>
-            <TouchableOpacity onPress={this.handlePress()}>
+            <TouchableOpacity onPress={this.handlePress}>
               <Text>Activity</Text>
             </TouchableOpacity>
           </View>
@@ -39,7 +39,7 @@ React Native 开发中遇到的一些坑（持续更新）
 	});
 	```
 
-    会报
+    当点击时，会报
     
     ```nohighlight   
     Error: Invariant Violation: setProps(...): 
@@ -50,7 +50,9 @@ React Native 开发中遇到的一些坑（持续更新）
     大体意思就是在 render 这种需要 props 和 state 进行渲染的方法中，不能再对 props 和 state 进行更新。我的理解是，React 会在 props 和 state 改变的时候调用 render 进行 DOM diff 然后渲染，如果在渲染过程中再对 props 和 state 进行更改，就陷入死循环了。
     
     
-    不仅仅是直接用 `setProps` 不可以，调用可能会改变当前 state 的函数也是不可以的，例如在 [EventRow.js](https://github.com/skyline75489/Deck/blob/master/App/Components/EventRow.js#L50) 中，当用户点击仓库名或者用户名时，如果使用下面的代码：
+3. onPress 属性的正确使用姿势
+    
+    在 [EventRow.js](https://github.com/skyline75489/Deck/blob/master/App/Components/EventRow.js#L50) 中，当用户点击仓库名或者用户名时，如果使用下面的代码：
     
     ```javascript
     var action = <View style={styles.action}>
@@ -59,25 +61,33 @@ React Native 开发中遇到的一些坑（持续更新）
                  <Text> to </Text>
     ```
     
-    同样会报
+    点击时同样会报
     
     ```nohighlight
     Error: Invariant Violation: setState(...): Cannot update ...
     ```
     
-    因为 `this.goToUser` 实际上会调用 `navigator.push`，导致当前 View 的 state 改变。
+    因为 onPress 应该传递进一个函数，在点击的时候执行，而不是传递函数的返回值。上面的写法等于是在渲染的时候执行了 `this.goToUser`，会导致 state 改变。正确的写法是使用匿名函数封装：
     
-    目前的解决方案是将 `TouchableOpacity` 再封装一层，得到 `TouchableLink`，然后将函数传递进去，这样处理将 state 改变放到下层的控件，就不会再报错了，具体的原因还有待深入研究。
+    ```javascript
+    <TouchableOpacity onPress={()=>{
+      this.goToUser(this.props.data.name)
+     }}>
+    </TouchableOpacity>
+    ```
     
     
-3. Navigator 的 pop 方法灵异的行为
+    
+4. Navigator 的 pop 方法灵异的行为
 
     在 [Deck](https://github.com/skyline75489/Deck)，只在 Dashboard 中进行操作，View 的 push 和 pop 都没有问题。如果进入次级 View 中，再点击 Me 进行 Tab 切换，再次回到 Dashboard 之后会发现 Back 按钮不好用了，更诡异的是，用拖拽的方式还能够正常返回。更更诡异的是，对 Me 这个 Tab 做相同的操作不会出现问题，更更更诡异的是，如果不是切换到 Me，而是切换到另两个 Tab，也不会出现问题。。。
     
     其实在点按仓库名或者用户名之后，底部的 Tab 导航应该是隐藏的，可惜这个功能现在还没有实现，有人已经提了 [issue](https://github.com/facebook/react-native/issues/1489)。
     
-4. AlertIOS 导致高 CPU 占用
+5. AlertIOS 导致高 CPU 占用
 
     在 [这里](https://github.com/skyline75489/Deck/blob/master/App/Components/RepoDetail.js#L197) 有一行 AlertIOS 弹出的消息，在我测试的过程中不知道为什么会导致程序 CPU 占用率飙涨到 100%，整个应用近乎卡死。任务监视器显示有一个 `backboardd` 进程在狂消耗 CPU，搜索了半天也没有解决方案。
     
-    
+6. 文档不完善
+
+    React Native 的文档现在基本处于半残状态，现有的文档内容都比较少，也缺少例子，很难看懂，像 Navigator 控件，直接看文档基本是看不懂的。还有些内容文档上根本就没有，例如 ActionSheetIOS 和 AdSupport。
