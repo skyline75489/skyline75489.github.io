@@ -50,9 +50,11 @@ React Native 开发中遇到的一些坑（持续更新）
     大体意思就是在 render 这种需要 props 和 state 进行渲染的方法中，不能再对 props 和 state 进行更新。我的理解是，React 会在 props 和 state 改变的时候调用 render 进行 DOM diff 然后渲染，如果在渲染过程中再对 props 和 state 进行更改，就陷入死循环了。
     
     
-3. onPress 属性的正确使用姿势
+3. onPress 的正确使用姿势
     
-    在 [EventRow.js](https://github.com/skyline75489/Deck/blob/master/App/Components/EventRow.js#L50) 中，当用户点击仓库名或者用户名时，如果使用下面的代码：
+    一般的 ListView 中每个 Row 的点击会对应一个 onPress 的事件，例如 push 到下一个 View，这种情况使用 `onPress={this.handlePress}` ，然后在 `handlePress` 里进行响应的操作就 OK 了。
+    
+    在显示 Github 时间线的时候，每个 Row 里会提到多个用户名和仓库名，点击用户名和仓库名时需要做不同的处理。最容易想到的方法就是给 `handlePress` 传递参数了，如果使用下面的代码：
     
     ```javascript
     var action = <View style={styles.action}>
@@ -67,7 +69,7 @@ React Native 开发中遇到的一些坑（持续更新）
     Error: Invariant Violation: setState(...): Cannot update ...
     ```
     
-    因为 onPress 应该传递进一个函数，在点击的时候执行，而不是传递函数的返回值。上面的写法等于是在渲染的时候执行了 `this.goToUser`，会导致 state 改变。正确的写法是使用匿名函数封装：
+    因为上面的写法等于是在渲染的时候执行了 `this.goToUser`，会导致 state 改变。 onPress 应该传递进一个**函数**，这个函数会在点击的时候执行。一种可行的写法是使用匿名函数封装：
     
     ```javascript
     <TouchableOpacity onPress={()=>{
@@ -75,6 +77,10 @@ React Native 开发中遇到的一些坑（持续更新）
      }}>
     </TouchableOpacity>
     ```
+    
+    这样就不会在渲染的时候跑里面的函数，也就避免了冲突。
+    
+    完整的代码在[这里](https://github.com/skyline75489/Deck/blob/master/App/Components/EventRow.js#L50)。
     
     
     
