@@ -97,3 +97,34 @@ React Native 开发中遇到的一些坑（持续更新）
 6. 文档不完善
 
     React Native 的文档现在基本处于半残状态，现有的文档内容都比较少，也缺少例子，很难看懂，像 Navigator 控件，直接看文档基本是看不懂的。还有些内容文档上根本就没有，例如 ActionSheetIOS 和 AdSupport。
+    
+7. Navigator 中使用自定义的 NavigatorBar 
+    
+    在 View 直接切换需要使用 Navigator 组件。Navigator 要实现上面 navbar 保持不变，需要使用 navigationBar 属性。在 push 之前和之后，还要对其中的内容进行处理，包括改变标题，添加 Back 按钮等。
+    
+    以 [react-native-router](https://github.com/t4t5/react-native-router) 的代码为例，它使用了 navigationBar 属性（[看这里](https://github.com/t4t5/react-native-router/blob/master/index.js#L115)），同时写了很多代码来实现 View 之间 push 时候的[处理](https://github.com/t4t5/react-native-router/blob/master/components/NavBarContent.js#L60)，最终实现的效果很好，用起来也很方便。在 Deck 的 Dashboard 和 Me 界面中都是直接使用的 react-native-router。
+    
+    但是到了搜索页面，react-native-router 就玩不动了，因为我们需要高度自定义的，同时组件之间还需要互操作的 navbar。
+        
+    ![Search](https://raw.githubusercontent.com/skyline75489/Deck/master/Screenshots/4.png)
+    
+    上面的三个部件需要互相联动，例如点击左边的面包按钮改变搜索设置，需要中间的输入框的 placeholder 进行相应改变，点击右边的搜索按钮需要得到中间输入框当前的值，同时让输入框放弃焦点。另外最重要的是，在输入框提交和点击右侧的搜索按钮时，下面需要显示搜索结果。
+    
+    总之 navbar 三个部件以及下面的搜索结果页面之间需要互操作，四个组合成一个大的组件，可以通过 ref 在 parent 中获得它们的引用，以及把 customAction 传递进去，从而实现互操作：
+    
+    ```javascript
+    <View style={styles.navbar}>
+      <SearchOption style={[styles.corner, styles.alignLeft]} customAction={this.customAction} />
+       <SearchTextInput ref="input" customAction={this.customAction} />
+       <SearchIcon style={[styles.corner, styles.alignLeft]} customAction={this.customAction} />
+    </View>
+    <View style={styles.searchResult}>
+       <SearchResult />
+    </View>
+    ```
+    
+    这样的做法实现了搜索组件的功能，但是 push 的时候又出问题了，这种做法没有使用 navigationBar，会导致 push 到下一个 View 的时候，上面就没有标题栏了。
+    
+    为什么不能使用 navigationBar？因为 navigationBar 要求是一个相对独立的组件，与其他组件之间应该是松耦合的，但是这里的 navbar 恰好是需要强耦合的，产生了矛盾。
+    
+    现在搜索页面点击下面仓库或用户名，进入到的下一个页面就是没有 Navbar 的，希望将来能有更好的解决方案。
