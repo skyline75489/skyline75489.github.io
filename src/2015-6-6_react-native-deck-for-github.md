@@ -3,6 +3,9 @@ React Native 开发中遇到的一些坑（持续更新）
 
 最近尝试使用 React Native 开发了一些小项目（[Sunshine](https://github.com/skyline75489/Sunshine-React-Native) 和 [Deck](https://github.com/skyline75489/Deck)），体会到了 React Native 开发的强大之处，例如使用 flexbox 布局让 Layout 变得分外简单，更新程序不用重启模拟器，大大提高了开发效率等等。由于 React Native 尚未发布 1.0 版本，本身还并不是很成熟，在开发过程中也遇到了一些坑，在这里记录一下。
 
+**更新：**官方给出的十个首先需要解决的问题 https://gist.github.com/brentvatne/52086f89293de1729363
+
+
 1. 升级 React Native 导致程序无法启动
     
     在从 0.4.1 版本向 0.4.2 升级的过程中，不管是使用 `npm update` 还是重新 `npm install` 都会报 `failed to parse query: unknown expression term 'dirname'` 导致 packager 无法启动，重新用 `react-native init` 创建新项目也不行。我向 React Native 官方提了 [issue](https://github.com/facebook/react-native/issues/1213)，也没有得到好的答复，反倒是路过的群众在 issue 下面提出了解决办法——重新安装 watchman:
