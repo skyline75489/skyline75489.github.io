@@ -77,6 +77,27 @@ iOS 提供了下面的函数可以创建简单的 2D 变换：
 
     UIViewAnimationOptionRepeat | UIViewAnimationOptionAllowUserInteraction
     
+#### 关键帧动画
+
+上面介绍的动画中，我们只能控制开始和结束时的效果，然后由系统补全中间的过程，有些时候我们需要自己设定若干关键帧，实现更复杂的动画效果，这时候就需要关键帧动画的支持了。下面是一个示例：
+
+
+```objective-c
+[UIView animateKeyframesWithDuration:2.0 delay:0.0 options:UIViewKeyframeAnimationOptionRepeat | UIViewKeyframeAnimationOptionAutoreverse animations:^{
+    [UIView addKeyframeWithRelativeStartTime:0.0 relativeDuration:0.5 animations:^{
+        self.myView.frame = CGRectMake(10, 50, 100, 100);
+    }];
+    [UIView addKeyframeWithRelativeStartTime: 0.5 relativeDuration:0.3 animations:^{
+        self.myView.frame = CGRectMake(20, 100, 100, 100);
+    }];
+    [UIView addKeyframeWithRelativeStartTime:0.8 relativeDuration:0.2 animations:^{
+        self.myView.transform = CGAffineTransformMakeScale(0.5, 0.5);
+    }];
+} completion:nil];
+```
+
+这个例子添加了三个关键帧，在外面的 `animateKeyframesWithDuration` 中我们设置了持续时间为 2.0 秒，这是真实意义上的时间，里面的 `startTime` 和 `relativeDuration` 都是相对时间。以第一个为例，`startTime` 为 0.0，`relativeTime` 为 0.5，这个动画会直接开始，持续时间为 2.0 X 0.5 = 1.0 秒，下面第二个的开始时间是 0.5，正好承接上一个结束，第三个同理，这样三个动画就变成连续的动画了。
+
 #### View 的转换
 
 iOS 还提供了两个函数，用于进行两个 View 之间通过动画换场：
@@ -90,4 +111,60 @@ iOS 还提供了两个函数，用于进行两个 View 之间通过动画换场�
 
 ### CALayer Animation 
 
-UIView 的动画简单易用，但是能实现的效果相对局限，CALayer 可以实现更多高级的动画效果。
+UIView 的动画简单易用，但是能实现的效果相对有限，上面介绍的 UIView 的几种动画方式，实际上是对底层 CALayer 动画的一种封装。直接使用 CALayer 层的动画方法可以实现更多高级的动画效果。
+
+#### 基本动画（CABasicAnimation）
+
+CABasicAnimation 用于创建一个 CALayer 上的基本动画效果，下面是一个例子：
+
+```objective-c
+CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"position.x"];
+animation.toValue = @200;
+animation.duration = 0.8;
+animation.repeatCount = 5;
+animation.beginTime = CACurrentMediaTime() + 0.5;
+animation.fillMode = kCAFillModeRemoved;
+[self.myView.layer addAnimation:animation forKey:nil];
+```
+
+##### KeyPath
+
+这里我们使用了 `animationWithKeyPath` 这个方法来改变 layer 的属性，可以使用的属性有很多，具体可以参考[这里](https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/CoreAnimation_guide/AnimatableProperties/AnimatableProperties.html)和[这里](http://www.cnblogs.com/pengyingh/articles/2379631.html)。
+
+上面我们使用了 `position` 属性，注意 layer 的这个 `position` 属性和 View 的 `frame` 以及 `bounds` 属性都不相同，可以由下面的公式计算得到：
+
+```objective-c
+position.x = frame.origin.x + 0.5 * bounds.size.width；  
+position.y = frame.origin.y + 0.5 * bounds.size.height； 
+```
+
+具体计算的原理可以参考[这篇文章](http://wonderffee.github.io/blog/2013/10/13/understand-anchorpoint-and-position/)。
+
+
+##### 属性
+
+CABasicAnimation 的属性有下面几个：
+
+* beginTime
+* duration
+* fromValue
+* toValue
+* byValue
+* repeatCount
+* autoreverses
+* timingFunction
+
+可以看到，其中 beginTime，duration，repeatCount 等属性和上面在 UIView 中使用到的 duration，UIViewAnimationOptionRepeat 等选项是相对应的，不过这里的选项能够提供更多的扩展性。
+
+需要注意的是 `fromValue`，`toValue`，`byValue` 这几个选项，支持的设置模式有下面几种：
+
+* 设置 fromValue 和 toValue：从 fromValue 变化到 toValue
+* 设置 fromValue 和 byValue：从 fromValue 变化到 fromValue + byValue
+* 设置 byValue 和 toValue：从 toValue - byValue 变化到 toValue
+* 设置 fromValue： 从 fromValue 变化到属性当前值
+* 设置 toValue：从属性当前值变化到 toValue
+* 设置 byValue：从属性当前值变化到属性当前值 + toValue
+
+看起来挺复杂，其实概括起来基本就是，如果某个值不设置，就是用这个属性当前的值。
+
+

@@ -102,6 +102,25 @@
 <pre><code>UIViewAnimationOptionRepeat | UIViewAnimationOptionAllowUserInteraction
 </code></pre>
 
+<h4>关键帧动画</h4>
+
+<p>上面介绍的动画中，我们只能控制开始和结束时的效果，然后由系统补全中间的过程，有些时候我们需要自己设定若干关键帧，实现更复杂的动画效果，这时候就需要关键帧动画的支持了。下面是一个示例：</p>
+
+<pre><code class="objective-c">[UIView animateKeyframesWithDuration:2.0 delay:0.0 options:UIViewKeyframeAnimationOptionRepeat | UIViewKeyframeAnimationOptionAutoreverse animations:^{
+    [UIView addKeyframeWithRelativeStartTime:0.0 relativeDuration:0.5 animations:^{
+        self.myView.frame = CGRectMake(10, 50, 100, 100);
+    }];
+    [UIView addKeyframeWithRelativeStartTime: 0.5 relativeDuration:0.3 animations:^{
+        self.myView.frame = CGRectMake(20, 100, 100, 100);
+    }];
+    [UIView addKeyframeWithRelativeStartTime:0.8 relativeDuration:0.2 animations:^{
+        self.myView.transform = CGAffineTransformMakeScale(0.5, 0.5);
+    }];
+} completion:nil];
+</code></pre>
+
+<p>这个例子添加了三个关键帧，在外面的 <code>animateKeyframesWithDuration</code> 中我们设置了持续时间为 2.0 秒，这是真实意义上的时间，里面的 <code>startTime</code> 和 <code>relativeDuration</code> 都是相对时间。以第一个为例，<code>startTime</code> 为 0.0，<code>relativeTime</code> 为 0.5，这个动画会直接开始，持续时间为 2.0 X 0.5 = 1.0 秒，下面第二个的开始时间是 0.5，正好承接上一个结束，第三个同理，这样三个动画就变成连续的动画了。</p>
+
 <h4>View 的转换</h4>
 
 <p>iOS 还提供了两个函数，用于进行两个 View 之间通过动画换场：</p>
@@ -116,7 +135,62 @@
 
 <h3>CALayer Animation</h3>
 
-<p>UIView 的动画简单易用，但是能实现的效果相对局限，CALayer 可以实现更多高级的动画效果。</p>
+<p>UIView 的动画简单易用，但是能实现的效果相对有限，上面介绍的 UIView 的几种动画方式，实际上是对底层 CALayer 动画的一种封装。直接使用 CALayer 层的动画方法可以实现更多高级的动画效果。</p>
+
+<h4>基本动画（CABasicAnimation）</h4>
+
+<p>CABasicAnimation 用于创建一个 CALayer 上的基本动画效果，下面是一个例子：</p>
+
+<pre><code class="objective-c">CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@&quot;position.x&quot;];
+animation.toValue = @200;
+animation.duration = 0.8;
+animation.repeatCount = 5;
+animation.beginTime = CACurrentMediaTime() + 0.5;
+animation.fillMode = kCAFillModeRemoved;
+[self.myView.layer addAnimation:animation forKey:nil];
+</code></pre>
+
+<h5>KeyPath</h5>
+
+<p>这里我们使用了 <code>animationWithKeyPath</code> 这个方法来改变 layer 的属性，可以使用的属性有很多，具体可以参考<a href="https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/CoreAnimation_guide/AnimatableProperties/AnimatableProperties.html">这里</a>和<a href="http://www.cnblogs.com/pengyingh/articles/2379631.html">这里</a>。</p>
+
+<p>上面我们使用了 <code>position</code> 属性，注意 layer 的这个 <code>position</code> 属性和 View 的 <code>frame</code> 以及 <code>bounds</code> 属性都不相同，可以由下面的公式计算得到：</p>
+
+<pre><code class="objective-c">position.x = frame.origin.x + 0.5 * bounds.size.width；  
+position.y = frame.origin.y + 0.5 * bounds.size.height； 
+</code></pre>
+
+<p>具体计算的原理可以参考<a href="http://wonderffee.github.io/blog/2013/10/13/understand-anchorpoint-and-position/">这篇文章</a>。</p>
+
+<h5>属性</h5>
+
+<p>CABasicAnimation 的属性有下面几个：</p>
+
+<ul>
+<li>beginTime</li>
+<li>duration</li>
+<li>fromValue</li>
+<li>toValue</li>
+<li>byValue</li>
+<li>repeatCount</li>
+<li>autoreverses</li>
+<li>timingFunction</li>
+</ul>
+
+<p>可以看到，其中 beginTime，duration，repeatCount 等属性和上面在 UIView 中使用到的 duration，UIViewAnimationOptionRepeat 等选项是相对应的，不过这里的选项能够提供更多的扩展性。</p>
+
+<p>需要注意的是 <code>fromValue</code>，<code>toValue</code>，<code>byValue</code> 这几个选项，支持的设置模式有下面几种：</p>
+
+<ul>
+<li>设置 fromValue 和 toValue：从 fromValue 变化到 toValue</li>
+<li>设置 fromValue 和 byValue：从 fromValue 变化到 fromValue + byValue</li>
+<li>设置 byValue 和 toValue：从 toValue - byValue 变化到 toValue</li>
+<li>设置 fromValue： 从 fromValue 变化到属性当前值</li>
+<li>设置 toValue：从属性当前值变化到 toValue</li>
+<li>设置 byValue：从属性当前值变化到属性当前值 + toValue</li>
+</ul>
+
+<p>看起来挺复杂，其实概括起来基本就是，如果某个值不设置，就是用这个属性当前的值。</p>
 
 
 </div>
