@@ -152,15 +152,15 @@ animation.fillMode = kCAFillModeRemoved;
 
 <h5>KeyPath</h5>
 
-<p>这里我们使用了 <code>animationWithKeyPath</code> 这个方法来改变 layer 的属性，可以使用的属性有很多，具体可以参考<a href="https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/CoreAnimation_guide/AnimatableProperties/AnimatableProperties.html">这里</a>和<a href="http://www.cnblogs.com/pengyingh/articles/2379631.html">这里</a>。</p>
+<p>这里我们使用了 <code>animationWithKeyPath</code> 这个方法来改变 layer 的属性，可以使用的属性有很多，具体可以参考<a href="https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/CoreAnimation_guide/AnimatableProperties/AnimatableProperties.html">这里</a>和<a href="http://www.cnblogs.com/pengyingh/articles/2379631.html">这里</a>。其中很多属性在前面介绍的 UIView 动画部分我们也看到过，进一步验证了 UIView 的动画方法是对底层 CALayer 的一种封装。</p>
 
-<p>上面我们使用了 <code>position</code> 属性，注意 layer 的这个 <code>position</code> 属性和 View 的 <code>frame</code> 以及 <code>bounds</code> 属性都不相同，可以由下面的公式计算得到：</p>
+<p>需要注意的一点是，上面我们使用了 <code>position</code> 属性， layer 的这个 <code>position</code> 属性和 View 的 <code>frame</code> 以及 <code>bounds</code> 属性都不相同，而是和 Layer 的 <code>anchorPoint</code> 有关，可以由下面的公式计算得到：</p>
 
 <pre><code class="objective-c">position.x = frame.origin.x + 0.5 * bounds.size.width；  
 position.y = frame.origin.y + 0.5 * bounds.size.height； 
 </code></pre>
 
-<p>具体计算的原理可以参考<a href="http://wonderffee.github.io/blog/2013/10/13/understand-anchorpoint-and-position/">这篇文章</a>。</p>
+<p>关于 <code>anchorPoint</code> 和 <code>position</code> 属性的以及具体计算的原理可以参考<a href="http://wonderffee.github.io/blog/2013/10/13/understand-anchorpoint-and-position/">这篇文章</a>。</p>
 
 <h5>属性</h5>
 
@@ -191,6 +191,60 @@ position.y = frame.origin.y + 0.5 * bounds.size.height；
 </ul>
 
 <p>看起来挺复杂，其实概括起来基本就是，如果某个值不设置，就是用这个属性当前的值。</p>
+
+<p>另外，可以看到上面我们使用的:</p>
+
+<pre><code class="objecitive-c">animation.toValue = @200;
+</code></pre>
+
+<p>而不是直接使用 200，因为 <code>toValue</code> 之类的属性为 <code>id</code> 类型，或者像这样使用 @ 符号，或者使用：</p>
+
+<pre><code class="objecitive-c">animation.toValue = [NSNumber numberWithInt:200];
+</code></pre>
+
+<p>最后一个比较有意思的是 <code>timingFunction</code> 属性，使用这个属性可以自定义动画的运动曲线（节奏，pacing），系统提供了五种值可以选择：</p>
+
+<ul>
+<li>kCAMediaTimingFunctionLinear 线性动画</li>
+<li>kCAMediaTimingFunctionEaseIn 先快后慢</li>
+<li>kCAMediaTimingFunctionEaseOut 先慢后快</li>
+<li>kCAMediaTimingFunctionEaseInEaseOut 先慢后快再慢</li>
+<li>kCAMediaTimingFunctionDefault 默认，也属于中间比较快</li>
+</ul>
+
+<p>此外，我们还可以使用 [CAMediaTimingFunction functionWithControlPoints] 方法来自定义运动曲线，<a href="http://netcetera.org/camtf-playground.html">这个网站</a>提供了一个将参数调节可视化的效果，关于动画时间系统的具体介绍可以参考<a href="http://geeklu.com/2012/09/animation-in-ios/">这篇文章</a>。</p>
+
+<h4>关键帧动画（CAKeyframeAnimation）</h4>
+
+<p>同 UIView 中的类似，CALayer 层也提供了关键帧动画的支持，CAKeyFrameAnimation 和 CABasicAnimation 都继承自 CAPropertyAnimation，因此它有具有上面提到的那些属性，此外，CAKeyFrameAnimation 还有特有的几个属性。</p>
+
+<h5>values 和 keyTimes</h5>
+
+<p>使用 <code>values</code> 和 <code>keyTimes</code> 可以共同确定一个动画的若干关键帧，示例代码如下：</p>
+
+<pre><code class="objective-c">CAKeyframeAnimation *anima = [CAKeyframeAnimation animationWithKeyPath:@&quot;transform.rotation&quot;];//在这里@&quot;transform.rotation&quot;==@&quot;transform.rotation.z&quot;
+NSValue *value1 = [NSNumber numberWithFloat:-M_PI/180*4];
+NSValue *value2 = [NSNumber numberWithFloat:M_PI/180*4];
+NSValue *value3 = [NSNumber numberWithFloat:-M_PI/180*4];
+anima.values = @[value1,value2,value3];
+// anima.keyTimes = @[@0.0, @0.5, @1.0];
+anima.repeatCount = MAXFLOAT;
+
+[_demoView.layer addAnimation:anima forKey:@&quot;shakeAnimation&quot;];
+</code></pre>
+
+<p>可以看到上面这个动画共有三个关键帧，如果没有指定 <code>keyTimes</code> 则各个关键帧会平分整个动画的时间(duration)。</p>
+
+<h5>path</h5>
+
+<p>使用 path 属性可以设置一个动画的运动路径，注意 path 只对 CALayer 的 anchorPoint 和position 属性起作用，另外如果你设置了 path ，那么 values 将被忽略。</p>
+
+<pre><code class="objective-c">CAKeyframeAnimation *anima = [CAKeyframeAnimation animationWithKeyPath:@&quot;position&quot;];
+UIBezierPath *path = [UIBezierPath bezierPathWithOvalInRect:CGRectMake(SCREEN_WIDTH/2-100, SCREEN_HEIGHT/2-100, 200, 200)];
+anima.path = path.CGPath;
+anima.duration = 2.0f;
+[_demoView.layer addAnimation:anima forKey:@&quot;pathAnimation&quot;];
+</code></pre>
 
 
 </div>
