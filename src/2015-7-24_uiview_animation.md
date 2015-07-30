@@ -223,3 +223,28 @@ anima.duration = 2.0f;
 [_demoView.layer addAnimation:anima forKey:@"pathAnimation"];
 ```
 
+#### 组动画（CAAnimationGroup)
+
+组动画可以将一组动画组合在一起，所有动画对象可以同时运行，示例代码如下：
+
+```objective-c
+CAAnimationGroup *group = [[CAAnimationGroup alloc] init];
+CABasicAnimation *animationOne = [CABasicAnimation animationWithKeyPath:@"transform.scale"];
+    
+animationOne.toValue = @2.0;
+animationOne.duration = 1.0;
+    
+CABasicAnimation *animationTwo = [CABasicAnimation animationWithKeyPath:@"position.x"];
+animationTwo.toValue = @400;
+animationTwo.duration = 1.0;
+
+[group setAnimations:@[animationOne, animationTwo]];
+[self.myView.layer addAnimation:group forKey:nil];
+```
+
+需要注意的是，一个 group 组内的某个动画的持续时间（duration），如果超过了整个组的动画持续时间，那么多出的动画时间将不会被展示。例如一个 group  的持续时间是 5s，而组内一个动画持续时间为 10s ，那么这个 10s 的动画只会展示前 5s 。
+
+#### 切换动画（CATransition）
+
+
+
