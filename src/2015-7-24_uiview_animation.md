@@ -246,5 +246,19 @@ animationTwo.duration = 1.0;
 
 #### 切换动画（CATransition）
 
+CATransition 可以用于 View 或 ViewController 直接的换场动画：
 
+```objective-c
+self.myView.backgroundColor = [UIColor blueColor];
+CATransition *trans = [CATransition animation];
+trans.duration = 1.0;
+trans.type = @"push";
+    
+[self.myView.layer addAnimation:trans forKey:nil];
+
+// 这句放在下面也可以
+// self.myView.backgroundColor = [UIColor blueColor];
+```
+
+为什么改变颜色放在前后都可以呢？具体的解释可以参考 SO 上的[这个回答](http://stackoverflow.com/questions/2233692/how-does-catransition-work)。简单来说就是动画和绘制之间并不冲突。
 

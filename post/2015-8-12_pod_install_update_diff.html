@@ -1,0 +1,63 @@
+<!DOCTYPE html> 
+<html>
+<head>
+<title>Skyline75489</title>
+ <meta charset='utf-8'>
+<link rel="stylesheet" href="../static/styles/github.css">
+<link rel="stylesheet" href="../static/post.css">
+</head>
+<body>
+
+<div class="wrapper">
+<div class="header">
+	<span class="blog-name">Skyline75489</span>
+
+<a class="nav" href="../index.html">Home</a>
+<a class="nav" href="about.html">About</a>
+</div>
+<div class="content">
+
+<h1>pod install 和 pod update 的区别（译）</h1>
+
+<p>原文： <a href="https://github.com/CocoaPods/CocoaPods/issues/760#issuecomment-46300500">https://github.com/CocoaPods/CocoaPods/issues/760#issuecomment-46300500</a></p>
+
+<h3>pod install</h3>
+
+<p>每次在 Podfile 中增加或者删除一个 pod  之后，应该使用 pod install。</p>
+
+<ul>
+<li><p>执行 <code>pod install</code> 的时候，它会下载并且安装新的 pod，将安装的 pod 信息写入 <code>Podfile.lock</code>。这个文件主要是用来跟踪已经安装的 pod 并且锁定（lock）它们的版本。</p></li>
+<li><p>执行 <code>pod install</code> 的时候，它会对那些<strong>不</strong>在 <code>Podfile.lock</code> 中的 pod 进行依赖分析</p>
+
+<ul>
+<li>对于已经在 <code>Podfile.lock</code> 中的 pod，它会下载在 <code>Podfile.lcok</code> 中指示的版本，不会去检查有没有新版本。</li>
+<li>对于没有出现在 <code>Podfile.lock</code> 中的 pod，它会搜索符合 <code>Podfile</code> 中要求的版本（例如 <code>pod &#39;MyPod&#39;, &#39;~&gt;1.2&#39;</code>）</li>
+</ul></li>
+</ul>
+
+<h3>pod outdated</h3>
+
+<p>当执行 <code>pod outdated</code> 的时候，CocoaPods 会在已安装的 Pod 中（出现在 <code>Podfile.lock</code> 中）找出所有有新版本可用的 Pod，这些 pod 在满足 <code>Podfile</code> 中要求的情况下，可以被更新（例如 <code>pod &#39;MyPod, &#39;~&gt;x.y&#39;</code>。</p>
+
+<h3>pod update</h3>
+
+<p>当你执行 <code>pod update SomePodName</code> 的时候， CocoaPods 会试着找到一个更新的 <code>SomePodName</code>，不会理会已经在 <code>Podfile.lock</code> 中已经存在的版本。在满足 <code>Podfile</code> 中对版本的约束的情况下，它会试图把 pod 更新到尽可能新的版本。</p>
+
+<p>如果你只执行 <code>pod update</code> 后面没有跟任何 pod 的名字，CocoaPods 会把 <code>Podfile</code> 中所有列出的 pod 都更新到尽可能新的版本。</p>
+
+<h3>用法</h3>
+
+<p>使用 <code>pod update SomePodName</code>，你可以只更新一个 pod（检查新版本，并且更新）。 <code>pod install</code> 不会试图查找一个已经安装的 pod 的新版本。</p>
+
+<p>通常情况下，当你在 <code>Podfile</code> 中添加了新 pod，你应该使用 <code>pod install</code>，而不是 <code>pod update</code>。这样你可以只安装新的 pod ，不会同时把已经存在的 pod 也更新掉。</p>
+
+<p>只有当你想更新某个或者全部 pod 时，你才应该使用 <code>pod update</code>。</p>
+
+
+</div>
+</div>
+<script src="../static/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+</body>
+
+</html>
