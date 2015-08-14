@@ -1,5 +1,5 @@
-iOS 静态库，动态库，Framework 学习汇总
-==================================
+iOS 静态库，动态库与 Framework
+============================
 
 
 ## 静态库与动态库的区别
@@ -45,6 +45,8 @@ iOS 8/Xcode 6 推出之后，iOS 平台添加了动态库的支持，同时 Xcod
 当不想发布代码的时候，也可以使用 Framework 发布 Pod，CocoaPods 提供了 `vendored_framework` 选项，具体的做法可以参考[这里](http://www.telerik.com/blogs/how-to-use-a-third-party-framework-in-a-private-cocoapod)和[这里](https://stackoverflow.com/questions/18219286/podspec-link-binary-library)。
 
 对于 Swift 项目，CocoaPods 提供了动态 Framework 的支持，通过 `use_frameworks!` 选项控制。
+
+有关代码分发的扩展资料： http://geeklu.com/2014/02/objc-lib/
 
 
 #### 参考资料
