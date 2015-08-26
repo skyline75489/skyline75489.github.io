@@ -26,11 +26,11 @@ iOS 静态库，动态库与 Framework
 
 除了上面提到的 .a 和 .dylib 之外，Mac OS/iOS 平台还可以使用 Framework。Framework 实际上是一种打包方式，将库的二进制文件，头文件和有关的资源文件打包到一起，方便管理和分发。
 
-在 iOS 8 之前，iOS 平台不支持使用动态 Framework，开发者可以使用的 Framework 只有苹果自家的 UIKit.Framework，Foundation.Framework 等。原因也很简单，因为 iOS 应用都是运行在沙盒当中，不同的程序之间不能共享代码，没办法发挥出动态库的优势，动态库也就没有存在的必要了。
+在 iOS 8 之前，iOS 平台不支持使用动态 Framework，开发者可以使用的 Framework 只有苹果自家的 UIKit.Framework，Foundation.Framework 等。这种限制可能是出于安全的考虑（见[这里的讨论](https://stackoverflow.com/questions/4733847/can-you-build-dynamic-libraries-for-ios-and-load-them-at-runtime))。换一个角度讲，因为 iOS 应用都是运行在沙盒当中，不同的程序之间不能共享代码，同时动态下载代码又是被苹果明令禁止的，没办法发挥出动态库的优势，实际上动态库也就没有存在的必要了。
 
-由于上面提到的限制，开发者想要在 iOS 平台共享代码，唯一的选择就是打包成静态库 .a 文件，同时附上头文件（例如[微信的SDK](https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419319164&token=&lang=zh_CN)）。但是这样的打包方式不够方便，使用时也比较麻烦，大家还是希望共享代码都能能像 Framework 一样，直接扔到工程里就可以用。于是人们想出了各种奇技淫巧去让 Xcode Build 出 iOS 可以使用的 Framework，具体做法参考[这里](https://github.com/kstenerud/iOS-Universal-Framework)和[这里](https://github.com/jverkoey/iOS-Framework)，这种方法产生的 Framework 被大家叫做 “伪”(Fake) Framework。
+由于上面提到的限制，开发者想要在 iOS 平台共享代码，唯一的选择就是打包成静态库 .a 文件，同时附上头文件（例如[微信的SDK](https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419319164&token=&lang=zh_CN)）。但是这样的打包方式不够方便，使用时也比较麻烦，大家还是希望共享代码都能能像 Framework 一样，直接扔到工程里就可以用。于是人们想出了各种奇技淫巧去让 Xcode Build 出 iOS 可以使用的 Framework，具体做法参考[这里](https://github.com/kstenerud/iOS-Universal-Framework)和[这里](https://github.com/jverkoey/iOS-Framework)，这种方法产生的 Framework 还有 “伪”(Fake) Framework 和 “真“(Real) Framework 的区别。
 
-iOS 8/Xcode 6 推出之后，iOS 平台添加了动态库的支持，同时 Xcode 6 也原生自带了 Framework 支持（动态和静态都可以），上面提到的的奇技淫巧也就没有必要了（新的做法参考[这里](http://www.cocoachina.com/ios/20141126/10322.html)）。为什么 iOS 8 要添加动态库的支持？唯一的理由大概就是 Extension 的出现。Extension 和 App 是两个分开的可执行文件，同时需要共享代码，这种情况下动态库的支持就是必不可少的了。但是这种动态 Framework 和系统的 UIKit.Framework 还是有很大区别。系统的 Framework 不需要拷贝到目标程序中，我们自己做出来的 Framework 哪怕是动态的，最后也还是要拷贝到 App 中（App 和 Extension 的 Bundle 是共享的），因此苹果又把这种 Framework 称为 Embedded Framework。
+iOS 8/Xcode 6 推出之后，iOS 平台添加了动态库的支持，同时 Xcode 6 也原生自带了 Framework 支持（动态和静态都可以），上面提到的的奇技淫巧也就没有必要了（新的做法参考[这里](http://www.cocoachina.com/ios/20141126/10322.html)）。为什么 iOS 8 要添加动态库的支持？唯一的理由大概就是 Extension 的出现。Extension 和 App 是两个分开的可执行文件，同时需要共享代码，这种情况下动态库的支持就是必不可少的了。但是这种动态 Framework 和系统的 UIKit.Framework 还是有很大区别。系统的 Framework 不需要拷贝到目标程序中，我们自己做出来的 Framework 哪怕是动态的，最后也还是要拷贝到 App 中（App 和 Extension 的 Bundle 是共享的），因此苹果又把这种 Framework 称为 [Embedded Framework](https://developer.apple.com/library/prerelease/ios/documentation/General/Conceptual/ExtensibilityPG/ExtensionScenarios.html)。
 
 ## Swift 支持
 
@@ -42,11 +42,11 @@ iOS 8/Xcode 6 推出之后，iOS 平台添加了动态库的支持，同时 Xcod
 
 在纯 ObjC 的项目中，CocoaPods 使用编译静态库 .a 方法将代码集成到项目中。在 Pods 项目中的每个 target 都对应这一个 Pod 的静态库。不过在编译过程中并不会真的产出 .a 文件。如果需要 .a 文件的话，可以参考[这里](http://www.cnblogs.com/brycezhang/p/4117180.html)，或者使用 [CocoasPods-Packager](https://github.com/CocoaPods/cocoapods-packager) 这个插件。
 
-当不想发布代码的时候，也可以使用 Framework 发布 Pod，CocoaPods 提供了 `vendored_framework` 选项，具体的做法可以参考[这里](http://www.telerik.com/blogs/how-to-use-a-third-party-framework-in-a-private-cocoapod)和[这里](https://stackoverflow.com/questions/18219286/podspec-link-binary-library)。
+当不想发布代码的时候，也可以使用 Framework 发布 Pod，CocoaPods 提供了 `vendored_framework` 选项来使用第三方 Framework，具体的做法可以参考[这里](http://www.telerik.com/blogs/how-to-use-a-third-party-framework-in-a-private-cocoapod)和[这里](https://stackoverflow.com/questions/18219286/podspec-link-binary-library)。
 
 对于 Swift 项目，CocoaPods 提供了动态 Framework 的支持，通过 `use_frameworks!` 选项控制。
 
-有关代码分发的扩展资料： http://geeklu.com/2014/02/objc-lib/
+更多有关代码分发的扩展资料可以参考这篇博客： http://geeklu.com/2014/02/objc-lib/
 
 
 #### 参考资料
