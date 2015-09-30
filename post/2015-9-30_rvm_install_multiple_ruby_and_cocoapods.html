@@ -25,7 +25,7 @@
 
 <p>安装 rvm 相对来说比较简单，官方提供了一个脚本可以直接安装</p>
 
-<pre><code>curl -sSL https://get.rvm.io | bash -s stable
+<pre><code class="bash">curl -sSL https://get.rvm.io | bash -s stable
 </code></pre>
 
 <p>但是 <code>rvm.io</code> 这个网站有被墙的感觉，如果发现这个脚本执行半天还没反应，估计就是网络环境的问题了。可以科学上网之后把这个脚本下载下来，然后再执行。</p>
@@ -34,19 +34,19 @@
 
 <p>安装 ruby 本来也应该比较简单，只需要执行一个命令:</p>
 
-<pre><code>rvm install 2.2.3
+<pre><code class="bash">rvm install 2.2.3
 </code></pre>
 
 <p>但是执行过程中却出现了：</p>
 
-<pre><code>Searching for binary rubies, this might take some time.
+<pre><code class="bash">Searching for binary rubies, this might take some time.
 No binary rubies available for: osx/10.10/x86_64/ruby-2.2.1.
 Continuing with compilation. Please read &#39;rvm help mount&#39; to get more information on binary rubies.
 </code></pre>
 
 <p>看这意思是没有找到二进制的包，要是自己下源码编译的话，恐怕要花挺长时间了。为什么它找不到二进制的包呢？在网上查了一下资料，知道 rvm 是在 <code>~/.rvm/config/remote</code> 中找二进制包的，打开这个文件，里面的内容类似这样：</p>
 
-<pre><code>https://rvm_io.global.ssl.fastly.net/binaries/amazon/2013.03/x86_64/ruby-1.9.3-p448.tar.bz2
+<pre><code class="bash">https://rvm_io.global.ssl.fastly.net/binaries/amazon/2013.03/x86_64/ruby-1.9.3-p448.tar.bz2
 https://rvm_io.global.ssl.fastly.net/binaries/amazon/2013.03/x86_64/ruby-2.0.0-p247.tar.bz2
 https://rvm_io.global.ssl.fastly.net/binaries/arch/libc-2.15/x86_64/ruby-1.9.3-p194.tar.bz2
 https://rvm_io.global.ssl.fastly.net/binaries/arch/libc-2.15/x86_64/ruby-1.9.3-p286.tar.bz2
@@ -59,7 +59,7 @@ https://rvm_io.global.ssl.fastly.net/binaries/arch/libc-2.15/x86_64/ruby-1.9.3-p
 
 <p>首先用科学上网的方法把二进制包下载下来（除了上面的地址，还可以去 <a href="https://rvm.io/binaries/">https://rvm.io/binaries/</a> ），然后使用 </p>
 
-<pre><code>rvm mount ~/Downloads/ruby-2.2.3.tar.bz2
+<pre><code class="bash">rvm mount ~/Downloads/ruby-2.2.3.tar.bz2
 </code></pre>
 
 <p>这样就可以安装成功了。更多关于 mount 命令的使用，可以参考<a href="http://syntaxi.net/2012/12/21/installing-binaries-in-rvm/">这篇英文博客</a></p>
@@ -68,7 +68,7 @@ https://rvm_io.global.ssl.fastly.net/binaries/arch/libc-2.15/x86_64/ruby-1.9.3-p
 
 <p>上面的步骤完成之后，就可以通过 rvm 来切换 ruby 版本了：</p>
 
-<pre><code>rvm use system # 使用系统 ruby
+<pre><code class="bash">rvm use system # 使用系统 ruby
 rvm use 2.2.3  # 使用 rvm ruby
 </code></pre>
 
