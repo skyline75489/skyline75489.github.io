@@ -7,12 +7,14 @@
 
 苹果官方论坛的[一个回复](https://discussions.apple.com/thread/4282533)给出了一个很简单的解决办法，打开 Terminal，在命令行里输入：
 
-    sudo killall VDCAssistant
-
+```bash
+sudo killall VDCAssistant
+```
 
 这一条命令就解决了我的问题了。如果不行的话，可以试试[这个网页](http://osxdaily.com/2013/12/27/fix-there-is-no-connected-camera-error-mac/)里给出的方法，多了一条命令：
 
-    sudo killall AppleCameraAssistant;sudo killall VDCAssistant
-
+```bash
+sudo killall AppleCameraAssistant; sudo killall VDCAssistant
+```
 
 当然重启按道理来说也应该能解决问题，不过既然有简单的方法也就没有必要祭出重启大法了。
