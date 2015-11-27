@@ -23,7 +23,7 @@
 
 <p>这货应该是很久没更新了，不支持在Mac OS X上直接编译。直接<code>./configure</code>会报错，在网上查了一下东西，发现需要执行</p>
 
-<pre><code class="nohighlight">./configure --prefix=/usr/local/thttpd --host=freebsd
+<pre><code class="language-nohighlight">./configure --prefix=/usr/local/thttpd --host=freebsd
 </code></pre>
 
 <p>虽然还是会报错，但是不影响configure的，configure完就可以<code>make</code>,<code>make install</code>了。</p>
@@ -32,7 +32,7 @@
 
 <p>输入</p>
 
-<pre><code class="nohighlight">host=127.0.0.1
+<pre><code class="language-nohighlight">host=127.0.0.1
 port=8080
 user=thttpd
 logfile=/usr/local/thttpd/log/thttpd.log
@@ -43,7 +43,7 @@ cgipat=**.cgi|**.pl
 
 <p>然后再执行</p>
 
-<pre><code class="nohighlight">./thttpd -C /usr/locat/thttpd/conf/thttpd/conf
+<pre><code class="language-nohighlight">./thttpd -C /usr/locat/thttpd/conf/thttpd/conf
 </code></pre>
 
 <p>就可以正常运行了。thttpd对于资源消耗的控制还是比较优秀的，大概也就Apache的十分之一吧，当个小型Web Server应该没什么问题。</p>

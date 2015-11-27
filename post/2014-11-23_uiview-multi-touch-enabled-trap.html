@@ -25,7 +25,7 @@
 
 <p>查阅了很多文档，也没有找到有关问题的答案。最后在一个很隐蔽的StackOverflow的问题的评论里（抱歉那个问题的链接我已经找不到了），有人提到需要把Subview的<code>userInteractionEnabled</code>设置成<code>NO</code>，这样才能够正常响应多点触控事件。于是照他的方法试了一下，果真如此。把UIView的Subview链中除了顶层的UIView之外，其他的Subview以及Subview的Subview全都设置 </p>
 
-<pre><code class="objective-c">self.userInteractionEnabled = NO;
+<pre><code class="language-objective-c">self.userInteractionEnabled = NO;
 </code></pre>
 
 <p>然后UIView就可以正常响应多点触控了。</p>

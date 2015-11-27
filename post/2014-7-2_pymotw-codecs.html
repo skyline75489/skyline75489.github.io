@@ -46,7 +46,7 @@
 
 <p>理解编码最好的方法便是看看同一个字符串，在不同编码下产生的不同字节序列。下面的例子使用这个函数来格式化字节字符串，使其更容易阅读。</p>
 
-<pre><code class="python">import binascii
+<pre><code class="language-python">import binascii
 
 def to_hex(t, nbytes):
     &quot;Format text t as a sequence of nbyte long values separated by spaces.&quot;
@@ -65,14 +65,14 @@ if __name__ == &#39;__main__&#39;:
 
 <p>这个函数使用<code>binascii</code>来得到输入字符串的16进制表示，然后在每nbytes字节之前插入一个空格。</p>
 
-<pre><code class="bash">$ python codecs_to_hex.py
+<pre><code class="language-bash">$ python codecs_to_hex.py
 61 62 63 64 65 66
 6162 6364 6566
 </code></pre>
 
 <p>第一个编码示范从打印文本&#39;pi: π&#39;开始。使用<code>unicode</code>类的<code>repr</code>表示， &#39;π&#39;这个字符被替换成了Unicode码点\u03c0。接下来两行代码把分别这个字符串编码成UTF-8和UTF-16，然后展示了编码结果的16进制表示。</p>
 
-<pre><code class="python">from codecs_to_hex import to_hex
+<pre><code class="language-python">from codecs_to_hex import to_hex
 
 text = u&#39;pi: π&#39;
 print &#39;Raw   :&#39;, repr(text)
@@ -83,7 +83,7 @@ print &#39;UTF-16:&#39;, to_hex(text.encode(&#39;utf-16&#39;), 2)
 
 <p>将<code>unicode</code>字符串编码的结果是一个<code>str</code>对象。</p>
 
-<pre><code class="bash">$ python codecs_encodings.py
+<pre><code class="language-bash">$ python codecs_encodings.py
 
 Raw   : u&#39;pi: \u03c0&#39;
 UTF-8 : 70 69 3a 20 cf 80
@@ -92,7 +92,7 @@ UTF-16: fffe 7000 6900 3a00 2000 c003
 
 <p>给出一个编码字节的序列作为<code>str</code>实例，<code>decode()</code>方法可以将他们转换成码点，并且返回<code>unicode</code>实例。</p>
 
-<pre><code class="python">from codecs_to_hex import to_hex
+<pre><code class="language-python">from codecs_to_hex import to_hex
 
 text = u&#39;pi: π&#39;
 encoded = text.encode(&#39;utf-8&#39;)
@@ -106,7 +106,7 @@ print &#39;Decoded  :&#39;, repr(decoded), type(decoded)
 
 <p>编码的选择并不影响输出类型。</p>
 
-<pre><code class="bash">$ python codecs_decode.py
+<pre><code class="language-bash">$ python codecs_decode.py
 Original : u&#39;pi: \u03c0&#39;
 Encoded  : 70 69 3a 20 cf 80 &lt;type &#39;str&#39;&gt;
 Decoded  : u&#39;pi: \u03c0&#39; &lt;type &#39;unicode&#39;&gt;
@@ -120,7 +120,7 @@ Decoded  : u&#39;pi: \u03c0&#39; &lt;type &#39;unicode&#39;&gt;
 
 <p>最简单的接口是<code>codecs</code>提供的用于替换内建<code>open()</code>函数的同名版本。这个版本工作起来和内建函数几乎相同，只是添加了两个用于确定编码和错误处理行为的参数。</p>
 
-<pre><code class="python">from codecs_to_hex import to_hex
+<pre><code class="language-python">from codecs_to_hex import to_hex
     import codecs
     import sys
     encoding = sys.argv[1]
@@ -142,7 +142,7 @@ with open(filename, mode=&#39;rt&#39;) as f:
 
 <p>开始是一个<code>unicode</code>字符串，其中有一个 π。这个例子将文本使用命令行中给出的编码存储到文件中。</p>
 
-<pre><code class="bash">$ python codecs_open_write.py utf-8
+<pre><code class="language-bash">$ python codecs_open_write.py utf-8
 Writing to utf-8.txt
 File contents:
 70 69 3a 20 cf 80
@@ -160,7 +160,7 @@ fffe0000 70000000 69000000 3a000000 20000000 c0030000
 
 <p>使用<code>open()</code>读取文件简单明了，前提是你知道文件的编码。某些文件格式，例如XML，允许你指定编码并将其作为文件的一部分。但是通常编码还是要靠程序来确定。<code>codecs</code>只把编码作为一个参数并且假定它是正确的。</p>
 
-<pre><code class="python">import codecs
+<pre><code class="language-python">import codecs
 import sys
 
 encoding = sys.argv[1]
@@ -173,7 +173,7 @@ with codecs.open(filename, mode=&#39;rt&#39;, encoding=encoding) as f:
 
 <p>这个例子读取前一个程序创建的文件，然后把它们用<code>unicode</code>对象的形式打印出来</p>
 
-<pre><code class="bash">$ python codecs_open_read.py utf-8
+<pre><code class="language-bash">$ python codecs_open_read.py utf-8
 Reading from utf-8.txt
 u’pi: \u03c0’
 
@@ -188,7 +188,7 @@ u’pi: \u03c0’
 
 <h4>6.1.3 字节序</h4>
 
-<p>像UTF-16和UTF-32这样的多字节编码，在不同计算机上传输数据时，不管是直接复制还是通过网络传输，都会遇到另一个问题。不同的计算机系统的高位和低位字节采用不同的顺序。这个特性依赖于计算机的硬件架构和操作系统以及应用开发者，通常被称为<strong>字节序</strong>(endianness)。有些时候我们没有办法提前得知给出的数据采用哪种字节序，所以在多字节编码中包含了一个<strong>字节顺序标识</strong>(BOM, byte-order-maker)，放在编码输出的前几个字节。例如，UTF-16定义0xFFEE和0xFEFF不是可用的字符，可以被用来指示字节序。<code>codecs</code>为UTF-16和UTF-32使用的字节序定义了常量。</p>
+<p>像UTF-16和UTF-32这样的多字节编码，在不同计算机上传输数据时，不管是直接复制还是通过网络传输，都会遇到另一个问题。不同的计算机系统的高位和低位字节采用不同的顺序。这个特性依赖于计算机的硬件架构和操作系统以及应用开发者，通常被称为**字节序**(endianness)。有些时候我们没有办法提前得知给出的数据采用哪种字节序，所以在多字节编码中包含了一个__字节顺序标识__(BOM, byte-order-maker)，放在编码输出的前几个字节。例如，UTF-16定义0xFFEE和0xFEFF不是可用的字符，可以被用来指示字节序。<code>codecs</code>为UTF-16和UTF-32使用的字节序定义了常量。</p>
 
 
 </div>

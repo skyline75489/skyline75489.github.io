@@ -27,7 +27,7 @@
 
 <p>类似Python，Swift也支持默认参数，如果使用了默认参数，那么这个参数的名称在使用时必须标示。</p>
 
-<pre><code class="swift">func convertToString(pretty: Bool = false) {
+<pre><code class="language-swift">func convertToString(pretty: Bool = false) {
     // do something
 }
 
@@ -40,7 +40,7 @@ convertToString(true)           // 报错 missing argument label &#39;pretty:&#3
 
 <p>函数参数默认是常量，也就是不允许在函数体中对参数值进行改变。可以使用<code>var</code>显式地将参数值设置为变量:</p>
 
-<pre><code class="swift">func foo(var greeting:String) {
+<pre><code class="language-swift">func foo(var greeting:String) {
     // 现在可以改变 greeting 的值了
 }
 </code></pre>
@@ -49,7 +49,7 @@ convertToString(true)           // 报错 missing argument label &#39;pretty:&#3
 
 <p>变量参数可以在函数体中改变，但是函数执行完成之后其原来的值并没有改变。类似C#中的做法，要想在函数中对参数的值进行改变，需要使用<code>inout</code>关键字。</p>
 
-<pre><code class="swift">func swap(inout a: Int, inout b: Int) {
+<pre><code class="language-swift">func swap(inout a: Int, inout b: Int) {
     // 交互两个数
 }
 
@@ -62,7 +62,7 @@ swap(&amp;intA, &amp;intB) // 调用，类似使用引用传值
 
 <p>和Python，Scala等一样，Swift中，函数是第一等公民，可以像变量那样用于赋值。</p>
 
-<pre><code class="swift">func addTwoInt(a: Int, b: Int) {
+<pre><code class="language-swift">func addTwoInt(a: Int, b: Int) {
     return a + b
 }
 
@@ -74,7 +74,7 @@ myAddFunc(4, 5) // 9
 
 <p>Swift也支持高阶函数与函数嵌套，函数可以当做别的函数的参数进行传递，也可以作为返回值。</p>
 
-<pre><code class="swift">func makeIncre(n:Int) -&gt; (Int) -&gt; Int {
+<pre><code class="language-swift">func makeIncre(n:Int) -&gt; (Int) -&gt; Int {
     func addN(a:Int) -&gt; Int{
         return a + n
    }
@@ -92,7 +92,7 @@ addTwo(6) // 8
 
 <p>闭包类似于Objectivc-C里的Block，以及别的语言中的lambda，本质上就是一个小的匿名函数。相比OC中的Block，Swift中闭包的写法显得更加简单和友好。</p>
 
-<pre><code class="swift">func backwards(s1: String, s2: String) {
+<pre><code class="language-swift">func backwards(s1: String, s2: String) {
     return s1 &gt; s2
 }
 

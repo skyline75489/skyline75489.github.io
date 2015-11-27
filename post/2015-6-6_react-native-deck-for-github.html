@@ -28,7 +28,7 @@
 
 <p>在从 0.4.1 版本向 0.4.2 升级的过程中，不管是使用 <code>npm update</code> 还是重新 <code>npm install</code> 都会报 <code>failed to parse query: unknown expression term &#39;dirname&#39;</code> 导致 packager 无法启动，重新用 <code>react-native init</code> 创建新项目也不行。我向 React Native 官方提了 <a href="https://github.com/facebook/react-native/issues/1213">issue</a>，也没有得到好的答复，反倒是路过的群众在 issue 下面提出了解决办法——重新安装 watchman:</p>
 
-<pre><code class="nohighlight">brew uninstall watchman
+<pre><code class="language-nohighlight">brew uninstall watchman
 brew install --HEAD watchman
 </code></pre>
 
@@ -39,7 +39,7 @@ brew install --HEAD watchman
 
 <p>在 <code>render</code> 方法中不能改变 props 或者 states，例如下面的代码：</p>
 
-<pre><code class="javascript">module.exports = React.createClass({
+<pre><code class="language-javascript">module.exports = React.createClass({
   handlePress: function() {
     this.setProps({
       id: &#39;1&#39;,
@@ -59,7 +59,7 @@ brew install --HEAD watchman
 
 <p>当点击时，会报</p>
 
-<pre><code class="nohighlight">Error: Invariant Violation: setProps(...): 
+<pre><code class="language-nohighlight">Error: Invariant Violation: setProps(...): 
 Cannot update during an existing state transition (such as within `render`). 
 Render methods should be a pure function of props and state.
 </code></pre>
@@ -71,7 +71,7 @@ Render methods should be a pure function of props and state.
 
 <p>在显示 Github 时间线的时候，每个 Row 里会提到多个用户名和仓库名，点击用户名和仓库名时需要做不同的处理。最容易想到的方法就是给 <code>handlePress</code> 传递参数了，如果使用下面的代码：</p>
 
-<pre><code class="javascript">var action = &lt;View style={styles.action}&gt;
+<pre><code class="language-javascript">var action = &lt;View style={styles.action}&gt;
                &lt;Text&gt;{actionDescription}&lt;/Text&gt;
                &lt;TouchableOpacity onPress={this.goToUser(this.props.data.name)}&gt;&lt;Text&gt;data.payload.member.login&lt;/Text&gt;&lt;/TouchableOpacity&gt;
              &lt;Text&gt; to &lt;/Text&gt;
@@ -79,12 +79,12 @@ Render methods should be a pure function of props and state.
 
 <p>点击时同样会报</p>
 
-<pre><code class="nohighlight">Error: Invariant Violation: setState(...): Cannot update ...
+<pre><code class="language-nohighlight">Error: Invariant Violation: setState(...): Cannot update ...
 </code></pre>
 
-<p>因为上面的写法等于是在渲染的时候执行了 <code>this.goToUser</code>，会导致 state 改变。 onPress 应该传递进一个<strong>函数</strong>，这个函数会在点击的时候执行。一种可行的写法是使用匿名函数封装：</p>
+<p>因为上面的写法等于是在渲染的时候执行了 <code>this.goToUser</code>，会导致 state 改变。 onPress 应该传递进一个**函数**，这个函数会在点击的时候执行。一种可行的写法是使用匿名函数封装：</p>
 
-<pre><code class="javascript">&lt;TouchableOpacity onPress={()=&gt;{
+<pre><code class="language-javascript">&lt;TouchableOpacity onPress={()=&gt;{
   this.goToUser(this.props.data.name)
  }}&gt;
 &lt;/TouchableOpacity&gt;
@@ -118,7 +118,7 @@ Render methods should be a pure function of props and state.
 
 <p>总之 navbar 三个部件以及下面的搜索结果页面之间需要互操作，四个组合成一个大的组件，可以通过 ref 在 parent 中获得它们的引用，以及把 customAction 传递进去，从而实现互操作：</p>
 
-<pre><code class="javascript">&lt;View style={styles.navbar}&gt;
+<pre><code class="language-javascript">&lt;View style={styles.navbar}&gt;
   &lt;SearchOption style={[styles.corner, styles.alignLeft]} customAction={this.customAction} /&gt;
    &lt;SearchTextInput ref=&quot;input&quot; customAction={this.customAction} /&gt;
    &lt;SearchIcon style={[styles.corner, styles.alignLeft]} customAction={this.customAction} /&gt;

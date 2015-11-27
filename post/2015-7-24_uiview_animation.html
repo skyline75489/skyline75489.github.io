@@ -50,7 +50,7 @@
 
 <p>这些属性大都是 View 的基本属性，下面是一个例子，这个例子中的动画会同时改变 View 的 <code>frame</code>，<code>backgroundColor</code> 和 <code>alpha</code> ：</p>
 
-<pre><code class="objective-c">[UIView animateWithDuration:2.0 animations:^{
+<pre><code class="language-objective-c">[UIView animateWithDuration:2.0 animations:^{
     myView.frame = CGRectMake(50, 200, 200, 200);
     myView.backgroundColor = [UIColor blueColor];
     myView.alpha = 0.7;
@@ -75,7 +75,7 @@
 
 <p>例如下面的代码会将 View 缩小至原来的 1/4 大小：</p>
 
-<pre><code class="objective-c">[UIView animateWithDuration:2.0 animations:^{
+<pre><code class="language-objective-c">[UIView animateWithDuration:2.0 animations:^{
     myView.transform = CGAffineTransformMakeScale(0.5, 0.5);
 }];
 </code></pre>
@@ -106,7 +106,7 @@
 
 <p>上面介绍的动画中，我们只能控制开始和结束时的效果，然后由系统补全中间的过程，有些时候我们需要自己设定若干关键帧，实现更复杂的动画效果，这时候就需要关键帧动画的支持了。下面是一个示例：</p>
 
-<pre><code class="objective-c">[UIView animateKeyframesWithDuration:2.0 delay:0.0 options:UIViewKeyframeAnimationOptionRepeat | UIViewKeyframeAnimationOptionAutoreverse animations:^{
+<pre><code class="language-objective-c">[UIView animateKeyframesWithDuration:2.0 delay:0.0 options:UIViewKeyframeAnimationOptionRepeat | UIViewKeyframeAnimationOptionAutoreverse animations:^{
     [UIView addKeyframeWithRelativeStartTime:0.0 relativeDuration:0.5 animations:^{
         self.myView.frame = CGRectMake(10, 50, 100, 100);
     }];
@@ -141,7 +141,7 @@
 
 <p>CABasicAnimation 用于创建一个 CALayer 上的基本动画效果，下面是一个例子：</p>
 
-<pre><code class="objective-c">CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@&quot;position.x&quot;];
+<pre><code class="language-objective-c">CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@&quot;position.x&quot;];
 animation.toValue = @200;
 animation.duration = 0.8;
 animation.repeatCount = 5;
@@ -156,7 +156,7 @@ animation.fillMode = kCAFillModeRemoved;
 
 <p>需要注意的一点是，上面我们使用了 <code>position</code> 属性， layer 的这个 <code>position</code> 属性和 View 的 <code>frame</code> 以及 <code>bounds</code> 属性都不相同，而是和 Layer 的 <code>anchorPoint</code> 有关，可以由下面的公式计算得到：</p>
 
-<pre><code class="objective-c">position.x = frame.origin.x + 0.5 * bounds.size.width；  
+<pre><code class="language-objective-c">position.x = frame.origin.x + 0.5 * bounds.size.width；  
 position.y = frame.origin.y + 0.5 * bounds.size.height； 
 </code></pre>
 
@@ -194,12 +194,12 @@ position.y = frame.origin.y + 0.5 * bounds.size.height；
 
 <p>另外，可以看到上面我们使用的:</p>
 
-<pre><code class="objecitive-c">animation.toValue = @200;
+<pre><code class="language-objecitive-c">animation.toValue = @200;
 </code></pre>
 
 <p>而不是直接使用 200，因为 <code>toValue</code> 之类的属性为 <code>id</code> 类型，或者像这样使用 @ 符号，或者使用：</p>
 
-<pre><code class="objecitive-c">animation.toValue = [NSNumber numberWithInt:200];
+<pre><code class="language-objecitive-c">animation.toValue = [NSNumber numberWithInt:200];
 </code></pre>
 
 <p>最后一个比较有意思的是 <code>timingFunction</code> 属性，使用这个属性可以自定义动画的运动曲线（节奏，pacing），系统提供了五种值可以选择：</p>
@@ -222,14 +222,14 @@ position.y = frame.origin.y + 0.5 * bounds.size.height；
 
 <p>使用 <code>values</code> 和 <code>keyTimes</code> 可以共同确定一个动画的若干关键帧，示例代码如下：</p>
 
-<pre><code class="objective-c">CAKeyframeAnimation *anima = [CAKeyframeAnimation animationWithKeyPath:@&quot;transform.rotation&quot;];//在这里@&quot;transform.rotation&quot;==@&quot;transform.rotation.z&quot;
+<pre><code class="language-objective-c">CAKeyframeAnimation *anima = [CAKeyframeAnimation animationWithKeyPath:@&quot;transform.rotation&quot;];//在这里@&quot;transform.rotation&quot;==@&quot;transform.rotation.z&quot;
 NSValue *value1 = [NSNumber numberWithFloat:-M_PI/180*4];
 NSValue *value2 = [NSNumber numberWithFloat:M_PI/180*4];
 NSValue *value3 = [NSNumber numberWithFloat:-M_PI/180*4];
 anima.values = @[value1,value2,value3];
 // anima.keyTimes = @[@0.0, @0.5, @1.0];
 anima.repeatCount = MAXFLOAT;
-
+    
 [_demoView.layer addAnimation:anima forKey:@&quot;shakeAnimation&quot;];
 </code></pre>
 
@@ -239,7 +239,7 @@ anima.repeatCount = MAXFLOAT;
 
 <p>使用 path 属性可以设置一个动画的运动路径，注意 path 只对 CALayer 的 anchorPoint 和position 属性起作用，另外如果你设置了 path ，那么 values 将被忽略。</p>
 
-<pre><code class="objective-c">CAKeyframeAnimation *anima = [CAKeyframeAnimation animationWithKeyPath:@&quot;position&quot;];
+<pre><code class="language-objective-c">CAKeyframeAnimation *anima = [CAKeyframeAnimation animationWithKeyPath:@&quot;position&quot;];
 UIBezierPath *path = [UIBezierPath bezierPathWithOvalInRect:CGRectMake(SCREEN_WIDTH/2-100, SCREEN_HEIGHT/2-100, 200, 200)];
 anima.path = path.CGPath;
 anima.duration = 2.0f;
@@ -250,12 +250,12 @@ anima.duration = 2.0f;
 
 <p>组动画可以将一组动画组合在一起，所有动画对象可以同时运行，示例代码如下：</p>
 
-<pre><code class="objective-c">CAAnimationGroup *group = [[CAAnimationGroup alloc] init];
+<pre><code class="language-objective-c">CAAnimationGroup *group = [[CAAnimationGroup alloc] init];
 CABasicAnimation *animationOne = [CABasicAnimation animationWithKeyPath:@&quot;transform.scale&quot;];
-
+    
 animationOne.toValue = @2.0;
 animationOne.duration = 1.0;
-
+    
 CABasicAnimation *animationTwo = [CABasicAnimation animationWithKeyPath:@&quot;position.x&quot;];
 animationTwo.toValue = @400;
 animationTwo.duration = 1.0;
@@ -270,11 +270,11 @@ animationTwo.duration = 1.0;
 
 <p>CATransition 可以用于 View 或 ViewController 直接的换场动画：</p>
 
-<pre><code class="objective-c">self.myView.backgroundColor = [UIColor blueColor];
+<pre><code class="language-objective-c">self.myView.backgroundColor = [UIColor blueColor];
 CATransition *trans = [CATransition animation];
 trans.duration = 1.0;
 trans.type = @&quot;push&quot;;
-
+    
 [self.myView.layer addAnimation:trans forKey:nil];
 
 // 这句放在下面也可以

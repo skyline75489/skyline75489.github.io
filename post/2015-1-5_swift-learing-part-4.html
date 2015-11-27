@@ -25,7 +25,7 @@
 
 <p>Swift在语言层面上提供了类中懒加载属性的支持，使用<code>lazy</code>作为关键字：</p>
 
-<pre><code class="swift">class Renderer {
+<pre><code class="language-swift">class Renderer {
     lazy var loader = Loader()
     var data = [String]()
     var render() {
@@ -45,7 +45,7 @@ renderer.loader.loadData()
 
 <p>类似于C#和Python中的<code>@property</code>，Swift也支持给属性赋值或者取出值时进行计算：</p>
 
-<pre><code class="swift">class Square {
+<pre><code class="language-swift">class Square {
     var length = 0.0
     var size: Double { // 必须显式声明类型
         get {
@@ -60,7 +60,7 @@ renderer.loader.loadData()
 
 <p>也可以用下面的方法将属性设置成只读的：</p>
 
-<pre><code class="swift">class Square {
+<pre><code class="language-swift">class Square {
     var length = 0.0
     var size: Double {
             return length * length
@@ -71,7 +71,7 @@ renderer.loader.loadData()
 
 <p>除了 set 和 get ，Swift还提供了更细粒度的针对属性值变化的观察方法——属性观察器 willSet 和 didSet ：</p>
 
-<pre><code class="swift">class Person {
+<pre><code class="language-swift">class Person {
     var age: Int = 0 {
         willSet(newAge) {
             println(&quot;About to set new age&quot;)
@@ -89,12 +89,12 @@ renderer.loader.loadData()
 
 <p>Swift提供了subscript语法，可以使用下标来访问类的属性，类似于Python中的<code>__getitem__</code></p>
 
-<pre><code class="swift">class Dict {
+<pre><code class="language-swift">class Dict {
     subscript(key: String) -&gt; String {
         get {
         // 取值
         }
-
+        
         set(newValue) {
         // 赋值
         }
@@ -105,7 +105,7 @@ renderer.loader.loadData()
 
 <p>Swift支持两个层次的初始化，一种叫做Designated，另一张叫做Convenience，顾名思义，是一种用于方便初始化过程的初始化器。</p>
 
-<pre><code class="swift">class Person {
+<pre><code class="language-swift">class Person {
     var name: String
     init(name: String) {
         self.name = name
@@ -120,7 +120,7 @@ renderer.loader.loadData()
 
 <p>你可能要问，为什么不在原来的init里使用默认参数，而是单独再加一个初始化函数呢？我个人的理解是，当初始化参数比较多，而且类型不同时，使用默认参数会使得初始化函数变得过于复杂，而且可读性差。使用Convenicence可以把这些参数全部解耦到不同的函数里，使得代码更加漂亮。例如SwiftJSON里就大量地使用了这一特性:</p>
 
-<pre><code class="swift">public convenience init(url:String) {//...}
+<pre><code class="language-swift">public convenience init(url:String) {//...}
 public convenience init(nsurl:NSURL) {//...}
 public convenience init(data:NSData) {//...}
 </code></pre>
@@ -131,7 +131,7 @@ public convenience init(data:NSData) {//...}
 
 <p>和C#之类的现代高级语言一样，Swift的结构体类型也是可以在其中定义属性和方法的，用法与类相似：</p>
 
-<pre><code class="swift">struct A{
+<pre><code class="language-swift">struct A{
      var a = 10;
      func sayHello() {
          println(&quot;hello&quot;)

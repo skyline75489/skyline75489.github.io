@@ -27,11 +27,11 @@
 
 <ul>
 <li><p>执行 <code>pod install</code> 的时候，它会下载并且安装新的 pod，将安装的 pod 信息写入 <code>Podfile.lock</code>。这个文件主要是用来跟踪已经安装的 pod 并且锁定（lock）它们的版本。</p></li>
-<li><p>执行 <code>pod install</code> 的时候，它会对那些<strong>不</strong>在 <code>Podfile.lock</code> 中的 pod 进行依赖分析</p>
+<li><p>执行 <code>pod install</code> 的时候，它会对那些**不**在 <code>Podfile.lock</code> 中的 pod 进行依赖分析</p>
 
 <ul>
-<li>对于已经在 <code>Podfile.lock</code> 中的 pod，它会下载在 <code>Podfile.lcok</code> 中指示的版本，不会去检查有没有新版本。</li>
-<li>对于没有出现在 <code>Podfile.lock</code> 中的 pod，它会搜索符合 <code>Podfile</code> 中要求的版本（例如 <code>pod &#39;MyPod&#39;, &#39;~&gt;1.2&#39;</code>）</li>
+<li><p>对于已经在 <code>Podfile.lock</code> 中的 pod，它会下载在 <code>Podfile.lcok</code> 中指示的版本，不会去检查有没有新版本。</p></li>
+<li><p>对于没有出现在 <code>Podfile.lock</code> 中的 pod，它会搜索符合 <code>Podfile</code> 中要求的版本（例如 <code>pod &#39;MyPod&#39;, &#39;~&gt;1.2&#39;</code>）</p></li>
 </ul></li>
 </ul>
 

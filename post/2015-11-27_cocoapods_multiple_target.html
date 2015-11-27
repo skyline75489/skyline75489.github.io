@@ -1,0 +1,94 @@
+<!DOCTYPE html> 
+<html>
+<head>
+<title>Skyline75489</title>
+ <meta charset='utf-8'>
+<link rel="stylesheet" href="../static/styles/github.css">
+<link rel="stylesheet" href="../static/post.css">
+</head>
+<body>
+
+<div class="wrapper">
+<div class="header">
+	<span class="blog-name">Skyline75489</span>
+
+<a class="nav" href="../index.html">Home</a>
+<a class="nav" href="about.html">About</a>
+</div>
+<div class="content">
+
+<h1>使用 CocoaPods 管理多个 Target 的依赖</h1>
+
+<p>CocoaPods 是常用是 iOS 依赖管理工具。默认情况下 CocoaPods 会把依赖安装到主的 Target 上：</p>
+
+<pre><code class="language-ruby">platform :ios, &#39;5.0&#39;
+
+pod &#39;Quick&#39;, &#39;0.5.0&#39;
+pod &#39;Nimble&#39;, &#39;2.0.0-rc.1&#39;
+</code></pre>
+
+<p>如果我们需要给多个 target 设置依赖的话，有两种办法，第一种是给每个 target 都写一遍依赖：</p>
+
+<pre><code class="language-ruby">platform :ios, &#39;5.0&#39;
+target &#39;MyTests&#39; do
+    pod &#39;Quick&#39;, &#39;0.5.0&#39;
+    pod &#39;Nimble&#39;, &#39;2.0.0-rc.1&#39;
+end
+
+target &#39;MyUITests&#39; do
+    pod &#39;Quick&#39;, &#39;0.5.0&#39;
+    pod &#39;Nimble&#39;, &#39;2.0.0-rc.1&#39;
+end
+</code></pre>
+
+<p>这样可以精确控制每个 target 的依赖。当各个 target 共享的依赖比较多的情况下，这样写会导致很多重复。</p>
+
+<p>第二种做法是使用 <code>link_with</code> 来指定多个 target:</p>
+
+<pre><code>platform :osx, &#39;10.7&#39;
+
+link_with &#39;MyApp&#39;, &#39;MyApp Tests&#39;
+pod &#39;AFNetworking&#39;, &#39;~&gt; 2.0&#39;
+pod &#39;Objection&#39;, &#39;0.9&#39;
+</code></pre>
+
+<p>这种写法不需要我们一个依赖写很多遍了，但是又不能精确控制每个 target 具体的依赖，如果有些依赖是不能共享的，这种写法就会引起问题。</p>
+
+<p>例如在 App Extension 开发中，Extension 和主 App 是两个 target，有些依赖在主 App 中是需要的，但是可能并不支持 Extension ，因为 Extension 中不能使用 UIApplication 之类的 API，这样如果我们用 <code>link_with</code> 的写法就会导致 Extension 编译不通过。</p>
+
+<p>可以看到上面两种写法都有局限性，这里介绍一种更好的写法。因为 Podfile 其实就是合法的 Ruby 源代码，我们可以在 Podfile 中直接使用 Ruby 的语法。对于上面提到的 Extension 的情况，我们可以这样做：</p>
+
+<pre><code class="language-ruby">def shared_pods
+    pod &quot;AFNetworking&quot;
+    pod &quot;SDWebImage&quot;
+    
+def app_only_pods
+    pod &quot;MBProgressHUD&quot;
+    
+target :app do
+    shared_pods
+    app_only_pods
+    
+target :keyboard do
+    shared_pods
+</code></pre>
+
+<p>我们利用了 Ruby 的函数，定义出了两个 target 可以共享的依赖，以及只能在 App 中使用的依赖，然后通过函数调用去给 target 设置依赖，这样既解决了重复问题，又能精确控制每个 target 的依赖。</p>
+
+<p>参考资料：</p>
+
+<ul>
+<li><a href="https://stackoverflow.com/questions/14906534/how-do-i-specify-multiple-targets-in-my-podfile-for-my-xcode-project">https://stackoverflow.com/questions/14906534/how-do-i-specify-multiple-targets-in-my-podfile-for-my-xcode-project</a></li>
+<li><a href="http://natashatherobot.com/cocoapods-installing-same-pod-multiple-targets/">http://natashatherobot.com/cocoapods-installing-same-pod-multiple-targets/</a></li>
+<li><a href="http://www.tuicool.com/articles/e6VrieN">http://www.tuicool.com/articles/e6VrieN</a></li>
+<li><a href="https://guides.cocoapods.org/using/the-podfile.html">https://guides.cocoapods.org/using/the-podfile.html</a></li>
+</ul>
+
+
+</div>
+</div>
+<script src="../static/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+</body>
+
+</html>

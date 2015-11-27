@@ -85,7 +85,7 @@ __del__ 并不会 执行。
 
 <p>这里有个 __init__ 和 __del__ 的例子:</p>
 
-<pre><code class="python">from os.path import join
+<pre><code class="language-python">from os.path import join
 
 class FileObject:
     &#39;&#39;&#39;文件对象的装饰类，用来保证文件被删除时能够正确关闭。&#39;&#39;&#39;
@@ -104,14 +104,14 @@ class FileObject:
 <p>使用Python魔法方法的一个巨大优势就是可以构建一个拥有Python内置类型行为的对象。这意味着你可以避免使用非标准的、丑陋的方式来表达简单的操作。
 在一些语言中，这样做很常见:</p>
 
-<pre><code class="python">if instance.equals(other_instance):
+<pre><code class="language-python">if instance.equals(other_instance):
     # do something
 </code></pre>
 
 <p>你当然可以在Python也这么做，但是这样做让代码变得冗长而混乱。不同的类库可能对同一种比较操作采用不同的方法名称，这让使用者需要做很多没有必要的工作。运用魔法方法的魔力，我们可以定义方法
 __eq__ :</p>
 
-<pre><code class="python">if instance == other_instance:
+<pre><code class="language-python">if instance == other_instance:
     # do something
 </code></pre>
 
@@ -153,7 +153,7 @@ __cmp__ 是一个很好的方法，可以减少代码重复，让代码更简洁
 
 <p>举个例子，假如我们想用一个类来存储单词。我们可能想按照字典序（字母顺序）来比较单词，字符串的默认比较行为就是这样。我们可能也想按照其他规则来比较字符串，像是长度，或者音节的数量。在这个例子中，我们使用长度作为比较标准，下面是一种实现:</p>
 
-<pre><code class="python">class Word(str):
+<pre><code class="language-python">class Word(str):
     &#39;&#39;&#39;单词类，按照单词长度来定义比较行为&#39;&#39;&#39;
 
     def __new__(cls, word):
@@ -343,7 +343,7 @@ from __future__ import division 时才有作用。</p></li>
 
 <p>Python同样提供了大量的魔法方法，可以用来自定义增强赋值操作的行为。或许你已经了解增强赋值，它融合了“常见”的操作符和赋值操作，如果你还是没听明白，看下面的例子:</p>
 
-<pre><code class="python">x = 5
+<pre><code class="language-python">x = 5
 x += 1 # 也就是 x = x + 1
 </code></pre>
 
@@ -521,7 +521,7 @@ AttributeError 时它才被使用。
 
 <p>自定义这些控制属性访问的魔法方法很容易导致问题，考虑下面这个例子:</p>
 
-<pre><code class="python">def __setattr__(self, name. value):
+<pre><code class="language-python">def __setattr__(self, name. value):
     self.name = value
     # 因为每次属性幅值都要调用 __setattr__()，所以这里的实现会导致递归
     # 这里的调用实际上是 self.__setattr(&#39;name&#39;, value)。因为这个方法一直
@@ -537,7 +537,7 @@ def __setattr__(self, name, value):
 <p>到这里，我们对Python中自定义属性存取控制有了什么样的印象？它并不适合轻度的使用。实际上，它有些过分强大，而且违反直觉。然而它之所以存在，是因为一个更大的原则：Python不指望让杜绝坏事发生，而是想办法让做坏事变得困难。自由是至高无上的权利，你真的可以随心所欲。下面的例子展示了实际应用中某些特殊的属性访问方法（注意我们之所以使用
 super 是因为不是所有的类都有 __dict__ 属性）:</p>
 
-<pre><code class="python">class AccessCounter(object):
+<pre><code class="language-python">class AccessCounter(object):
     &#39;&#39;&#39; 一个包含了一个值并且实现了访问计数器的类
     每次值的变化都会导致计数器自增&#39;&#39;&#39;
 
@@ -619,7 +619,7 @@ d.__missing__(&quot;george&quot;) ）。</p></li>
 
 <p>让我们来看一个实现了一些函数式结构的列表，可能在其他语言中这种结构更常见（例如Haskell）:</p>
 
-<pre><code class="python">class FunctionalList:
+<pre><code class="language-python">class FunctionalList:
     &#39;&#39;&#39;一个列表的封装类，实现了一些额外的函数式
     方法，例如head, tail, init, last, drop和take。&#39;&#39;&#39;
 
@@ -719,7 +719,7 @@ __call__ ，喜欢用多少参数就用多少。</p></li>
 <p>__call__
 在某些需要经常改变状态的类的实例中显得特别有用。“调用”这个实例来改变它的状态，是一种更加符合直觉，也更加优雅的方法。一个表示平面上实体的类是一个不错的例子:</p>
 
-<pre><code class="python">class Entity:
+<pre><code class="language-python">class Entity:
     &#39;&#39;&#39;表示一个实体的类，调用它的实例
     可以更新实体的位置&#39;&#39;&#39;
 
@@ -739,7 +739,7 @@ with
 声明。上下文管理的概念在Python中并不是全新引入的（之前它作为标准库的一部分实现），直到PEP
 343被接受，它才成为一种一级的语言结构。可能你已经见过这种写法了:</p>
 
-<pre><code class="python">with open(&#39;foo.txt&#39;) as bar:
+<pre><code class="language-python">with open(&#39;foo.txt&#39;) as bar:
     # 使用bar进行某些操作
 </code></pre>
 
@@ -765,7 +765,7 @@ __exit__ 在完成工作之后返回 True
 __exit__
 会显得特别有用。你也可以使用这几个方法来创建通用的上下文管理器，用来包装其他对象。下面是一个例子:</p>
 
-<pre><code class="python">class Closer:
+<pre><code class="language-python">class Closer:
     &#39;&#39;&#39;一个上下文管理器，可以在with语句中
     使用close()自动关闭对象&#39;&#39;&#39;
 
@@ -786,7 +786,7 @@ __exit__
 <p>这是一个 Closer
 在实际使用中的例子，使用一个FTP连接来演示（一个可关闭的socket):</p>
 
-<pre><code class="python">&gt;&gt;&gt; from magicmethods import Closer
+<pre><code class="language-python">&gt;&gt;&gt; from magicmethods import Closer
 &gt;&gt;&gt; from ftplib import FTP
 &gt;&gt;&gt; with Closer(FTP(&#39;ftp.somesite.com&#39;)) as conn:
 ...     conn.dir()
@@ -833,7 +833,7 @@ __delete__ 三个方法中至少一个。</p>
 
 <p>现在，来看一个描述符的有效应用：单位转换:</p>
 
-<pre><code class="python">class Meter(object):
+<pre><code class="language-python">class Meter(object):
     &#39;&#39;&#39;米的描述符。&#39;&#39;&#39;
 
     def __init__(self, value=0.0):
@@ -891,7 +891,7 @@ copy.deepcopy() ，使用 memodict 作为第一个参数。</p></li>
 exec()
 或处理文件输入。但是这种方法并不可靠：如果你使用纯文本来存储重要数据，数据很容易以多种方式被破坏或者修改，导致你的程序崩溃，更糟糕的情况下，还可能在你的计算机上运行恶意代码。因此，我们要pickle它:</p>
 
-<pre><code class="python">import pickle
+<pre><code class="language-python">import pickle
 
 data = {&#39;foo&#39;: [1,2,3],
         &#39;bar&#39;: (&#39;Hello&#39;, &#39;world!&#39;),
@@ -903,7 +903,7 @@ jar.close()
 
 <p>过了几个小时，我们想把它取出来，我们只需要反pickle它:</p>
 
-<pre><code class="python">import pickle
+<pre><code class="language-python">import pickle
 
 pkl_file = open(&#39;data.pkl&#39;, &#39;rb&#39;) # 与pickle后的数据连接
 data = pickle.load(pkl_file) # 把它加载进一个变量
@@ -960,7 +960,7 @@ __reduce_ex__ 会代替 __reduce__ 被调用。 __reduce__
 ，它会记住它的值曾经是什么，以及那些值是什么时候赋给它的。然而
 每次被pickle时它都会变成空白，因为当前的值不会被存储:</p>
 
-<pre><code class="python">import time
+<pre><code class="language-python">import time
 
 class Slate:
     &#39;&#39;&#39;存储一个字符串和一个变更日志的类
@@ -1002,13 +1002,16 @@ class Slate:
 
 <p>一些魔法方法直接和内建函数对应，这种情况下，如何调用它们是显而易见的。然而，另外的情况下，调用魔法方法的途径并不是那么明显。这个附录旨在展示那些不那么明显的调用魔法方法的语法。</p>
 
-<table><thead>
+<table>
+<thead>
 <tr>
 <th>魔法方法</th>
 <th>什么时候被调用</th>
 <th>解释</th>
 </tr>
-</thead><tbody>
+</thead>
+
+<tbody>
 <tr>
 <td>__new__(cls [,...])</td>
 <td>instance = MyClass(arg1, arg2)</td>
@@ -1119,7 +1122,8 @@ class Slate:
 <td>data = pickle.load(pkl_file)</td>
 <td>Pickling</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 
 <h2>附录2：Python 3中的变化</h2>
 

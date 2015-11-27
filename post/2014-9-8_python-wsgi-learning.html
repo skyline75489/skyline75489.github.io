@@ -33,7 +33,7 @@
 
 <p>Web框架是对Low Level的WSGI进行封装之后的产物，通常Web框架对开发者提供了更为友好的接口，例如使用Flask框架，可以使用如下的代码来构建一个输出Hello World的小应用:</p>
 
-<pre><code class="python">from flask import Flask
+<pre><code class="language-python">from flask import Flask
 app = Flask(__name__)
 
 @app.route(’/’)
@@ -46,7 +46,7 @@ if __name__ == ’__main__’:
 
 <p>而如果直接使用WSGI，可能需要写成这样:</p>
 
-<pre><code class="python">from wsgiref.simple_server import make_server
+<pre><code class="language-python">from wsgiref.simple_server import make_server
 
 HELLO_WORLD = b&quot;Hello World!\n&quot;
 
@@ -59,7 +59,7 @@ def my_app(environ, start_response):
         return [HELLO_WORLD]
     else:
         raise NotFound
-
+        
 server = make_server(&#39;127.0.0.1&#39;, 5000, my_app)
 server.serve_forever()
 </code></pre>
@@ -68,27 +68,27 @@ server.serve_forever()
 
 <p>同时，大部分Web框架都提供了符合WSGI规范的接口，也就是说可以作为WSGI app来使用：</p>
 
-<pre><code class="python"># Flask
+<pre><code class="language-python"># Flask
 from flask import Flask
 app = Flask(__name__)
 
 my_app = app.wsgi_app
 </code></pre>
 
-<pre><code class="python"># Tornado 
+<pre><code class="language-python"># Tornado 
 import tornado.web
 import tornado.wsgi
 
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
         self.write(&quot;Hello, world&quot;)
-
+        
 application = tornado.wsgi.WSGIApplication([
         (r&quot;/&quot;, MainHandler),
 ])
 </code></pre>
 
-<pre><code class="python"># Django
+<pre><code class="language-python"># Django
 from django.core.wsgi import get_wsgi_application
 
 application = get_wsgi_application()

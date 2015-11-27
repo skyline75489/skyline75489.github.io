@@ -23,7 +23,7 @@
 
 <p>改完之后想看一下这个DNS返回的地址到底是什么，按照计算机网络课上讲的，在命令行里使用nslookup，没想到却返回了这样的结果：</p>
 
-<pre><code class="bash">&gt;nslookup twitter.com
+<pre><code class="language-bash">&gt;nslookup twitter.com
 ;; Got recursion not available from 42.120.21.30, trying next server
 Server:     223.5.5.5
 Address:    223.5.5.5#53
@@ -37,7 +37,7 @@ Address: 59.24.3.173
 
 <p>查询nslooup的man文档之后，发现nslookup默认采用递归查询，可以通过参数来设置，指定不使用递归查询，像下面这样，就可以得到结果了：</p>
 
-<pre><code class="bash">&gt;nslookup -norec twitter.com
+<pre><code class="language-bash">&gt;nslookup -norec twitter.com
 Server:     42.120.21.30
 Address:    42.120.21.30#53
 
@@ -48,7 +48,7 @@ Address: 198.98.52.15
 
 <p>另外，还可以使用dig命令来查询</p>
 
-<pre><code class="bash">&gt;dig twitter.com
+<pre><code class="language-bash">&gt;dig twitter.com
 
 ; &lt;&lt;&gt;&gt; DiG 9.8.3-P1 &lt;&lt;&gt;&gt; twitter.com
 ;; global options: +cmd
