@@ -64,7 +64,6 @@ a.nav:visited {
 pre {
 	line-height: 19px;
 	word-break: break-all;
-	word-wrap: break-word;
 	font-size: 13px;
 	overflow: auto;
 	border-radius: 3px;
