@@ -138,8 +138,8 @@ vc.languageSelectionBlock = ^(NSUInteger index){
 };
 ```
 
-**优点**：可以看到，和 delegate 相比，block 使用起来语法更加简明方便，不需要定义 protocol。同时 block 本身是一个对象，是可以进行传递的，用法比 delegate 要灵活很多
-。
+**优点**：可以看到，和 delegate 相比，block 使用起来语法更加简明方便，不需要定义 protocol。同时 block 本身是一个对象，是可以进行传递的，用法比 delegate 要灵活很多。
+
 **缺点**：由于 block 会捕获外部的对象，使用 block 很容易造成内存泄露问题，需要多加小心。同时 block 层次过多也会使得回调层数太深，导致代码难以维护。
 
 ### 其他方法

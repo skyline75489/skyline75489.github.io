@@ -100,9 +100,8 @@ vc.languageSelectionBlock = ^(NSUInteger index){
     // Do something
 };
 </code></pre>
-<p><strong>优点</strong>：可以看到，和 delegate 相比，block 使用起来语法更加简明方便，不需要定义 protocol。同时 block 本身是一个对象，是可以进行传递的，用法比 delegate 要灵活很多
-。
-<strong>缺点</strong>：由于 block 会捕获外部的对象，使用 block 很容易造成内存泄露问题，需要多加小心。同时 block 层次过多也会使得回调层数太深，导致代码难以维护。</p>
+<p><strong>优点</strong>：可以看到，和 delegate 相比，block 使用起来语法更加简明方便，不需要定义 protocol。同时 block 本身是一个对象，是可以进行传递的，用法比 delegate 要灵活很多。</p>
+<p><strong>缺点</strong>：由于 block 会捕获外部的对象，使用 block 很容易造成内存泄露问题，需要多加小心。同时 block 层次过多也会使得回调层数太深，导致代码难以维护。</p>
 <h3>其他方法</h3>
 <p>除了上面提到的方法，iOS 系统内部还提供了几种用于数据共享和传递的机制：</p>
 <h4>NSNotification</h4>
