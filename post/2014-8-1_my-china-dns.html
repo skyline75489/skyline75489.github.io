@@ -18,34 +18,21 @@
 <div class="content">
 
 <h1>我(以前)的DNS解决方案</h1>
-
 <p><strong>如果你也觉得下面的这些步骤实在很繁琐，请移步<a href="simpledns-the-proxy-dns-server.html">这里</a></strong></p>
-
 <p>在中国这片神奇的土地上，网络自由是如此的可遇不可求。连DNS解析这样一个基础服务，都变成了网络封锁的目标。各种DNS劫持，污染，让人烦不胜烦。于是我开始寻找一个不受别人监视的，自由的DNS解决方案。</p>
-
 <p>仅仅是改DNS地址已经不能满足我们的需求了。使用国内的114.114.114.114，国外地址的解析肯定不靠谱，使用OpenDNS这类国外DNS的话，国内的地址又会变得很慢。所以我们需要自己在本机搭建一个DNS服务器，它能够根据我们的配置，将不同的请求发送到不同的地址去，确保不管是国内还是国外的地址都能得到正确而且快速的解析结果。</p>
-
 <p>感谢<a href="http://www.thekelleys.org.uk/dnsmasq/doc.html">DNSMasq</a>和<a href="http://dnscrypt.org/">DNSCrypt</a>，想达到这样的效果并不是太困难。这个解决方案的原理是，把请求发给DNSMasq，DNSMasq根据请求的地址，判断将DNS请求发送到哪里，如果是国外的地址，将会通过DNSCrypt解析，防止DNS污染，如果是国内的地址，就交给114DNS。同时，由于DNSMasq可以进行缓存，哪怕通过DNSCrypt解析的速度比较慢，或者不稳定，我们的解析速度也不会受到太大的影响。</p>
-
 <p>在Mac OS X上进行配置具体的步骤来自这里 <a href="https://gist.github.com/ahmozkya/8456503">https://gist.github.com/ahmozkya/8456503</a> ，根据这个Gist和查到的其他博文，我在这里总结一下具体的步骤（Linux用户可以自行查询一下有关资料，原理是一样的，只是某些步骤因为系统原因有差异）：</p>
-
 <h3>1.安装DNSMasq和DNSCrypt</h3>
-
 <p>使用 Homebrew 安装</p>
-
-<pre><code class="language-nohighlight">$ brew install dnsmasq
+<pre><code class="lang-nohighlight">$ brew install dnsmasq
 $ brew install dnscrypt-proxy
 </code></pre>
-
 <p>装DNSMasq的时候这一步问题不大，但是安装DNSCrypt的时候，我发现DNSCrypt已经被墙了。没办法，只能先使用Wallproxy翻出去，把源码下载下来，然后在Downloads目录用<code>python -m SimpleHTTPServer</code>开一个本地服务器，然后再使用<code>brew edit dnscrypt-proxy</code>把Formula里的下载地址改成本地的地址，然后再执行install，才把DNSCrypt安装上。</p>
-
 <h3>2.配置</h3>
-
 <p>这个部分是最麻烦的，因为需要根据地址不同，把国内地址和国外地址区分对待。幸亏有好心人做了一些工作，极大的减少我们的工作量。<a href="https://github.com/felixonmars/dnsmasq-china-list">这个项目</a>维护了一份中国地区大部分网站的地址。这个列表来可以帮助DNSMasq判断应该把DNS请求发向哪里。我们先要把里面的两个配置文件下载下来，创建 /usr/local/etc/dnsmasq.d 文件夹，把两个配置文件放到里面。</p>
-
 <p>配置DNSMasq，修改 /usr/local/etc/dnsmasq.conf</p>
-
-<pre><code class="language-nohighlight"># 不读取有关解析的配置文件，默认使用/etc/revolve.conf中的上游服务器地址进行解析
+<pre><code class="lang-nohighlight"># 不读取有关解析的配置文件，默认使用/etc/revolve.conf中的上游服务器地址进行解析
 # 这里我们把地址直接写在配置文件里，所以不需要这个了
 no-resolv
 # 不检查有关解析的配置文件更新（原因同上）
@@ -62,41 +49,28 @@ cache-size=2000
 proxy-dnssec
 # 可以自行参照man dnsmasq里的内容继续添加别的参数
 </code></pre>
-
 <p>配置DNSCrypt，上面提到的Gist里把配置写在了 /Library/LaunchDaemons/homebrew.mxcl.dnscrypt-proxy.plist。可能是我安装的时候有问题，我没找到这个文件。经我自己的测试发现，使用launchctl启动DNSCrypt可能会出现DNSCrypt不停重启的情况。所以我们直接在后面使用命令行参数启动DNSCrypt。</p>
-
 <h3>3.启动服务</h3>
-
 <p>执行下面的命令可以启动DNSCrypt</p>
-
-<pre><code class="language-nohighlight">$ sudo /usr/local/sbin/dnscrypt-proxy --local-address=127.0.0.1:40 --edns-payload-size=4096 --user=nobody --resolver-address=77.66.84.233:443 --provider-name=2.dnscrypt-cert.resolver2.dnscrypt.eu --provider-key=3748:5585:E3B9:D088:FD25:AD36:B037:01F5:520C:D648:9E9A:DD52:1457:4955:9F0A:9955 --daemonize
-
+<pre><code class="lang-nohighlight">$ sudo /usr/local/sbin/dnscrypt-proxy --local-address=127.0.0.1:40 --edns-payload-size=4096 --user=nobody --resolver-address=77.66.84.233:443 --provider-name=2.dnscrypt-cert.resolver2.dnscrypt.eu --provider-key=3748:5585:E3B9:D088:FD25:AD36:B037:01F5:520C:D648:9E9A:DD52:1457:4955:9F0A:9955 --daemonize
 </code></pre>
-
 <p>参数里面比较重要的有--local-address，使用的端口号是40，也就是我们上面DNSMasq的上游地址。还有那三个解析服务器相关的值，那个Gist里使用的是OpenDNS的地址，我感觉OpenDNS太出名，容易被封，就在<a href="https://github.com/jedisct1/dnscrypt-proxy/blob/master/dnscrypt-resolvers.csv">这个地方</a>随便挑了一个能Ping通的。我试了几个，Ping值都在300，400毫秒左右，反正有缓存，查询速度慢点也没什么关系。daemonize表示以Daemon的方式启动，可以先不加这个参数试一下能不能正确启动，如果可以再加上它。</p>
-
 <p>然后启动DNSMasq并清除系统DNS缓存</p>
-
-<pre><code class="language-nohighlight">$ sudo launchctl stop homebrew.mxcl.dnsmasq
+<pre><code class="lang-nohighlight">$ sudo launchctl stop homebrew.mxcl.dnsmasq
 $ sudo launchctl start homebrew.mxcl.dnsmasq
 $ sudo killall -HUP mDNSResponder
 </code></pre>
-
 <p>然后就可以查询一下，看看效果了</p>
-
-<pre><code class="language-nohighlight">$ nslookup www.facebook.com
-Server:     127.0.0.1
+<pre><code class="lang-nohighlight">$ nslookup www.facebook.com
+Server:        127.0.0.1
 Address:    127.0.0.1#53
 Non-authoritative answer:
 www.facebook.com    canonical name = star.c10r.facebook.com.
-Name:   star.c10r.facebook.com
+Name:    star.c10r.facebook.com
 Address: 31.13.90.17
 </code></pre>
-
 <p>查询结果已经不是那个诡异的韩国地址了。第一次查询用的时间会比较长，之后由于缓存，在一定时间内查询会很快。另外，浏览器可能会对DNS进行缓存，启动DNSMasq之后推荐清空浏览器的DNS缓存。</p>
-
 <h3>4.总结</h3>
-
 <p>虽然安装配置这些步骤有些复杂，但是结果还是比较令人满意的，Gmail和Dropbox一下子就好用了，再也不用担心DNS被劫持了，也能起到一定的翻墙效果（可以直接用HTTPS上Facebook和Youtube）。如果你也有希望有一个更干净的DNS查询结果，希望这篇文章对你有所帮助。</p>
 
 

@@ -18,111 +18,71 @@
 <div class="content">
 
 <h1>Swift学习笔记(一)——语法初探</h1>
-
 <p>最近闲了一些，打算系统地学习一下Swift语言，写一个系列日志来记录一下学习中的心得和体会，也起到监督自己的作用。</p>
-
 <p>Swift的语法吸收了很多语言的特点，能看到JS，Python，C/C++，Scala等多种语言的影子，同时也具有自己独有的特点。</p>
-
-<h3>&quot;强制&quot;空格</h3>
-
+<h3>"强制"空格</h3>
 <p>Swift语言并不是像C/C++，Java那样完全忽视空格，Swift对空格的使用有一定的要求，但是又不像Python对缩进的要求那么严格。</p>
-
 <p>在Swift中，运算符不能直接跟在变量或常量的后面。按照<a href="https://stackoverflow.com/questions/24134354/swift-error-prefix-postfix-is-reserved">Stackoverflow上的说法</a>，是为了区分前缀运算符和后缀运算符，避免写出<code>++i++</code>这样的代码。看起来很美好，但是实际使用中还是有一些别扭，例如下面的代码会报错（注意空格）：</p>
-
-<pre><code class="language-swift">let a= 1 + 2
+<pre><code class="lang-swift">let a= 1 + 2
 </code></pre>
-
 <p>错误信息是：</p>
-
-<pre><code class="language-plaintext">error: prefix/postfix &#39;=&#39; is reserved
+<pre><code class="lang-plaintext">error: prefix/postfix &#39;=&#39; is reserved
 </code></pre>
-
 <p>意思大概是等号直接跟在前面或后面这种用法是保留的。</p>
-
 <p>下面的代码还是会报错（继续注意空格）：</p>
-
-<pre><code class="language-swift">let a = 1+ 2
+<pre><code class="lang-swift">let a = 1+ 2
 </code></pre>
-
 <p>错误信息是：</p>
-
-<pre><code class="language-plaintext">error: consecutive statements on a line must be separated by &#39;;&#39;
+<pre><code class="lang-plaintext">error: consecutive statements on a line must be separated by &#39;;&#39;
 </code></pre>
-
 <p>这是因为Swift认为到<code>1+</code>这个语句就结束了，<code>2</code>就是下一个语句了。</p>
-
 <p>只有这样写才不会报错：</p>
-
-<pre><code class="language-swift">let a = 1 + 2;  // 编码规范推荐使用这种写法
-let b = 3+4 // 这样也是OK的
+<pre><code class="lang-swift">let a = 1 + 2;  // 编码规范推荐使用这种写法
+let b = 3+4    // 这样也是OK的
 </code></pre>
-
 <h3>全新的字符串处理</h3>
-
 <p>Swift的字符串是全Unicode的，于是就产生了在网上流传的用Emoji表情写的代码（用中文写的话，岂不就是传说中的“中文编程”了？）</p>
-
-<pre><code class="language-swift">let wiseWords = &quot;\&quot;Imagination is more important than knowledge\&quot; - Einstein&quot;
+<pre><code class="lang-swift">let wiseWords = &quot;\&quot;Imagination is more important than knowledge\&quot; - Einstein&quot;
 // &quot;Imagination is more important than knowledge&quot; - Einstein
 let dollarSign = &quot;\x24&quot;        // $,  Unicode scalar U+0024
 let blackHeart = &quot;\u2665&quot;      // ♥,  Unicode scalar U+2665
 let sparklingHeart = &quot;\U0001F496&quot;  // 💖, Unicode scalar U+1F496”
 </code></pre>
-
 <p>由于这个特点，Swift中字符串不再使用length来获得属性，而是使用全局方法<code>countElements</code>，这样能使不同语言的字符串都得到正确的长度结果。</p>
-
 <p>同时，Swift还带来了全新的构建字符串的方式——字符串插值，简化了字符串的构建操作。</p>
-
-<pre><code class="language-swift">let multiplier = 3
+<pre><code class="lang-swift">let multiplier = 3
 let message = &quot;\(multiplier) times 2.5 is \(Double(multiplier) * 2.5)&quot;
 </code></pre>
-
 <p>最感人的是对字符串可变性的处理。Swift中使用<code>let</code>和<code>var</code>来区分可变字符串和不可变字符串，不再使用<code>NSString</code>和<code>NSMutableString</code>。同时字符串的拼接可以像Python一样直接使用加号，判断两个字符串是否相等也可以直接使用等号，终于可以告别<code>[str1 isEqualToString:str2]</code>和<code>[str1 stringByAppendingString:str2]</code>这种繁琐的语法了。</p>
-
 <h3>Optional与Unwrap</h3>
-
 <p>Optional大概是Swift里最有特色的一个特色了，苹果为这个特色也准备了很多语法糖。关于Optional的具体含义和用法可以参考<a href="http://onevcat.com/2014/06/walk-in-swift/">这篇文章</a>，这里只简单讲一下语法上的内容。</p>
-
 <p>首先是大量的<code>?</code>和<code>!</code>使用，刚开始看起来会让人摸不着头脑，明白的话好理解了。</p>
-
-<pre><code class="language-swift">let possibleString: String? = &quot;An optional string.&quot;///这个String可以是nil
+<pre><code class="lang-swift">let possibleString: String? = &quot;An optional string.&quot;///这个String可以是nil
 
 println(possibleString!)///必须使用!才能取出String值，不然打印出的是一个Optional值
 </code></pre>
-
 <p>简单来说，<code>?</code>用来声明变量为Optional，<code>!</code>用于强制unwrap一个Optional。</p>
-
 <p>然后是<code>let</code>关键字可用于Optional Binding，就是这种写法：</p>
-
-<pre><code class="language-swift">if let constantName = someOptional {
+<pre><code class="lang-swift">if let constantName = someOptional {
     statements
 }
 </code></pre>
-
 <p>这种写法类似于Go语言，可以在if语句执行之前做一个赋值操作：</p>
-
-<pre><code class="language-go">if err := file.Chmod(0664); err != nil {
+<pre><code class="lang-go">if err := file.Chmod(0664); err != nil {
     log.Print(err)
     return err
 }
 </code></pre>
-
 <p>不过由于Optional的特性，Swift中不再需要<code>err != nil</code>这一句了，显得更简洁一些。</p>
-
 <h3>运算符</h3>
-
 <p>Swift的运算符和C基本是一样的，不过Swift的取余运算是可用于浮点数的。这种运算符我真的是第一次见到：</p>
-
-<pre><code class="language-swift">let a = 10 % 3    // a = 1
+<pre><code class="lang-swift">let a = 10 % 3    // a = 1
 let b = 10.8 % 3  // b = 1.8000000000000007
 </code></pre>
-
 <p>这里%运算符的作用不再是取模了，官方文档特意强调了这一点，它的作用就是取余。</p>
-
 <h3>For In 与 Range</h3>
-
 <p>Swift引入了很多语言中都有的For In语法和Range语法，使得遍历操作变得很方便：</p>
-
-<pre><code class="language-swift">for index in 1...5 {
+<pre><code class="lang-swift">for index in 1...5 {
     println(&quot;\(index) times 5 is \(index * 5)&quot;)
 }
 // 1 times 5 is 5
@@ -131,7 +91,6 @@ let b = 10.8 % 3  // b = 1.8000000000000007
 // 4 times 5 is 20
 // 5 times 5 is 25
 </code></pre>
-
 <p>这里的<code>1...5</code>表示全闭，可以用<code>1..&lt;5</code>表示半开半闭，也就是不包括5。这里注意一点，有些资料比较旧，使用的是旧的写法<code>1..5</code>，这种写法在新版本的Xcode上是不能通过编译的。</p>
 
 

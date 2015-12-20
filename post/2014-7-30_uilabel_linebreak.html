@@ -18,47 +18,26 @@
 <div class="content">
 
 <h1>UILabel的LineBreak方式总结</h1>
-
 <p>UILabel这个东西挺好用的，有很多可以调的设置，显示纯文字相当合适。它的诸多设置中有一项LineBreak，用来设置当文字长度超过UILabel宽度时的显示方式，当显示的内容是动态的，而且内容有可能很长的时候，为了得到较好地显示效果，这项设置毫无疑问是我们必须考虑的。</p>
-
 <p>LineBreak方式总共有下面六种：</p>
-
 <h4>1.NSLineBreakByWordWrapping</h4>
-
 <p>这个主要是UILabel本身设置行数的大于1，需要换行的时候使用，有点像是CSS里的word-break的意思。这个主要针对英语这类语言，单词比较长，如果一个单词换行的时候被折成两个会显得不好看，使用这个设置就能避免这种现象。</p>
-
 <p><img src="../img/uilabel-linebreak/1.png" alt="1"></p>
-
 <p>上面这个LineNumber 设置为2，设置为1是不会换行的。设置为0也可以，代表没有行数限制。</p>
-
 <h4>2.NSLineBreakByCharWrapping</h4>
-
 <p>和WordWrapping类似，这个是直接在字母的地方砍掉，出来的效果就是这样的：</p>
-
 <p><img src="../img/uilabel-linebreak/2.png" alt="2"></p>
-
 <h4>3.NSLineBreakByClipping</h4>
-
 <p>从这个开始往下的几个，都是用于单行显示的。这个是最简单粗暴的方式，超过长度并且不是多行，直接把多出的部分砍掉</p>
-
 <p><img src="../img/uilabel-linebreak/3.png" alt="3"></p>
-
 <h4>4.NSLineBreakByTruncatingHead</h4>
-
 <p>这个和下面两个类似，都是用省略号来代替多出的内容，直接上图了，不解释</p>
-
 <p><img src="../img/uilabel-linebreak/4.png" alt="4"></p>
-
 <h4>5.NSLineBreakByTruncatingMiddle</h4>
-
 <p><img src="../img/uilabel-linebreak/5.png" alt="5"></p>
-
 <h4>6.NSLineBreakByTruncatingTail</h4>
-
 <p>UILabel的默认设置是这一个。</p>
-
 <p><img src="../img/uilabel-linebreak/6.png" alt="6"></p>
-
 <p>还有一点需要注意，如果是单行的话，LineBreak和adjustsFontSizeToFitWidth以及adjustsLetterSpacingToFitWidth（iOS7废弃）是不能同时设置的，根据文档，在iOS6之前，同时设置会报错，现在同时设置的话，LineBreak不会起作用。</p>
 
 
