@@ -21,8 +21,7 @@
 <p><a href="https://github.com/forkingdog/UITableView-FDTemplateLayoutCell">UITableView+FDTemplateLayoutCell</a> 是百度知道团队出品的一款用于在 UITableView 中基于 auto layout 解决动态高度计算问题的框架。由于作者本身使用 XIB 比较多，有关基于 frame 布局的内容就介绍的比较少，使得我自己在基于这个框架使用 frame 布局时碰到了一些问题，在这里记录一下，供大家参考。</p>
 <h3>基本使用</h3>
 <p>首先说一下取 Cell 的问题，FDTemplateLayoutCell 依赖于我们把 Cell Identifier 注册到 tableView，然后通过 Cell Identifier 取出 Cell，不少同学可能还在使用旧的先 dequeue，然后再判断是不是 nil 的方法：</p>
-<pre><code class="lang-objective-c">
-UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@&quot;MyIdentifier&quot;];
+<pre><code class="lang-objective-c">UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@&quot;MyIdentifier&quot;];
 if (cell == nil) {
     cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@&quot;MyIdentifier&quot;];
 }
@@ -52,9 +51,7 @@ return cell;
 </code></pre>
 <p>结果运行一看，Cell 里啥都没有。。。</p>
 <p>看一下 FD 自己的 Demo 和它的源码我才发现，还是自己太 naive 了。<code>fd_height</code> 这个函数在实现里面这个 cell 和真正显示的 cell 并不是一回事，真正显示的 cell 还是在 cellForRowAtIndexPath 那个里返回的。<code>fd_height</code> 里的 cell 就是单纯地算了一下高度而已。因此我们可以看到，FD 自己的 Demo 里，configure 其实是使用了两次的：</p>
-<pre><code class="lang-objective-c">
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+<pre><code class="lang-objective-c">- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     FDFeedCell *cell = [tableView dequeueReusableCellWithIdentifier:@&quot;FDFeedCell&quot; forIndexPath:indexPath];
     [self configureCell:cell atIndexPath:indexPath];
     return cell;
@@ -117,8 +114,7 @@ return cell;
 <p>现在出来的结果是这样的：</p>
 <p><img src="../img/fd_frame/1.png" alt="1"></p>
 <p>可以看到 Cell 的高度是没问题了，但是 Label 本身大小还是没有变化。出现这种情况，是因为我们少了一个关键的步骤—— layoutSubviews：</p>
-<pre><code class="lang-objective-c">
-- (void)layoutSubviews {
+<pre><code class="lang-objective-c">- (void)layoutSubviews {
     [super layoutSubviews];
     _label.frame = CGRectMake(5, 5, 300, self.label.caculatedHeight);
 }
@@ -146,6 +142,7 @@ return cell;
 <h3>总结</h3>
 <p>到这里我们整理总结了一下在基于 Frame 布局时使用 FDTemplateCell 时需要注意的一些问题。这些问题大部分其实不是 FD 自己的锅，而是 Frame 布局本身的锅，如果使用 XIB 的话这些问题可能根本就不存在了。现在苹果总体也是在推动使用 XIB 布局的，在内容比较简单的情况下，XIB 相对完全基于 frame 的代码布局还是有很大优势的。</p>
 <p>希望这些内容对大家有帮助，如果发现错误的话，欢迎联系指正。</p>
+<p>文章中提到的示例代码完整版在<a href="https://github.com/skyline75489/FDTemplateCell-Frame-Example">这里</a>。</p>
 
 
 </div>

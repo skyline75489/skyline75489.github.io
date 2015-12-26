@@ -8,7 +8,6 @@ FDTemplateLayoutCell Frame 布局实践
 首先说一下取 Cell 的问题，FDTemplateLayoutCell 依赖于我们把 Cell Identifier 注册到 tableView，然后通过 Cell Identifier 取出 Cell，不少同学可能还在使用旧的先 dequeue，然后再判断是不是 nil 的方法：
 
 ```objective-c
-
 UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"MyIdentifier"];
 if (cell == nil) {
     cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"MyIdentifier"];
@@ -55,8 +54,6 @@ FDTemplateLayoutCell 也是根据 cell identifier 来得到 cell 的，因此需
 看一下 FD 自己的 Demo 和它的源码我才发现，还是自己太 naive 了。`fd_height` 这个函数在实现里面这个 cell 和真正显示的 cell 并不是一回事，真正显示的 cell 还是在 cellForRowAtIndexPath 那个里返回的。`fd_height` 里的 cell 就是单纯地算了一下高度而已。因此我们可以看到，FD 自己的 Demo 里，configure 其实是使用了两次的：
 
 ```objective-c
-
-
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     FDFeedCell *cell = [tableView dequeueReusableCellWithIdentifier:@"FDFeedCell" forIndexPath:indexPath];
     [self configureCell:cell atIndexPath:indexPath];
@@ -140,7 +137,6 @@ FD 本身对于高度计算提供了缓存机制，可以很大程度上减少�
 可以看到 Cell 的高度是没问题了，但是 Label 本身大小还是没有变化。出现这种情况，是因为我们少了一个关键的步骤—— layoutSubviews：
 
 ```objective-c
-
 - (void)layoutSubviews {
     [super layoutSubviews];
     _label.frame = CGRectMake(5, 5, 300, self.label.caculatedHeight);
@@ -180,3 +176,5 @@ FD 本身对于高度计算提供了缓存机制，可以很大程度上减少�
 到这里我们整理总结了一下在基于 Frame 布局时使用 FDTemplateCell 时需要注意的一些问题。这些问题大部分其实不是 FD 自己的锅，而是 Frame 布局本身的锅，如果使用 XIB 的话这些问题可能根本就不存在了。现在苹果总体也是在推动使用 XIB 布局的，在内容比较简单的情况下，XIB 相对完全基于 frame 的代码布局还是有很大优势的。 
 
 希望这些内容对大家有帮助，如果发现错误的话，欢迎联系指正。
+
+文章中提到的示例代码完整版在[这里](https://github.com/skyline75489/FDTemplateCell-Frame-Example)。
