@@ -17,7 +17,7 @@
 </div>
 <div class="content">
 
-<h1>UITableView+FDTemplateLayoutCell.h 动态 Frame 布局实践</h1>
+<h1>FDTemplateLayoutCell Frame 布局实践</h1>
 <p><a href="https://github.com/forkingdog/UITableView-FDTemplateLayoutCell">UITableView+FDTemplateLayoutCell</a> 是百度知道团队出品的一款用于在 UITableView 中基于 auto layout 解决动态高度计算问题的框架。由于作者本身使用 XIB 比较多，有关基于 frame 布局的内容就介绍的比较少，使得我自己在基于这个框架使用 frame 布局时碰到了一些问题，在这里记录一下，供大家参考。</p>
 <h3>基本使用</h3>
 <p>首先说一下取 Cell 的问题，FDTemplateLayoutCell 依赖于我们把 Cell Identifier 注册到 tableView，然后通过 Cell Identifier 取出 Cell，不少同学可能还在使用旧的先 dequeue，然后再判断是不是 nil 的方法：</p>

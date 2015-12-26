@@ -1,5 +1,5 @@
-UITableView+FDTemplateLayoutCell.h 动态 Frame 布局实践
-===================================================
+FDTemplateLayoutCell Frame 布局实践
+==================================
 
 [UITableView+FDTemplateLayoutCell](https://github.com/forkingdog/UITableView-FDTemplateLayoutCell) 是百度知道团队出品的一款用于在 UITableView 中基于 auto layout 解决动态高度计算问题的框架。由于作者本身使用 XIB 比较多，有关基于 frame 布局的内容就介绍的比较少，使得我自己在基于这个框架使用 frame 布局时碰到了一些问题，在这里记录一下，供大家参考。
 
