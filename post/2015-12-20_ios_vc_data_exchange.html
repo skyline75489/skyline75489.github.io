@@ -27,28 +27,28 @@
 <h3>正向传递</h3>
 <h4>使用 property</h4>
 <p>首先我们来看正向的数据传递。正向传递最容易想到的就是使用 @property 了，我们可以在 LanguageVC 中定义一个属性：</p>
-<pre><code class="lang-objective-c">@property (nonatomic) NSUInteger selectedIndex;
+<pre><code class="lang-objectivec">@property (nonatomic) NSUInteger selectedIndex;
 </code></pre>
 <p>然后在向 LanguageVC push 的时候把它设置好：</p>
-<pre><code class="lang-objective-c">LanguageViewController *vc = [[LanguageViewController alloc] init];
+<pre><code class="lang-objectivec">LanguageViewController *vc = [[LanguageViewController alloc] init];
 vc.selectedIndex = self.currentSelectedIndex;
 [self.navigationController pushViewController:vc animated:YES];
 </code></pre>
 <h4>使用 initializer</h4>
 <p>使用属性很简单，但是当要设置的属性很多时，会导致代码过于冗余。如果要设置很多属性，我们可以通过自定义 <code>init</code>方法来简化代码：</p>
-<pre><code class="lang-objective-c">LanguageViewController *vc = [[LanguageViewController alloc] initWithIndex:self.currentSelectedIndex name:self.languageName];
+<pre><code class="lang-objectivec">LanguageViewController *vc = [[LanguageViewController alloc] initWithIndex:self.currentSelectedIndex name:self.languageName];
 </code></pre>
 <h4>使用 Router</h4>
 <p>上面的实现虽然达到了目的，但是却导致了 SettingVC 和 LanguageVC 之间出现了强耦合。为了避免 VC 之间的强耦合，借鉴 Web 开发的思想，我们可以引入一个中介性质的 router，来完成 VC 之间的数据传递。以 <a href="https://github.com/Huohua/HHRouter">HHRouter</a> 为例，首先我们把 LanguageVC 注册到路由中：</p>
 <pre><code class="lang-objectivec">[[HHRouter shared] map:@&quot;/lang/:index/&quot; toControllerClass:[LanguageViewController class]];
 </code></pre>
 <p>在 LanguageVC 中实现 <code>setParams:</code> 用来接收参数：</p>
-<pre><code class="lang-objective-c">- (void)setParams:(NSDictionary)params {
+<pre><code class="lang-objectivec">- (void)setParams:(NSDictionary)params {
     self.selectedIndex = [params[@&quot;index&quot;] integerValue];
 }
 </code></pre>
 <p>然后通过带参数的 URL，来取出对应的 VC：</p>
-<pre><code class="lang-objective-c">UIViewController *vc = [[HHRouter shared] matchController:@&quot;/lang/1/&quot;];
+<pre><code class="lang-objectivec">UIViewController *vc = [[HHRouter shared] matchController:@&quot;/lang/1/&quot;];
 [self.navigationController pushViewController:vc animated:YES];
 </code></pre>
 <p>这样便实现了参数的传递，同时并没有引入对于 LanguageVC 的强依赖，是一种比较好的解决方案。</p>
@@ -68,7 +68,7 @@ vc.selectedIndex = self.currentSelectedIndex;
 @end
 </code></pre>
 <p>当用户在 LanguageVC 中做出选择时，我们可以调用 delegate 方法来实现数据回调：</p>
-<pre><code class="lang-objective-c">- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+<pre><code class="lang-objectivec">- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if ([self.delegate respondsToSelector:@selector(didSelectLanguageAtIndex:)]) {
         [self.delegate didSelectLanguageAtIndex:indexPath.row];
     }
@@ -76,7 +76,7 @@ vc.selectedIndex = self.currentSelectedIndex;
 </code></pre>
 <p>注意到由于我们使用了 delegate，我们并没有强依赖于 SettingVC，不管是什么对象，只要是实现了对应 Protocol 的都是可以的。</p>
 <p>在 SettingVC 中，只要把自己设置为 LanguageVC 的 delegate ，然后实现对应的 protocol 方法就可以了：</p>
-<pre><code class="lang-objective-c">LanguageViewController *vc = [[LanguageViewController alloc] init];
+<pre><code class="lang-objectivec">LanguageViewController *vc = [[LanguageViewController alloc] init];
 vc.delegate = self;
 [self.navigationController pushViewController:vc animated:YES];
 </code></pre>
@@ -85,17 +85,17 @@ vc.delegate = self;
 <h4>Block</h4>
 <p>从 iOS 4.0 开始我们可以使用 Block 来实现匿名函数，由于 Block 的闭包性质，也可以使用它来实现参数传递。</p>
 <p>首先在 LanguageVC 中定义一个 Block 属性：</p>
-<pre><code class="lang-objective-c">@property (nonatomic, copy) void (^languageSelectionBlock)(NSUInteger index);
+<pre><code class="lang-objectivec">@property (nonatomic, copy) void (^languageSelectionBlock)(NSUInteger index);
 </code></pre>
 <p>然后在用户选择的时候调用 Block 方法：</p>
-<pre><code class="lang-objective-c">- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+<pre><code class="lang-objectivec">- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if (self.languageSelectionBlock) {
         self.languageSelectionBlock(indexPath.row);
     }
 }
 </code></pre>
 <p>在 SettingVC 中，不再需要实现 delegate 方法，直接进行 block 赋值即可：</p>
-<pre><code class="lang-objective-c">LanguageViewController *vc = [[LanguageViewController alloc] initWithIndex:self.currentSelectedIndex];
+<pre><code class="lang-objectivec">LanguageViewController *vc = [[LanguageViewController alloc] initWithIndex:self.currentSelectedIndex];
 vc.languageSelectionBlock = ^(NSUInteger index){
     // Do something
 };

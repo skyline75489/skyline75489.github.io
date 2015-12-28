@@ -7,7 +7,7 @@ FDTemplateLayoutCell Frame 布局实践
 
 首先说一下取 Cell 的问题，FDTemplateLayoutCell 依赖于我们把 Cell Identifier 注册到 tableView，然后通过 Cell Identifier 取出 Cell，不少同学可能还在使用旧的先 dequeue，然后再判断是不是 nil 的方法：
 
-```objective-c
+```objectivec
 UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"MyIdentifier"];
 if (cell == nil) {
     cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"MyIdentifier"];
@@ -17,14 +17,14 @@ if (cell == nil) {
 
 这种方法确实是可行的，但是现在已经不再推荐了。推荐使用的方法是，先把 cell 的 class 和 identifier 注册的 tableView:
 
-```objective-c
+```objectivec
 [self.tableView registerClass:[TableViewCell class] forCellReuseIdentifier:kCellIdentifier];
 ```
 
 然后再使用`dequeueReusableCellWithIdentifier:forIndexPath:
 `（注意和上面方法的区别，多了一个 forIndexPath 参数）取出 cell:
 
-```objective-c
+```objectivec
 TableViewCell *cell = (TableViewCell *)[tableView dequeueReusableCellWithIdentifier:kCellIdentifier forIndexPath:indexPath];
 // ... 
 return cell;
@@ -36,7 +36,7 @@ FDTemplateLayoutCell 也是根据 cell identifier 来得到 cell 的，因此需
 
 然后，到了使用 FDTemplateLayoutCell 来计算高度的时候了。实话说，官网的 README 对我这种小白来说感觉是有些误导性的，在 [Basic Usage](https://github.com/forkingdog/UITableView-FDTemplateLayoutCell#basic-usage) 这个部分，它说用 `fd_heightForCellWithIdentifier` 这个方法，在 block 里对 Cell 进行 configure 就可以了，然后我就照着做了，把 configure 挪到了 heightForRow 里：
 
-```objective-c
+```objectivec
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     TableViewCell *cell = (TableViewCell *)[tableView dequeueReusableCellWithIdentifier:kCellIdentifier forIndexPath:indexPath];
     return cell;
@@ -53,7 +53,7 @@ FDTemplateLayoutCell 也是根据 cell identifier 来得到 cell 的，因此需
 
 看一下 FD 自己的 Demo 和它的源码我才发现，还是自己太 naive 了。`fd_height` 这个函数在实现里面这个 cell 和真正显示的 cell 并不是一回事，真正显示的 cell 还是在 cellForRowAtIndexPath 那个里返回的。`fd_height` 里的 cell 就是单纯地算了一下高度而已。因此我们可以看到，FD 自己的 Demo 里，configure 其实是使用了两次的：
 
-```objective-c
+```objectivec
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     FDFeedCell *cell = [tableView dequeueReusableCellWithIdentifier:@"FDFeedCell" forIndexPath:indexPath];
     [self configureCell:cell atIndexPath:indexPath];
@@ -79,7 +79,7 @@ FD 本身对于高度计算提供了缓存机制，可以很大程度上减少�
 
 有没有办法优化呢？其实仔细想想我们就会发现，在 heightForRow 中我们其实没有必要进行完整的 configure，因为我们只是想得到高度而已，这里面的 cell 也不会真正被使用。我们可以单独写一个 updateHeight，专门用于计算高度：
 
-```objective-c
+```objectivec
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     TableViewCell *cell = (TableViewCell *)[tableView dequeueReusableCellWithIdentifier:kCellIdentifier forIndexPath:indexPath];
     [cell configureUsingText:self.dataSource[indexPath.row]];
@@ -96,7 +96,7 @@ FD 本身对于高度计算提供了缓存机制，可以很大程度上减少�
 
 首先我们定义一个简单的 MyLabel：
 
-```objective-c
+```objectivec
 @interface MyLabel : UILabel
 
 @property (nonatomic) CGFloat caculatedHeight;
@@ -117,7 +117,7 @@ FD 本身对于高度计算提供了缓存机制，可以很大程度上减少�
 之所以要定义 MyLabel 就是为了存储计算的出来真正的高度(caculatedHeight)，然后在自定义的 Cell 中：
 
 
-```objective-c
+```objectivec
 - (void)configureUsingText:(NSString *)text {
     _label.text = text;
     [self.label updateHeightUsingText:text];
@@ -136,7 +136,7 @@ FD 本身对于高度计算提供了缓存机制，可以很大程度上减少�
 
 可以看到 Cell 的高度是没问题了，但是 Label 本身大小还是没有变化。出现这种情况，是因为我们少了一个关键的步骤—— layoutSubviews：
 
-```objective-c
+```objectivec
 - (void)layoutSubviews {
     [super layoutSubviews];
     _label.frame = CGRectMake(5, 5, 300, self.label.caculatedHeight);
@@ -154,7 +154,7 @@ FD 本身对于高度计算提供了缓存机制，可以很大程度上减少�
 
 当我们需要 Cell 的高度在运行过程中发生变化时，上面单独提出 updateHeight 方法的优势就体现出来了，我们可以针对某个 Cell 单独调用 updateHeight 方法算一下高度就可以了，不需要再执行 model 数据的设置，更不需要整个 tableView 进行 `reloadData`：
 
-```objective-c
+```objectivec
 // 这里使用通知来发送 Cell 高度需要更新的消息
 // 在 Cell 的某个 subview 中 post 通知，同时把自己作为 object 传进去
 // 在这里通过查找 superview 来找到 cell 实例 

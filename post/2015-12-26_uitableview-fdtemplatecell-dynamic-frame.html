@@ -21,24 +21,24 @@
 <p><a href="https://github.com/forkingdog/UITableView-FDTemplateLayoutCell">UITableView+FDTemplateLayoutCell</a> 是百度知道团队出品的一款用于在 UITableView 中基于 auto layout 解决动态高度计算问题的框架。由于作者本身使用 XIB 比较多，有关基于 frame 布局的内容就介绍的比较少，使得我自己在基于这个框架使用 frame 布局时碰到了一些问题，在这里记录一下，供大家参考。</p>
 <h3>基本使用</h3>
 <p>首先说一下取 Cell 的问题，FDTemplateLayoutCell 依赖于我们把 Cell Identifier 注册到 tableView，然后通过 Cell Identifier 取出 Cell，不少同学可能还在使用旧的先 dequeue，然后再判断是不是 nil 的方法：</p>
-<pre><code class="lang-objective-c">UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@&quot;MyIdentifier&quot;];
+<pre><code class="lang-objectivec">UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@&quot;MyIdentifier&quot;];
 if (cell == nil) {
     cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@&quot;MyIdentifier&quot;];
 }
 // ...
 </code></pre>
 <p>这种方法确实是可行的，但是现在已经不再推荐了。推荐使用的方法是，先把 cell 的 class 和 identifier 注册的 tableView:</p>
-<pre><code class="lang-objective-c">[self.tableView registerClass:[TableViewCell class] forCellReuseIdentifier:kCellIdentifier];
+<pre><code class="lang-objectivec">[self.tableView registerClass:[TableViewCell class] forCellReuseIdentifier:kCellIdentifier];
 </code></pre>
 <p>然后再使用<code>dequeueReusableCellWithIdentifier:forIndexPath:</code>（注意和上面方法的区别，多了一个 forIndexPath 参数）取出 cell:</p>
-<pre><code class="lang-objective-c">TableViewCell *cell = (TableViewCell *)[tableView dequeueReusableCellWithIdentifier:kCellIdentifier forIndexPath:indexPath];
+<pre><code class="lang-objectivec">TableViewCell *cell = (TableViewCell *)[tableView dequeueReusableCellWithIdentifier:kCellIdentifier forIndexPath:indexPath];
 // ... 
 return cell;
 </code></pre>
 <p>可以看到这里是不用判断 <code>if (cell == nil)</code> 的，因为这个方法保证返回的 cell 是可用的。如果没有可以 dequeue 的 cell 它会创建一个新的返回过来（其实也就是上面 <code>if (cell == nil)</code> 那个逻辑，不过不需要我们来做了，苹果帮我们实现了）。</p>
 <p>FDTemplateLayoutCell 也是根据 cell identifier 来得到 cell 的，因此需要我们使用注册 cell 的方法，不然直接就会报找不到 cell 的错误。</p>
 <p>然后，到了使用 FDTemplateLayoutCell 来计算高度的时候了。实话说，官网的 README 对我这种小白来说感觉是有些误导性的，在 <a href="https://github.com/forkingdog/UITableView-FDTemplateLayoutCell#basic-usage">Basic Usage</a> 这个部分，它说用 <code>fd_heightForCellWithIdentifier</code> 这个方法，在 block 里对 Cell 进行 configure 就可以了，然后我就照着做了，把 configure 挪到了 heightForRow 里：</p>
-<pre><code class="lang-objective-c">- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+<pre><code class="lang-objectivec">- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     TableViewCell *cell = (TableViewCell *)[tableView dequeueReusableCellWithIdentifier:kCellIdentifier forIndexPath:indexPath];
     return cell;
 }
@@ -51,7 +51,7 @@ return cell;
 </code></pre>
 <p>结果运行一看，Cell 里啥都没有。。。</p>
 <p>看一下 FD 自己的 Demo 和它的源码我才发现，还是自己太 naive 了。<code>fd_height</code> 这个函数在实现里面这个 cell 和真正显示的 cell 并不是一回事，真正显示的 cell 还是在 cellForRowAtIndexPath 那个里返回的。<code>fd_height</code> 里的 cell 就是单纯地算了一下高度而已。因此我们可以看到，FD 自己的 Demo 里，configure 其实是使用了两次的：</p>
-<pre><code class="lang-objective-c">- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+<pre><code class="lang-objectivec">- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     FDFeedCell *cell = [tableView dequeueReusableCellWithIdentifier:@&quot;FDFeedCell&quot; forIndexPath:indexPath];
     [self configureCell:cell atIndexPath:indexPath];
     return cell;
@@ -71,7 +71,7 @@ return cell;
 <h3>算高优化</h3>
 <p>FD 本身对于高度计算提供了缓存机制，可以很大程度上减少高度的计算量。但是在上面我们看到，为了得到正确的高度，configure 这个函数被调用了两次。当 cell 当中的控件比较多时，以及在下面我们要提到的需要 Cell 高度进行动态变化时，这样执行两次 configure 的成本也是比较高的。</p>
 <p>有没有办法优化呢？其实仔细想想我们就会发现，在 heightForRow 中我们其实没有必要进行完整的 configure，因为我们只是想得到高度而已，这里面的 cell 也不会真正被使用。我们可以单独写一个 updateHeight，专门用于计算高度：</p>
-<pre><code class="lang-objective-c">- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+<pre><code class="lang-objectivec">- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     TableViewCell *cell = (TableViewCell *)[tableView dequeueReusableCellWithIdentifier:kCellIdentifier forIndexPath:indexPath];
     [cell configureUsingText:self.dataSource[indexPath.row]];
     return cell;
@@ -85,7 +85,7 @@ return cell;
 </code></pre>
 <p>例如 cell 中有图片和 label，我们在 updateHeight 中计算出正确的高度就可以了，没有必要去真正执行  <code>[_imageView setImage:]</code> 和 <code>[_label setText:]</code> 这些应该放到 configure 中的方法。</p>
 <p>首先我们定义一个简单的 MyLabel：</p>
-<pre><code class="lang-objective-c">@interface MyLabel : UILabel
+<pre><code class="lang-objectivec">@interface MyLabel : UILabel
 
 @property (nonatomic) CGFloat caculatedHeight;
 
@@ -102,7 +102,7 @@ return cell;
 @end
 </code></pre>
 <p>之所以要定义 MyLabel 就是为了存储计算的出来真正的高度(caculatedHeight)，然后在自定义的 Cell 中：</p>
-<pre><code class="lang-objective-c">- (void)configureUsingText:(NSString *)text {
+<pre><code class="lang-objectivec">- (void)configureUsingText:(NSString *)text {
     _label.text = text;
     [self.label updateHeightUsingText:text];
 }
@@ -114,7 +114,7 @@ return cell;
 <p>现在出来的结果是这样的：</p>
 <p><img src="../img/fd_frame/1.png" alt="1"></p>
 <p>可以看到 Cell 的高度是没问题了，但是 Label 本身大小还是没有变化。出现这种情况，是因为我们少了一个关键的步骤—— layoutSubviews：</p>
-<pre><code class="lang-objective-c">- (void)layoutSubviews {
+<pre><code class="lang-objectivec">- (void)layoutSubviews {
     [super layoutSubviews];
     _label.frame = CGRectMake(5, 5, 300, self.label.caculatedHeight);
 }
@@ -124,7 +124,7 @@ return cell;
 <p><img src="../img/fd_frame/2.png" alt="2"></p>
 <h3>高度变化</h3>
 <p>当我们需要 Cell 的高度在运行过程中发生变化时，上面单独提出 updateHeight 方法的优势就体现出来了，我们可以针对某个 Cell 单独调用 updateHeight 方法算一下高度就可以了，不需要再执行 model 数据的设置，更不需要整个 tableView 进行 <code>reloadData</code>：</p>
-<pre><code class="lang-objective-c">// 这里使用通知来发送 Cell 高度需要更新的消息
+<pre><code class="lang-objectivec">// 这里使用通知来发送 Cell 高度需要更新的消息
 // 在 Cell 的某个 subview 中 post 通知，同时把自己作为 object 传进去
 // 在这里通过查找 superview 来找到 cell 实例 
 - (void)handleCellUpdate:(NSNotification *)notification {

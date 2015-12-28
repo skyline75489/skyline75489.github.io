@@ -19,13 +19,13 @@ iOS 开发中 VC 之间数据的传递和交换可以有很多种方法，下面
 
 首先我们来看正向的数据传递。正向传递最容易想到的就是使用 @property 了，我们可以在 LanguageVC 中定义一个属性：
 
-```objective-c
+```objectivec
 @property (nonatomic) NSUInteger selectedIndex;
 ```
 
 然后在向 LanguageVC push 的时候把它设置好：
 
-```objective-c
+```objectivec
 LanguageViewController *vc = [[LanguageViewController alloc] init];
 vc.selectedIndex = self.currentSelectedIndex;
 [self.navigationController pushViewController:vc animated:YES];
@@ -35,7 +35,7 @@ vc.selectedIndex = self.currentSelectedIndex;
 
 使用属性很简单，但是当要设置的属性很多时，会导致代码过于冗余。如果要设置很多属性，我们可以通过自定义 `init `方法来简化代码：
 
-```objective-c
+```objectivec
 LanguageViewController *vc = [[LanguageViewController alloc] initWithIndex:self.currentSelectedIndex name:self.languageName];
 ```
 
@@ -48,14 +48,14 @@ LanguageViewController *vc = [[LanguageViewController alloc] initWithIndex:self.
 ```
 在 LanguageVC 中实现 `setParams:` 用来接收参数：
 
-```objective-c
+```objectivec
 - (void)setParams:(NSDictionary)params {
     self.selectedIndex = [params[@"index"] integerValue];
 }
 ```
 然后通过带参数的 URL，来取出对应的 VC：
 
-```objective-c
+```objectivec
 UIViewController *vc = [[HHRouter shared] matchController:@"/lang/1/"];
 [self.navigationController pushViewController:vc animated:YES];
 ```
@@ -87,7 +87,7 @@ Delegate(委托) 是 iOS 系统库中大量使用的一种设计模式。委托�
 
 当用户在 LanguageVC 中做出选择时，我们可以调用 delegate 方法来实现数据回调：
 
-```objective-c
+```objectivec
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if ([self.delegate respondsToSelector:@selector(didSelectLanguageAtIndex:)]) {
         [self.delegate didSelectLanguageAtIndex:indexPath.row];
@@ -99,7 +99,7 @@ Delegate(委托) 是 iOS 系统库中大量使用的一种设计模式。委托�
 
 在 SettingVC 中，只要把自己设置为 LanguageVC 的 delegate ，然后实现对应的 protocol 方法就可以了：
 
-```objective-c
+```objectivec
 LanguageViewController *vc = [[LanguageViewController alloc] init];
 vc.delegate = self;
 [self.navigationController pushViewController:vc animated:YES];
@@ -115,13 +115,13 @@ vc.delegate = self;
 
 首先在 LanguageVC 中定义一个 Block 属性：
 
-```objective-c
+```objectivec
 @property (nonatomic, copy) void (^languageSelectionBlock)(NSUInteger index);
 ```
 
 然后在用户选择的时候调用 Block 方法：
 
-```objective-c
+```objectivec
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if (self.languageSelectionBlock) {
         self.languageSelectionBlock(indexPath.row);
@@ -131,7 +131,7 @@ vc.delegate = self;
 
 在 SettingVC 中，不再需要实现 delegate 方法，直接进行 block 赋值即可：
 
-```objective-c
+```objectivec
 LanguageViewController *vc = [[LanguageViewController alloc] initWithIndex:self.currentSelectedIndex];
 vc.languageSelectionBlock = ^(NSUInteger index){
     // Do something
