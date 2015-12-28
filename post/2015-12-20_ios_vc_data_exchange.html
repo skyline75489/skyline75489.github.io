@@ -58,7 +58,7 @@ vc.selectedIndex = self.currentSelectedIndex;
 <h4>Delegate</h4>
 <p>Delegate(委托) 是 iOS 系统库中大量使用的一种设计模式。委托可以很方便地做到接口和实现的分离，降低了依赖性（依赖于接口而不依赖于实现）。我们也可以使用委托模式来实现反向的数据传递。</p>
 <p>首先我们定义一个 Protocol，同时在 LanguageVC 中设置一个实现了这个 Protocol 的 delegate 对象属性：</p>
-<pre><code class="lang-objective-c">@protocol LanguageSelectionProtocol &lt;NSObject&gt;
+<pre><code class="lang-objectivec">@protocol LanguageSelectionProtocol &lt;NSObject&gt;
 @required
 - (void)didSelectLanguageAtIndex:(NSUInteger)index;
 @end

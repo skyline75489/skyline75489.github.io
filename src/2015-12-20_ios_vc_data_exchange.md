@@ -74,7 +74,7 @@ Delegate(委托) 是 iOS 系统库中大量使用的一种设计模式。委托�
 
 首先我们定义一个 Protocol，同时在 LanguageVC 中设置一个实现了这个 Protocol 的 delegate 对象属性：
 
-```objective-c
+```objectivec
 @protocol LanguageSelectionProtocol <NSObject>
 @required
 - (void)didSelectLanguageAtIndex:(NSUInteger)index;
