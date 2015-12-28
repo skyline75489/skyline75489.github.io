@@ -43,7 +43,7 @@ LanguageViewController *vc = [[LanguageViewController alloc] initWithIndex:self.
 
 上面的实现虽然达到了目的，但是却导致了 SettingVC 和 LanguageVC 之间出现了强耦合。为了避免 VC 之间的强耦合，借鉴 Web 开发的思想，我们可以引入一个中介性质的 router，来完成 VC 之间的数据传递。以 [HHRouter](https://github.com/Huohua/HHRouter) 为例，首先我们把 LanguageVC 注册到路由中：
 
-```objective-c
+```objectivec
 [[HHRouter shared] map:@"/lang/:index/" toControllerClass:[LanguageViewController class]];
 ```
 在 LanguageVC 中实现 `setParams:` 用来接收参数：

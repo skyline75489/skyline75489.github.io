@@ -40,7 +40,7 @@ vc.selectedIndex = self.currentSelectedIndex;
 </code></pre>
 <h4>使用 Router</h4>
 <p>上面的实现虽然达到了目的，但是却导致了 SettingVC 和 LanguageVC 之间出现了强耦合。为了避免 VC 之间的强耦合，借鉴 Web 开发的思想，我们可以引入一个中介性质的 router，来完成 VC 之间的数据传递。以 <a href="https://github.com/Huohua/HHRouter">HHRouter</a> 为例，首先我们把 LanguageVC 注册到路由中：</p>
-<pre><code class="lang-objective-c">[[HHRouter shared] map:@&quot;/lang/:index/&quot; toControllerClass:[LanguageViewController class]];
+<pre><code class="lang-objectivec">[[HHRouter shared] map:@&quot;/lang/:index/&quot; toControllerClass:[LanguageViewController class]];
 </code></pre>
 <p>在 LanguageVC 中实现 <code>setParams:</code> 用来接收参数：</p>
 <pre><code class="lang-objective-c">- (void)setParams:(NSDictionary)params {
