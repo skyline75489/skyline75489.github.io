@@ -29,7 +29,7 @@ end
 
 第二种做法是使用 `link_with` 来指定多个 target:
 
-```
+```ruby
 platform :osx, '10.7'
 
 link_with 'MyApp', 'MyApp Tests'

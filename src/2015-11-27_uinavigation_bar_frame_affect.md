@@ -5,7 +5,7 @@ UINavigationBar 透明设置以及对 frame 的影响
 
 首先创建一个 Single View 的工程，设置 Navigation Controller 和 rootViewController:
 
-```objective-c
+```objectivec
 MyViewController *vc = [[MyViewController alloc] init];
 UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:vc];
 
@@ -15,7 +15,7 @@ self.window.rootViewController = nav;
 
 在 MyViewController 里把背景设置为绿色：
 
-```objective-c
+```objectivec
 - (void)viewDidLoad {
     self.view.backgroundColor = [UIColor greenColor];
 }
@@ -29,7 +29,7 @@ self.window.rootViewController = nav;
 
 全屏幕布局带来了一个问题，当我们想在 View 里添加东西时：
 
-```objective-c
+```objectivec
 UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 100, 40)];
 label.text = @"Hello";
 
@@ -46,7 +46,7 @@ WTF! 老子的 label 呢？。。。其实 Label 是被加进去的，只不过�
 
 想解决这个问题，最简单的办法就是调整 Label 的 frame。不过手动调整怎么看也是比较脏的解决方案。幸亏苹果已经提前想到这个问题了，不需要我们手动调整。根据苹果提供的 API，有两种办法，一种是调整 edgesForExtendedLayout。这个属性指示了下层 view 扩展 layout 的方向，默认值是 UIRectEdgeAll，就是会向各个方向扩展（其实在这里能扩展的方向也只有上方），我们可以更改这个属性：
 
-```objective-c
+```objectivec
 - (void)viewDidLoad {
     self.edgesForExtendedLayout = UIRectEdgeNone;
 }
@@ -58,7 +58,7 @@ WTF! 老子的 label 呢？。。。其实 Label 是被加进去的，只不过�
 
 另一种方式是把导航栏改成不透明:
 
-```objective-c
+```objectivec
 UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:vc];
 nav.navigationBar.translucent = NO;
 ```
@@ -93,7 +93,7 @@ nav.navigationBar.translucent = NO;
 
 看样子不透明的导航栏会需要的设置会少一些，不过不透明导航栏其实也有自己的坑。。。例如，当我们想在 VC 中添加一个 WebView 时：
 
-```objective-c
+```objectivec
 - (void)viewDidLoad {
     
     self.view.backgroundColor = [UIColor greenColor];
@@ -112,7 +112,7 @@ nav.navigationBar.translucent = NO;
 
 出现这个问题的原因是，在 viewDidLoad 里 Navigation Controller 还没有正确调整好下面 View 的属性，导致我们使用 self.view.bounds 是获取的是错误的大小。一种解决办法是把设置 frame 的代码放到 viewWillAppear 里：
 
-```objective-c
+```objectivec
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     UIWebView *webView = [[UIWebView alloc] initWithFrame:self.view.bounds];
@@ -126,13 +126,13 @@ nav.navigationBar.translucent = NO;
 
 另一种解决方法是，设置 extendedLayoutIncludesOpaqueBars 为 YES：
 
-```objective-c
+```objectivec
 self.extendedLayoutIncludesOpaqueBars = YES;
 ```
 
 这个解决办法貌似有点奇怪，为什么我们设置让 View 往上伸展，却解决了 View frame 设置不对的问题呢？原因还是在于神奇的 automaticallyAdjustsScrollViewInsets。如果我们把它关掉:
 
-```objective-c
+```objectivec
 self.extendedLayoutIncludesOpaqueBars = YES;
 self.automaticallyAdjustsScrollViewInsets = NO;
 ```
