@@ -111,7 +111,7 @@ vc.languageSelectionBlock = ^(NSUInteger index){
 <h4>KVO</h4>
 <p>KVO(Key-Value Observing)是系统自带的一种消息传递机制，可以实现对象之间对某个属性值的观察。</p>
 <p><strong>优点：</strong> KVO 可以对属性值实现细粒度的观察，这一点是别的方法不容易做到的，也是很有用的一个特性。</p>
-<p><strong>缺点：</strong> KVO 语法使用很繁琐，同时由于 KVO 本身的实现基于 Runtime，对于原始类型（struct 等）是没有用处的，这一点也限制了 KVO 的应用场景。</p>
+<p><strong>缺点：</strong> KVO 语法使用很繁琐，基于字符串对值进行观察本身也很容易出错。同时由于 KVO 本身的实现基于 Runtime，对于原始类型（struct 等）是没有用处的（ NSObject 中的 struct 等属性可以进行 KVO，因为系统会自动处理装箱和拆箱操作，这是说的是非 NSObject 对象），这一点也限制了 KVO 的应用场景。</p>
 <p>除此之外，使用 NSUserDefaults 或者 AppDelegate 本身也能实现数据的传递，不过在设计上和上面介绍的几种方法相比，并没有什么独特的优势，在这里就不再赘述了。</p>
 
 
