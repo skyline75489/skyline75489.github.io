@@ -15,14 +15,14 @@ if (cell == nil) {
 // ...
 ```
 
-这种方法确实是可行的，但是现在已经不再推荐了。推荐使用的方法是，先把 cell 的 class 和 identifier 注册的 tableView:
+这种方法确实是可行的，但是现在已经不再推荐了。推荐使用的方法是，先把 cell 的 class 和 identifier 注册到 tableView:
 
 ```objectivec
 [self.tableView registerClass:[TableViewCell class] forCellReuseIdentifier:kCellIdentifier];
 ```
 
 然后再使用`dequeueReusableCellWithIdentifier:forIndexPath:
-`（注意和上面方法的区别，多了一个 forIndexPath 参数）取出 cell:
+`这个方法（注意和上面方法名称上的区别，多了一个 forIndexPath 参数）取出 cell:
 
 ```objectivec
 TableViewCell *cell = (TableViewCell *)[tableView dequeueReusableCellWithIdentifier:kCellIdentifier forIndexPath:indexPath];

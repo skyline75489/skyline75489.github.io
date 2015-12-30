@@ -27,10 +27,10 @@ if (cell == nil) {
 }
 // ...
 </code></pre>
-<p>这种方法确实是可行的，但是现在已经不再推荐了。推荐使用的方法是，先把 cell 的 class 和 identifier 注册的 tableView:</p>
+<p>这种方法确实是可行的，但是现在已经不再推荐了。推荐使用的方法是，先把 cell 的 class 和 identifier 注册到 tableView:</p>
 <pre><code class="lang-objectivec">[self.tableView registerClass:[TableViewCell class] forCellReuseIdentifier:kCellIdentifier];
 </code></pre>
-<p>然后再使用<code>dequeueReusableCellWithIdentifier:forIndexPath:</code>（注意和上面方法的区别，多了一个 forIndexPath 参数）取出 cell:</p>
+<p>然后再使用<code>dequeueReusableCellWithIdentifier:forIndexPath:</code>这个方法（注意和上面方法名称上的区别，多了一个 forIndexPath 参数）取出 cell:</p>
 <pre><code class="lang-objectivec">TableViewCell *cell = (TableViewCell *)[tableView dequeueReusableCellWithIdentifier:kCellIdentifier forIndexPath:indexPath];
 // ... 
 return cell;
