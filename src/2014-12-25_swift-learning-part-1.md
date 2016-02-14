@@ -66,7 +66,7 @@ let multiplier = 3let message = "\(multiplier) times 2.5 is \(Double(multiplier
 最感人的是对字符串可变性的处理。Swift中使用```let```和```var```来区分可变字符串和不可变字符串，不再使用```NSString```和```NSMutableString```。同时字符串的拼接可以像Python一样直接使用加号，判断两个字符串是否相等也可以直接使用等号，终于可以告别```[str1 isEqualToString:str2]```和```[str1 stringByAppendingString:str2]```这种繁琐的语法了。
 
 
-### Optional与Unwrap
+### Optional 与 Unwrap
 
 Optional大概是Swift里最有特色的一个特色了，苹果为这个特色也准备了很多语法糖。关于Optional的具体含义和用法可以参考[这篇文章](http://onevcat.com/2014/06/walk-in-swift/)，这里只简单讲一下语法上的内容。
 

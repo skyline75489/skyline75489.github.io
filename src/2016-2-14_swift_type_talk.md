@@ -1,5 +1,5 @@
-Swift 类型系统初探
-================
+Swift学习笔记(五)——类型系统初探
+===========================
 
 ### 从头学习 Swift
 
@@ -103,7 +103,7 @@ extension Array where Element:StringLiteralConvertible {
 }
 ```
 
-同理，如果想添加别的类型（例如整数类型）也有去做这样的类型限制：
+同理，如果想添加别的类型的支持（例如整数类型），就要写在另一个 Extension 里，并且加上类型限制：
 
 ```swift
 extension Array where Element: IntegerLiteralConvertible {
@@ -113,6 +113,6 @@ extension Array where Element: IntegerLiteralConvertible {
 }
 ```
 
-这样就造成了再给泛型类型添加 Extension 时仍然需要确定泛型的具体类型，丧失了 Extension 的灵活性。
+在给泛型类型添加 Extension 时仍然需要确定泛型的具体类型，其实等于是丧失了 Extension 的灵活性。这里的矛盾也可以看成是旧特性（OC 的 Category & Extension）与新特性（泛型）之间的一种妥协。
 
-这里的矛盾也可以看成是旧特性（OC 的 Category & Extension）与新特性（泛型）之间的一种妥协，希望苹果在 Swift 的下个版本中能对这篇文章里提到的这些痛点给出更好的解决方案。如果你知道更好的写法的话，欢迎随时骚扰 :)
+希望苹果在 Swift 的下个版本中能对这篇文章里提到的这些痛点给出更好的解决方案。如果你知道更好的写法的话，欢迎随时骚扰 :)
