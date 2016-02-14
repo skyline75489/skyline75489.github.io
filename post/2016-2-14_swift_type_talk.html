@@ -50,7 +50,7 @@ if let r2 = d[&quot;Other&quot;] as? String {
 <p>正如<a href="http://swifter.tips/any-anyobject/">SwifterTips 中的这篇文章</a>提到的，AnyObject（以及 Any，AnyClass）等本身就是为了向 OC 类型提供兼容而出现的妥协产物。然而 Swift 语言本身还在发展进步中，大家抛弃 OC 的步伐也没有想象中那么快。因此，尽管有了<a href="https://github.com/SwiftyJSON/SwiftyJSON">SwiftyJSON</a>这样方便大家的开源库，在可预见的未来里，上面例子中的痛点在 Swift 开发中依然会存在。</p>
 <h3>泛型与 Extension 的矛盾</h3>
 <p>在最新的 Objective-C 2.0 里苹果引入了轻量级泛型的支持，仅仅是语法层次上的静态检查，已经是 OC 开发者的一大福音了：</p>
-<pre><code class="lang-objectivec">@property (nonatomic) NSArray&lt;Person *&gt; *persons
+<pre><code class="lang-objectivec">@property (nonatomic) NSArray&lt;Person *&gt; *persons;
 </code></pre>
 <p>Swift 中泛型支持已经是一个单独的特性了，和 OC 相比是一大进步：</p>
 <pre><code class="lang-swift">struct Stack&lt;Element&gt; {

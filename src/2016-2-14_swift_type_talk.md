@@ -52,7 +52,7 @@ if let JSONObject = try NSJSONSerialization.JSONObjectWithData(data, options: .A
 在最新的 Objective-C 2.0 里苹果引入了轻量级泛型的支持，仅仅是语法层次上的静态检查，已经是 OC 开发者的一大福音了：
 
 ```objectivec
-@property (nonatomic) NSArray<Person *> *persons
+@property (nonatomic) NSArray<Person *> *persons;
 ```
 
 Swift 中泛型支持已经是一个单独的特性了，和 OC 相比是一大进步：
