@@ -1,6 +1,8 @@
 FDTemplateLayoutCell Frame 布局实践
 ==================================
 
+**注意:**以下内容均是针对 FDTemplateLayoutCell 的 1.3 版本，1.4 版本中 frame layout 有关的内容出现了 breaking change，导致下面的内容不再完全适用，望周知。
+
 [UITableView+FDTemplateLayoutCell](https://github.com/forkingdog/UITableView-FDTemplateLayoutCell) 是百度知道团队出品的一款用于在 UITableView 中基于 auto layout 解决动态高度计算问题的框架。由于作者本身使用 XIB 比较多，有关基于 frame 布局的内容就介绍的比较少，使得我自己在基于这个框架使用 frame 布局时碰到了一些问题，在这里记录一下，供大家参考。
 
 ### 基本使用
