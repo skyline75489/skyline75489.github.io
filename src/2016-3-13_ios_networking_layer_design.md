@@ -7,7 +7,7 @@
 
 网络层本身来看是很简单的一层，最开始接触 iOS 开发的同学几乎都在 Controller 里写过类似这样的代码：
 
-```objective-c
+```objectivec
 AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
 [manager GET:@"http://example.com/resources.json" parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
     NSLog(@"JSON: %@", responseObject);
@@ -47,7 +47,7 @@ Session 提供了一个较为中心的管理机制，可以通过配置 NSURLSes
 
 中心化的设计通常使用一个独立的类来处理所有的网络请求，其中不同的请求可以通过不同的传参来区分：
 
-```objective-c
+```objectivec
 NSDictionary *params = @{/*参数*/};
 [JLGithubApi requestApi:JLGithubUserApi params:params success:^(NSURLSessionTask *task, id responseObject) {
     NSLog(@"JSON: %@", responseObject);
@@ -58,7 +58,7 @@ NSDictionary *params = @{/*参数*/};
 
 另外一种方式，也可以封装通过不同的函数来对网络操作进行区分，进一步降低上层的调用成本：
 
-```objective-c
+```objectivec
 /**
 JLGithubApi.h
 */
@@ -82,7 +82,7 @@ JLGithubApi.h
 
 注意到我们这里采用的是 NSURLSession 系列 API（AFN 3.0），因为 NSURLSession 本身就是基于 Session 的中心化的管理，我们可以很方便的对于所有使用 `JLGithubApi` 发出的请求进行统一处理：
 
-```objective-c
+```objectivec
 - (void)configureManagerIfNeeded {
     if ([JLGithubUser currentUserToken]) {
         [self updateManagerConfigurationUsingToken:[JLGithubUser currentUserToken]];
@@ -145,7 +145,7 @@ provider.request(.Zen) { result in
 
 分散化的设计可以认为是参考了设计模式当中的[命令模式](http://blog.csdn.net/zhengzhb/article/details/7550895)，把不同的网络请求全部都封装成类：
 
-```objective-c
+```objectivec
 JLGithubUserRequest *req = [JLGithubUserRequest alloc] initWithUser:currentUser];
 [req startWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
     NSLog(@"JSON: %@", responseObject);
@@ -160,7 +160,7 @@ JLGithubUserRequest *req = [JLGithubUserRequest alloc] initWithUser:currentUser]
 
 同样考虑上面的请求的 Token 问题，如果使用分散化的设计（在这里以 YTKNetwork）为例，比较好的解决办法就是创建基类，在基类里进行统一的控制：
 
-```objective-c
+```objectivec
 @interface JLGithubBaseRequest : YTKRequest
 
 @end

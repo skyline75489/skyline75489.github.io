@@ -21,7 +21,7 @@
 <p>移动端开发当中网络层已经成为不可或缺的一部分了，本文尝试着总结一些在 iOS 开发中常见的网络层架构的设计方法和技巧，辅以示例性质的代码，希望能给读者一些启发和帮助。</p>
 <h3>概述</h3>
 <p>网络层本身来看是很简单的一层，最开始接触 iOS 开发的同学几乎都在 Controller 里写过类似这样的代码：</p>
-<pre><code class="lang-objective-c">AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+<pre><code class="lang-objectivec">AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
 [manager GET:@&quot;http://example.com/resources.json&quot; parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
     NSLog(@&quot;JSON: %@&quot;, responseObject);
     // 对数据进行处理
@@ -48,7 +48,7 @@
 <p>同上面的请求层类似，常见的封装层架构设计也有两种，中心化和分散化（在别的文章里被称为集约型和离散型）。</p>
 <h4>中心化设计</h4>
 <p>中心化的设计通常使用一个独立的类来处理所有的网络请求，其中不同的请求可以通过不同的传参来区分：</p>
-<pre><code class="lang-objective-c">NSDictionary *params = @{/*参数*/};
+<pre><code class="lang-objectivec">NSDictionary *params = @{/*参数*/};
 [JLGithubApi requestApi:JLGithubUserApi params:params success:^(NSURLSessionTask *task, id responseObject) {
     NSLog(@&quot;JSON: %@&quot;, responseObject);
 } failure:^(NSURLSessionTask *operation, NSError *error) {
@@ -56,7 +56,7 @@
 }];]
 </code></pre>
 <p>另外一种方式，也可以封装通过不同的函数来对网络操作进行区分，进一步降低上层的调用成本：</p>
-<pre><code class="lang-objective-c">/**
+<pre><code class="lang-objectivec">/**
 JLGithubApi.h
 */
 
@@ -78,7 +78,7 @@ JLGithubApi.h
 </ul>
 </blockquote>
 <p>注意到我们这里采用的是 NSURLSession 系列 API（AFN 3.0），因为 NSURLSession 本身就是基于 Session 的中心化的管理，我们可以很方便的对于所有使用 <code>JLGithubApi</code> 发出的请求进行统一处理：</p>
-<pre><code class="lang-objective-c">- (void)configureManagerIfNeeded {
+<pre><code class="lang-objectivec">- (void)configureManagerIfNeeded {
     if ([JLGithubUser currentUserToken]) {
         [self updateManagerConfigurationUsingToken:[JLGithubUser currentUserToken]];
     }
@@ -133,7 +133,7 @@ provider.request(.Zen) { result in
 </code></pre>
 <h4>分散化设计</h4>
 <p>分散化的设计可以认为是参考了设计模式当中的<a href="http://blog.csdn.net/zhengzhb/article/details/7550895">命令模式</a>，把不同的网络请求全部都封装成类：</p>
-<pre><code class="lang-objective-c">JLGithubUserRequest *req = [JLGithubUserRequest alloc] initWithUser:currentUser];
+<pre><code class="lang-objectivec">JLGithubUserRequest *req = [JLGithubUserRequest alloc] initWithUser:currentUser];
 [req startWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
     NSLog(@&quot;JSON: %@&quot;, responseObject);
 } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -143,7 +143,7 @@ provider.request(.Zen) { result in
 <p>采用分散化设计的一个开源例子是 <a href="https://github.com/yuantiku/YTKNetwork">YTKNetwork</a>，在对网络层进行封装的基础之上，还加入了缓存，批量请求发送等功能。</p>
 <p>不出意料的，YTKNetwork 基于 AFN 的 2.0 版本，以 Operation 为中心的请求控制和 YTK 基于类的设计衔接很自然。可以想象，如果要升级依赖到 AFN 3.0 版本，一些设计上的东西就要重新考虑了。</p>
 <p>同样考虑上面的请求的 Token 问题，如果使用分散化的设计（在这里以 YTKNetwork）为例，比较好的解决办法就是创建基类，在基类里进行统一的控制：</p>
-<pre><code class="lang-objective-c">@interface JLGithubBaseRequest : YTKRequest
+<pre><code class="lang-objectivec">@interface JLGithubBaseRequest : YTKRequest
 
 @end
 
