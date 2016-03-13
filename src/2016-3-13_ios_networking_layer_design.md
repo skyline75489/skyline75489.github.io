@@ -29,7 +29,7 @@ AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager]
 
 ### 底层网络库的选择
 
-网络封装层，故名思议是要对下层的网络请求库再次进行封装。下层网络库当中鼎鼎大名的 AFNetworking，几乎已经 iOS 开发必备了。然而 AFNetworking 当前也产生了 2.0 和 3.0 两个大版本直接的分裂。目前 AFNetworking 2.0 官方已经不再提供支持了，其所依赖的 NSURLConnection 系列类也已经被苹果废弃了，意味着也不再会有官方的更新。AFNetworking 3.0 版本是目前开发的首选（需要兼容旧版本 iOS 的情况下除外）。
+网络封装层，故名思议是要对下层的网络请求库再次进行封装。下层网络库当中鼎鼎大名的 AFNetworking，几乎已经 iOS 开发必备了。然而 AFNetworking 当前也产生了 2.0 和 3.0 两个大版本直接的分裂。目前 AFNetworking 2.0 官方已经不再提供支持了，其所依赖的 NSURLConnection 系列类也已经被苹果废弃了，意味着苹果官方也不再推荐。因此 AFNetworking 3.0 版本是目前开发的首选（需要兼容旧版本 iOS 的情况下除外）。
 
 尽管 AFNetworking 对外提供的 API 变化不大，这里我们还是需要注意一下 AFNetworking 3.0 和 2.0 版本架构上的一个主要变化，因为这会影响到我们后续的封装层的设计：
 
@@ -99,7 +99,7 @@ JLGithubApi.h
 
 通过类似这样的方式，我们可以给所有的请求加入 token 头部，以通过服务器端的验证。
 
-中心化的设计一个很优秀的例子是 [Moya](https://github.com/Moya/Moya/blob/master/docs/Examples.md) 这个 Swift 库，它依赖于 [Alamofire](https://github.com/Alamofire/Alamofire)（即 AFN 3.0 的 Swift 版）。它利用了 Swift 强大的枚举类型，实现了很优雅的 API 设计：
+采用中心化的设计一个很优秀的例子是 [Moya](https://github.com/Moya/Moya/blob/master/docs/Examples.md) 这个 Swift 库，它依赖于 [Alamofire](https://github.com/Alamofire/Alamofire)（即 AFN 3.0 的 Swift 版）。它利用了 Swift 强大的枚举类型，实现了很优雅的 API 设计：
 
 ```swift
 // API 配置
@@ -143,7 +143,7 @@ provider.request(.Zen) { result in
 
 #### 分散化设计
 
-分散化的设计可以认为是参考了设计模式当中的“命令模式”，把不同的网络请求全部都封装成类：
+分散化的设计可以认为是参考了设计模式当中的[命令模式](http://blog.csdn.net/zhengzhb/article/details/7550895)，把不同的网络请求全部都封装成类：
 
 ```objective-c
 JLGithubUserRequest *req = [JLGithubUserRequest alloc] initWithUser:currentUser];
@@ -156,7 +156,7 @@ JLGithubUserRequest *req = [JLGithubUserRequest alloc] initWithUser:currentUser]
 
 采用分散化设计的一个开源例子是 [YTKNetwork](https://github.com/yuantiku/YTKNetwork)，在对网络层进行封装的基础之上，还加入了缓存，批量请求发送等功能。
 
-不出意料的，YTKNetwork 基于了 AFN 的 2.0 版本，以 Operation 为中心的请求控制和 YTK 基于类的设计衔接很自然。可以想象，如果要升级依赖到 AFN 3.0 版本，一些设计上的东西就要重新考虑了。
+不出意料的，YTKNetwork 基于 AFN 的 2.0 版本，以 Operation 为中心的请求控制和 YTK 基于类的设计衔接很自然。可以想象，如果要升级依赖到 AFN 3.0 版本，一些设计上的东西就要重新考虑了。
 
 同样考虑上面的请求的 Token 问题，如果使用分散化的设计（在这里以 YTKNetwork）为例，比较好的解决办法就是创建基类，在基类里进行统一的控制：
 
