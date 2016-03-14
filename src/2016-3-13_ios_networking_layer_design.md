@@ -3,6 +3,8 @@
 
 移动端开发当中网络层已经成为不可或缺的一部分了，本文尝试着总结一些在 iOS 开发中常见的网络层架构的设计方法和技巧，辅以示例性质的代码，希望能给读者一些启发和帮助。
 
+**注：**这里我们讨论的网络层是基于 HTTP 协议的，不考虑基于其他协议的情况。
+
 ### 概述
 
 网络层本身来看是很简单的一层，最开始接触 iOS 开发的同学几乎都在 Controller 里写过类似这样的代码：
@@ -76,9 +78,10 @@ JLGithubApi.h
 
 进一步地，我们还可以利用 OC 的 category 特性，来对于不同的业务进行分离，形成诸如下面这样诸多的 category:
 
->* JLGithubApi+Repo.h
->* JLGithubApi+User.h
->* JLGithubApi+Search.h
+* JLGithubApi+Repo.h
+* JLGithubApi+User.h
+* JLGithubApi+Search.h
+* ...
 
 注意到我们这里采用的是 NSURLSession 系列 API（AFN 3.0），因为 NSURLSession 本身就是基于 Session 的中心化的管理，我们可以很方便的对于所有使用 `JLGithubApi` 发出的请求进行统一处理：
 
