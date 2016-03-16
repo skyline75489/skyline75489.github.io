@@ -31,7 +31,7 @@ AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager]
 
 ### 底层网络库的选择
 
-网络封装层，故名思议是要对下层的网络请求库再次进行封装。下层网络库当中鼎鼎大名的 AFNetworking，几乎已经 iOS 开发必备了。然而 AFNetworking 当前也产生了 2.0 和 3.0 两个大版本直接的分裂。目前 AFNetworking 2.0 官方已经不再提供支持了，其所依赖的 NSURLConnection 系列类也已经被苹果废弃了，意味着苹果官方也不再推荐。因此 AFNetworking 3.0 版本是目前开发的首选（需要兼容旧版本 iOS 的情况下除外）。
+网络封装层，故名思议是要对下层的网络请求库再次进行封装。如果你想从头自己写底层网络请求库的话，当然也是可以的，不过我们这里主要考虑使用第三方库的情况。下层网络库当中鼎鼎大名的 AFNetworking，几乎已经 iOS 开发必备了。然而 AFNetworking 当前也产生了 2.0 和 3.0 两个大版本直接的分裂。目前 AFNetworking 2.0 官方已经不再提供支持了，其所依赖的 NSURLConnection 系列类也已经被苹果废弃了，意味着苹果官方也不再推荐。因此 AFNetworking 3.0 版本是目前开发的首选（需要兼容旧版本 iOS 的情况下除外）。
 
 尽管 AFNetworking 对外提供的 API 变化不大，这里我们还是需要注意一下 AFNetworking 3.0 和 2.0 版本架构上的一个主要变化，因为这会影响到我们后续的封装层的设计：
 
@@ -43,7 +43,7 @@ Session 提供了一个较为中心的管理机制，可以通过配置 NSURLSes
 
 ### 封装层的架构风格
 
-同上面的请求层类似，常见的封装层架构设计也有两种，中心化和分散化（在别的文章里被称为集约型和离散型）。
+同上面的请求层类似，常见的封装层架构设计也有两种，中心化和分散化（在 casatwy 老师的文章里被称为集约型和离散型）。
 
 #### 中心化设计
 
@@ -159,9 +159,9 @@ JLGithubUserRequest *req = [JLGithubUserRequest alloc] initWithUser:currentUser]
 
 采用分散化设计的一个开源例子是 [YTKNetwork](https://github.com/yuantiku/YTKNetwork)，在对网络层进行封装的基础之上，还加入了缓存，批量请求发送等功能。
 
-不出意料的，YTKNetwork 基于 AFN 的 2.0 版本，以 Operation 为中心的请求控制和 YTK 基于类的设计衔接很自然。可以想象，如果要升级依赖到 AFN 3.0 版本，一些设计上的东西就要重新考虑了。
+不出意料的，YTKNetwork 基于 AFN 的 2.0 版本，以 Operation 为中心的请求控制和 YTK 基于类的设计衔接很自然。可以想象，如果要升级依赖到 AFN 3.0 版本，一些设计上的东西就要重新考虑了（见[这里](https://github.com/yuantiku/YTKNetwork/issues/133)）。
 
-同样考虑上面的请求的 Token 问题，如果使用分散化的设计（在这里以 YTKNetwork）为例，比较好的解决办法就是创建基类，在基类里进行统一的控制：
+同样考虑上面的请求的 Token 问题，如果使用分散化的设计（在这里以 YTKNetwork为例），比较好的解决办法就是创建基类，在基类里进行统一的控制：
 
 ```objectivec
 @interface JLGithubBaseRequest : YTKRequest
@@ -197,11 +197,11 @@ JLGithubUserRequest *req = [JLGithubUserRequest alloc] initWithUser:currentUser]
 
 #### 灵活性
 
-分散化的设计在灵活性上是要强出很多的，通过不同的基类和继承关系，可以构建出不同系列的请求。假如我们也一些请求是 Token 验证的，有一些是 Cookie 验证的，那么通过两个不同的请求基类就可以实现。如果使用中心化的设计，这种情况就会显得比较棘手。
+分散化的设计在灵活性上是要强出很多的，通过不同的基类和继承关系，可以构建出不同系列的请求。例如我们也一些请求是 Token 验证的，有一些是 Cookie 验证的，那么通过两个不同的请求基类就可以实现。如果使用中心化的设计，这种情况就会显得比较棘手。
 
 #### 模块化
 
-中心化的设计实现了层次之间的解耦，但是没有实现内部的模块化。假设我们有不同的人在开发不同的业务，中心化的设计很可能会导致大家都要去修改同一个文件。而分散化的设计则完全避免了这一点，对于不同的业务来说，修改的文件不会是同一个，在此基础上可以很方便地对于代码进行模块化的分割。
+中心化的设计实现了层次之间的解耦，但是没有实现横向的模块化。假设我们有不同的人在开发不同的业务，中心化的设计很可能会导致大家都要去修改同一个文件。而分散化的设计则完全避免了这一点，对于不同的业务来说，修改的文件不会是同一个，互相之间不会产生依赖，在此基础上可以很方便地对于代码进行模块化的分割。
 
 ### 总结
 
@@ -210,4 +210,5 @@ JLGithubUserRequest *req = [JLGithubUserRequest alloc] initWithUser:currentUser]
 **参考资料**：
 
 * http://casatwy.com/iosying-yong-jia-gou-tan-wang-luo-ceng-she-ji-fang-an.html
+* http://blog.cnbluebox.com/blog/2015/05/07/architecture-ios-1/
 * https://github.com/changjianfeishui/XBBusinessManager
