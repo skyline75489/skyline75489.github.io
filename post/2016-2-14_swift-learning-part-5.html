@@ -32,7 +32,7 @@ let instance = clz.init()
 </code></pre>
 <p>看来想达到“熟悉Swift”，需要从头开始理解 Swift，并且形成一种独立的编程思想（当初是谁说 Swift 大幅降低 iOS 学习成本的，分明是提高了好吗...）。</p>
 <h3>Optional 与 AnyObejct 的纠缠</h3>
-<p>Optional 类型是 Swift 中非常亮眼的特性，我在<a href="https://skyline75489.github.io/post/2014-12-25_swift-learning-part-1.html">之前的博文</a>中也提到过。当变量的类型本身是确定的情况下，Optional 是很好用的。但是当变量类型是 AnyObject? 时，使用 Optional 就不可避免的要引入类型转换了。在使用旧的 OC API 时会碰到很多这种情况：</p>
+<p>Optional 类型是 Swift 中非常亮眼的特性，我在 <a href="https://skyline75489.github.io/post/2014-12-25_swift-learning-part-1.html">之前的博文</a> 中也提到过。当变量的类型本身是确定的情况下，Optional 是很好用的。但是当变量类型是 AnyObject? 时，使用 Optional 就不可避免的要引入类型转换了。在使用旧的 OC API 时会碰到很多这种情况：</p>
 <pre><code class="lang-swift">let d = NSMutableDictionary()
 let r = d[&quot;Something&quot;] // 类型为 AnyObject?
 
@@ -47,7 +47,7 @@ if let r2 = d[&quot;Other&quot;] as? String {
         // There&#39;s our username
 }
 </code></pre>
-<p>正如<a href="http://swifter.tips/any-anyobject/">SwifterTips 中的这篇文章</a>提到的，AnyObject（以及 Any，AnyClass）等本身就是为了向 OC 类型提供兼容而出现的妥协产物。然而 Swift 语言本身还在发展进步中，大家抛弃 OC 的步伐也没有想象中那么快。因此，尽管有了<a href="https://github.com/SwiftyJSON/SwiftyJSON">SwiftyJSON</a>这样方便大家的开源库，在可预见的未来里，上面例子中的痛点在 Swift 开发中依然会存在。</p>
+<p>正如 <a href="http://swifter.tips/any-anyobject/">SwifterTips 中的这篇文章</a> 提到的，AnyObject（以及 Any，AnyClass）等本身就是为了向 OC 类型提供兼容而出现的妥协产物。然而 Swift 语言本身还在发展进步中，大家抛弃 OC 的步伐也没有想象中那么快。因此，尽管有了 <a href="https://github.com/SwiftyJSON/SwiftyJSON">SwiftyJSON</a> 这样方便大家的开源库，在可预见的未来里，上面例子中的痛点在 Swift 开发中依然会存在。</p>
 <h3>泛型与 Extension 的矛盾</h3>
 <p>在最新的 Objective-C 2.0 里苹果引入了轻量级泛型的支持，仅仅是语法层次上的静态检查，已经是 OC 开发者的一大福音了：</p>
 <pre><code class="lang-objectivec">@property (nonatomic) NSArray&lt;Person *&gt; *persons;

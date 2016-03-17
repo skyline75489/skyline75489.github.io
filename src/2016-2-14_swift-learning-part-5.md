@@ -24,7 +24,7 @@ let instance = clz.init()
 
 ### Optional 与 AnyObejct 的纠缠
 
-Optional 类型是 Swift 中非常亮眼的特性，我在[之前的博文](https://skyline75489.github.io/post/2014-12-25_swift-learning-part-1.html)中也提到过。当变量的类型本身是确定的情况下，Optional 是很好用的。但是当变量类型是 AnyObject? 时，使用 Optional 就不可避免的要引入类型转换了。在使用旧的 OC API 时会碰到很多这种情况：
+Optional 类型是 Swift 中非常亮眼的特性，我在 [之前的博文](https://skyline75489.github.io/post/2014-12-25_swift-learning-part-1.html) 中也提到过。当变量的类型本身是确定的情况下，Optional 是很好用的。但是当变量类型是 AnyObject? 时，使用 Optional 就不可避免的要引入类型转换了。在使用旧的 OC API 时会碰到很多这种情况：
 
 ```swift
 let d = NSMutableDictionary()
@@ -45,7 +45,7 @@ if let JSONObject = try NSJSONSerialization.JSONObjectWithData(data, options: .A
 }
 ```
 
-正如[SwifterTips 中的这篇文章](http://swifter.tips/any-anyobject/)提到的，AnyObject（以及 Any，AnyClass）等本身就是为了向 OC 类型提供兼容而出现的妥协产物。然而 Swift 语言本身还在发展进步中，大家抛弃 OC 的步伐也没有想象中那么快。因此，尽管有了[SwiftyJSON](https://github.com/SwiftyJSON/SwiftyJSON)这样方便大家的开源库，在可预见的未来里，上面例子中的痛点在 Swift 开发中依然会存在。
+正如 [SwifterTips 中的这篇文章](http://swifter.tips/any-anyobject/) 提到的，AnyObject（以及 Any，AnyClass）等本身就是为了向 OC 类型提供兼容而出现的妥协产物。然而 Swift 语言本身还在发展进步中，大家抛弃 OC 的步伐也没有想象中那么快。因此，尽管有了 [SwiftyJSON](https://github.com/SwiftyJSON/SwiftyJSON) 这样方便大家的开源库，在可预见的未来里，上面例子中的痛点在 Swift 开发中依然会存在。
 
 ### 泛型与 Extension 的矛盾
 
