@@ -45,7 +45,7 @@ pod 'MGJiPhone-Shop'
 
 #### 基础依赖
 
-哪些模块算是底层的基础依赖？一个判断的办法就是，这个部分的代码是不是稳定的。通常最常见的基础依赖，包括稳定的三方库，底层网络通信模块，常用的 category 等等。这些代码不会频繁改动，可以作为基础依赖。
+哪些模块算是底层的基础依赖？一个判断的办法就是，看这个部分的代码是不是稳定的。最常见的基础依赖，包括稳定的三方库，底层网络通信模块，常用的 category 等等。这些代码不会频繁改动，可以作为基础依赖。
 
 基础依赖在保持稳定的基础之上，还需要做到高复用性和单一职责性。这就要涉及到大家经常会去做的一件事了——创建一个 Common 模块。Common  模块可能会存一些常用的 category，helper，utils 等等东西：
 
@@ -53,10 +53,11 @@ pod 'MGJiPhone-Shop'
 pod 'MGJiPhone-Common'
 ```
 
-最开始的时候会显的很方便，但是一旦项目增长到一定程度，整个 Common 模块就成了依赖管理的噩梦。Common 本身作为一个模块集各种依赖于一身，内部的横向解耦基本没有，导致其整体的复用性非常差，简直是剪不断理还乱。因此最好一开始就避免创建 Common 模块，让每个模块都保持尽量少的职责：
+最开始的时候这么做会显的很方便，但是随着项目规模的增长，整个 Common 模块最终会成为依赖管理的噩梦。Common 本身作为一个模块集各种依赖于一身，缺乏内部的横向解耦，导致其整体的复用性非常差，简直是剪不断理还乱。因此最好一开始就避免创建 Common 模块，让每个模块都保持尽量少的职责：
 
 ```ruby
 pod 'MGJiPhone-Location'
+pod 'MJGiPhone-Device'
 pod 'MGJiPhone-NSStringCategory'
 pod 'MGJiPhone-NSDateCategory'
 ```
@@ -71,7 +72,7 @@ vc.selectedIndex = self.currentSelectedIndex;
 [self.navigationController pushViewController:vc animated:YES];
 ```
 
-可以通过 router 来去除对于 vc 类的强依赖：
+可以通过引入 Router 来去除对于 vc 类的强依赖：
 
 ```objectivec
 // 注册
@@ -99,9 +100,9 @@ UIViewController *vc = [[HHRouter shared] matchController:@"/lang/1/"];
 
 1. 基于 URL 的方案无法表达非常规对象
    
-   由于 URL 本身的限制，对于 UIImage 这种不容易序列化成文字的参数来说，是不容易作为参数传递的。这一点我也有所体会，其实岂止是 UIImage 这种，哪怕是普通的文本，如果含有一些特殊的 URL 字符的话（`/ ，？,=`）都会导致 Router 对于参数的解析发生错误。一个可行的解决办法是像浏览器那样，在发送端进行 URL Encode，接收端进行 URL Decode，无形中增加了调用的难度。
+   由于 URL 本身的限制，对于 UIImage 这种不容易序列化成文字的参数来说，是不容易作为参数传递的。这一点我也有所体会，其实岂止是 UIImage 这种，哪怕是普通的文本，如果含有一些特殊的 URL 字符的话（`/ ，？,=`）都会导致 Router 对于参数的解析发生错误。一个可行的解决办法是像浏览器那样，在发送端进行 URL Encode，接收端进行 URL Decode，无形中增加了调用的成本。
    
-2. URL 注册的方案使得可维护性下降
+2. URL 注册使得可维护性下降
 
    由于注册 URL 的过程仍然需要在主工程当中操作，在新增或删除业务时，需要持续地对 URL 进行维护。从 limboy 的博文中可以看到，蘑菇街还专门有一个后台用来管理可用的 URL entry，确实是有维护成本比较高的问题。
    
@@ -121,7 +122,7 @@ UIViewController *vc = [[HHRouter shared] matchController:@"/lang/1/"];
 3. 在 target-action 之上构建 openURL 的处理
 
 
-这套方案差不多是是我目前为止看到的最优秀的解耦方案了，从中可以看到作者很多的积淀和思考。有关它具体的一些探讨请移步[博文](http://casatwy.com/iOS-Modulization.html)和[代码仓库](https://github.com/casatwy/CTMediator)。
+这套方案差不多是我目前为止看到的最优秀的解耦方案了，从中可以看到作者很多的积淀和思考。有关它具体的一些探讨请移步[博文](http://casatwy.com/iOS-Modulization.html)和[代码仓库](https://github.com/casatwy/CTMediator)。
 
 关于它的好处我就不说了，下面说一下我感觉有些问题的地方：
 
@@ -142,7 +143,7 @@ UIViewController *vc = [[HHRouter shared] matchController:@"/lang/1/"];
 说了这么多，为了实现组件化折腾这么半天真的值得吗？首先我们来看下组件化有哪些优点：
 
 * 简化了代码整体结构，降低了维护成本。
-* 为代码和模块的复用提供了基础，假如蘑菇街要开发 iPad 客户端，可以想象大部分底层代码可以直接复用 iPhone 旧有的代码。
+* 为代码和模块的复用提供了基础，假如蘑菇街要开发 iPad 客户端，可以想象大部分底层模块可以直接复用 iPhone 端原有的代码。
 * 对不同的业务模块可以进行物理隔离（通过 git 仓库权限控制），进一步提升代码的稳定性。
 * 极大地提升了整体架构的伸缩性，为将来的业务扩展打下了基础。
 
