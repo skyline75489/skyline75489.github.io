@@ -95,14 +95,15 @@ JLGithubApi.h
 - (void)updateManagerConfigurationUsingToken:(NSString *)token {
     NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
     config.HTTPAdditionalHeaders = @{@"Token": token};
-    // 这里只能新建一个 manager，修改旧的是没用的
+    // 注意这里只能新建一个 manager，修改旧的是没用的
+    // 这是 NSURLSession 的设计，详见 NSURLSession 官方文档
     _manager = [[AFHTTPSessionManager alloc] initWithBaseURL:[NSURL URLWithString: kApiBaseURL] sessionConfiguration:config];
 }
 ```
 
 通过类似这样的方式，我们可以给所有的请求加入 token 头部，以通过服务器端的验证。
 
-采用中心化的设计一个很优秀的例子是 [Moya](https://github.com/Moya/Moya/blob/master/docs/Examples.md) 这个 Swift 库，它依赖于 [Alamofire](https://github.com/Alamofire/Alamofire)（即 AFN 3.0 的 Swift 版）。它利用了 Swift 强大的枚举类型，实现了很优雅的 API 设计：
+采用中心化的设计一个很优秀的例子是 [Moya](https://github.com/Moya/Moya/blob/master/docs/Examples.md) 这个 Swift 库，其底层依赖于 [Alamofire](https://github.com/Alamofire/Alamofire)（即 AFN 3.0 的 Swift 版）。它利用 Swift 强大的枚举类型，实现了很优雅的 API 设计：
 
 ```swift
 // API 配置
@@ -159,7 +160,7 @@ JLGithubUserRequest *req = [JLGithubUserRequest alloc] initWithUser:currentUser]
 
 采用分散化设计的一个开源例子是 [YTKNetwork](https://github.com/yuantiku/YTKNetwork)，在对网络层进行封装的基础之上，还加入了缓存，批量请求发送等功能。
 
-不出意料的，YTKNetwork 基于 AFN 的 2.0 版本，以 Operation 为中心的请求控制和 YTK 基于类的设计衔接很自然。可以想象，如果要升级依赖到 AFN 3.0 版本，一些设计上的东西就要重新考虑了（见[这里](https://github.com/yuantiku/YTKNetwork/issues/133)）。
+不出意料，YTKNetwork 基于 AFN 的 2.0 版本，以 Operation 为中心的请求控制和 YTK 基于类的设计衔接很自然。可以想象，如果要升级依赖到 AFN 3.0 版本，一些设计上的东西就要重新考虑了（见[这个 issue](https://github.com/yuantiku/YTKNetwork/issues/133)）。
 
 同样考虑上面的请求的 Token 问题，如果使用分散化的设计（在这里以 YTKNetwork为例），比较好的解决办法就是创建基类，在基类里进行统一的控制：
 
@@ -173,10 +174,7 @@ JLGithubUserRequest *req = [JLGithubUserRequest alloc] initWithUser:currentUser]
 - (NSDictionary *)requestHeaderFieldValueDictionary
 {
     NSMutableDictionary *headers = [NSMutableDictionary dictionaryWithDictionary:[super requestHeaderFieldValueDictionary]];
-    JLGithubUserModel *user = [JLGithubUser currentUser];
-    if (user.token) {
-        [headers setObject:[NSString stringWithFormat:@"Token %@", user.token] forKey:@"Authorization"];
-    }
+    [headers setObject:[NSString stringWithFormat:@"Token %@", [JLGithubUser currentUserToken]] forKey:@"Authorization"];
     return headers;
 }
 ```
@@ -197,7 +195,7 @@ JLGithubUserRequest *req = [JLGithubUserRequest alloc] initWithUser:currentUser]
 
 #### 灵活性
 
-分散化的设计在灵活性上是要强出很多的，通过不同的基类和继承关系，可以构建出不同系列的请求。例如我们也一些请求是 Token 验证的，有一些是 Cookie 验证的，那么通过两个不同的请求基类就可以实现。如果使用中心化的设计，这种情况就会显得比较棘手。
+分散化的设计在灵活性上是要强出很多的，通过不同的基类和继承关系，可以构建出不同系列的请求。例如我们也一些请求是 Token 验证的，有一些是 Cookie 验证的（通常和 H5 结合的部分），那么通过两个不同的请求基类就可以实现。如果使用中心化的设计，这种情况就会显得比较棘手。
 
 #### 模块化
 

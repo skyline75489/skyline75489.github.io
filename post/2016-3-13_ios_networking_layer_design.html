@@ -88,12 +88,13 @@ JLGithubApi.h
 - (void)updateManagerConfigurationUsingToken:(NSString *)token {
     NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
     config.HTTPAdditionalHeaders = @{@&quot;Token&quot;: token};
-    // 这里只能新建一个 manager，修改旧的是没用的
+    // 注意这里只能新建一个 manager，修改旧的是没用的
+    // 这是 NSURLSession 的设计，详见 NSURLSession 官方文档
     _manager = [[AFHTTPSessionManager alloc] initWithBaseURL:[NSURL URLWithString: kApiBaseURL] sessionConfiguration:config];
 }
 </code></pre>
 <p>通过类似这样的方式，我们可以给所有的请求加入 token 头部，以通过服务器端的验证。</p>
-<p>采用中心化的设计一个很优秀的例子是 <a href="https://github.com/Moya/Moya/blob/master/docs/Examples.md">Moya</a> 这个 Swift 库，它依赖于 <a href="https://github.com/Alamofire/Alamofire">Alamofire</a>（即 AFN 3.0 的 Swift 版）。它利用了 Swift 强大的枚举类型，实现了很优雅的 API 设计：</p>
+<p>采用中心化的设计一个很优秀的例子是 <a href="https://github.com/Moya/Moya/blob/master/docs/Examples.md">Moya</a> 这个 Swift 库，其底层依赖于 <a href="https://github.com/Alamofire/Alamofire">Alamofire</a>（即 AFN 3.0 的 Swift 版）。它利用 Swift 强大的枚举类型，实现了很优雅的 API 设计：</p>
 <pre><code class="lang-swift">// API 配置
 enum GitHub {
     case Zen
@@ -142,7 +143,7 @@ provider.request(.Zen) { result in
 }];
 </code></pre>
 <p>采用分散化设计的一个开源例子是 <a href="https://github.com/yuantiku/YTKNetwork">YTKNetwork</a>，在对网络层进行封装的基础之上，还加入了缓存，批量请求发送等功能。</p>
-<p>不出意料的，YTKNetwork 基于 AFN 的 2.0 版本，以 Operation 为中心的请求控制和 YTK 基于类的设计衔接很自然。可以想象，如果要升级依赖到 AFN 3.0 版本，一些设计上的东西就要重新考虑了（见<a href="https://github.com/yuantiku/YTKNetwork/issues/133">这里</a>）。</p>
+<p>不出意料，YTKNetwork 基于 AFN 的 2.0 版本，以 Operation 为中心的请求控制和 YTK 基于类的设计衔接很自然。可以想象，如果要升级依赖到 AFN 3.0 版本，一些设计上的东西就要重新考虑了（见<a href="https://github.com/yuantiku/YTKNetwork/issues/133">这个 issue</a>）。</p>
 <p>同样考虑上面的请求的 Token 问题，如果使用分散化的设计（在这里以 YTKNetwork为例），比较好的解决办法就是创建基类，在基类里进行统一的控制：</p>
 <pre><code class="lang-objectivec">@interface JLGithubBaseRequest : YTKRequest
 
@@ -153,10 +154,7 @@ provider.request(.Zen) { result in
 - (NSDictionary *)requestHeaderFieldValueDictionary
 {
     NSMutableDictionary *headers = [NSMutableDictionary dictionaryWithDictionary:[super requestHeaderFieldValueDictionary]];
-    JLGithubUserModel *user = [JLGithubUser currentUser];
-    if (user.token) {
-        [headers setObject:[NSString stringWithFormat:@&quot;Token %@&quot;, user.token] forKey:@&quot;Authorization&quot;];
-    }
+    [headers setObject:[NSString stringWithFormat:@&quot;Token %@&quot;, [JLGithubUser currentUserToken]] forKey:@&quot;Authorization&quot;];
     return headers;
 }
 </code></pre>
@@ -171,7 +169,7 @@ provider.request(.Zen) { result in
 <h4>实现的复杂度</h4>
 <p>很明显，中心化的设计对于编码的要求要低一些，一方面是因为没有了基类和各种继承关系，所需要的源代码文件就要少很多，另一方面分散化的设计当中，每一个请求类的 URL，参数等等都需要单独处理，也显得很啰嗦。</p>
 <h4>灵活性</h4>
-<p>分散化的设计在灵活性上是要强出很多的，通过不同的基类和继承关系，可以构建出不同系列的请求。例如我们也一些请求是 Token 验证的，有一些是 Cookie 验证的，那么通过两个不同的请求基类就可以实现。如果使用中心化的设计，这种情况就会显得比较棘手。</p>
+<p>分散化的设计在灵活性上是要强出很多的，通过不同的基类和继承关系，可以构建出不同系列的请求。例如我们也一些请求是 Token 验证的，有一些是 Cookie 验证的（通常和 H5 结合的部分），那么通过两个不同的请求基类就可以实现。如果使用中心化的设计，这种情况就会显得比较棘手。</p>
 <h4>模块化</h4>
 <p>中心化的设计实现了层次之间的解耦，但是没有实现横向的模块化。假设我们有不同的人在开发不同的业务，中心化的设计很可能会导致大家都要去修改同一个文件。而分散化的设计则完全避免了这一点，对于不同的业务来说，修改的文件不会是同一个，互相之间不会产生依赖，在此基础上可以很方便地对于代码进行模块化的分割。</p>
 <h3>总结</h3>
