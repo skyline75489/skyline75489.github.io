@@ -47,7 +47,7 @@
   s.source_files = &quot;Headers/*.{h,m}&quot;
 end
 </code></pre>
-<p>只需这么简单的几行，这个 pod 就可以在本地工作了，需要注意的一点是，这里的 <code>name</code> 一定要和文件夹名称，podspec 本身的名称都是一致的，不然会报错。</p>
+<p>只需这么简单的几行，这个 pod 就可以在本地工作了，需要注意的一点是，这里的 <code>name</code>，文件夹名称，podspec 本身的文件名，这三个需要都是一致的，不然会报错。</p>
 <p>现在主工程已经编译不过去了，因为我们去掉了几个文件，现在我们通过 Podfile 把它们再加到主工程里面，在已有的 Podfile 里加入下面这一行：</p>
 <pre><code class="lang-ruby">pod &#39;XXBaseHeaders&#39;, :path =&gt; &#39;../XXBaseHeaders/&#39;
 </code></pre>
@@ -125,7 +125,7 @@ end
 <h3>二、私有 Spec 仓库搭建</h3>
 <h4>上传 Pod 到私有 Spec 库</h4>
 <p>通过上面的步骤，我们把模块拆分成了单独的 Pod，为了让整个项目组都能使用这些 Pod，我们需要在内网环境（或者其它的私有环境）上搭建自己的 Spec 仓库，方便所有人在本地安装依赖环境。</p>
-<p>在创建 Spec 仓库之前，首先我们要在远端把各个模块的仓库先单独建立起来。继续以 XXBaseHeader 为例，我们在目录下创建 git 仓库：</p>
+<p>在创建 Spec 仓库之前，首先我们要在远端把各个模块的仓库先单独建立起来。继续以 XXBaseHeaders 为例，我们在目录下创建 git 仓库：</p>
 <pre><code class="lang-no-highlight">git init
 </code></pre>
 <p>并添加远端仓库，这里以我用自己的 Coding 账号创建了公开仓库：</p>
@@ -142,14 +142,14 @@ end
   s.source_files = &quot;Headers/*.{h,m}&quot;
 end
 </code></pre>
-<p>其中 <code>s.source</code> 比较重要，写清楚了这个 pod 对应的 git 仓库和分支。其它字段主要是为了通过 CocoaPods 的格式检查。</p>
+<p>其中 <code>s.source</code> 比较重要，写清楚了这个 pod 对应的 git 仓库和分支。其它字段主要是为了通过 CocoaPods 的格式检查，对实际使用没有影响。</p>
 <p>下面我们把 pod push 到远端：</p>
 <pre><code class="lang-no-highlight">git push --set-upstream origin master
 </code></pre>
 <p>下一步，我们创建一个私有的 Spec 仓库，这里面存放的是我们需要的 Pod 的索引，我在 Coding 上创建了一个 MySpec 仓库，我们先把它加到 CocoaPods 当中：</p>
 <pre><code class="lang-no-highlight">pod repo add MySpec git@git.coding.net:skyline75489/MySpec.git
 </code></pre>
-<p>这里面现在还是空的，下面我们把 XXBaseHeaders 放到上面去，相当于发布出去：</p>
+<p>这里面现在还是空的，下面我们把 XXBaseHeaders push 到仓库中，相当于发布出去：</p>
 <pre><code class="lang-no-highlight">pod repo push MySpec XXBaseHeaders.podspec --allow-warnings
 </code></pre>
 <p>首先要确保有 MySpec 这个仓库的写权限，才能发布成功。成功之后，MySpec 仓库会有下面这样的目录结构：</p>
@@ -190,11 +190,12 @@ s.source  = { :git =&gt; &quot;git@git.coding.net:skyline75489/XXBaseHeader.git&
 <pre><code class="lang-no-highlight">git push
 git push --tags
 </code></pre>
-<p>重复上面的步骤，我们把新版本发布的 MySpec 之后，就可以使用新版本的 Pod 了。所不同的是，通过对 tag 的指定，我们可以确保使用同一个版本号 <code>1.0.1</code> 拿到的 XXBaseHeaders 代码一定是相同的。</p>
+<p>重复前面讲过的发布的步骤，我们把新版本发布的 MySpec 之后，就可以使用新版本的 Pod 了。所不同的是，通过对 tag 的指定，我们可以确保使用同一个版本号 <code>1.0.1</code> 拿到的 XXBaseHeaders 代码一定是相同的。</p>
 <h4>风险控制</h4>
 <p>搭建私有 Spec 的过程不会对工程代码有破坏性的影响。需要注意的是，对于 Spec 仓库权限的控制很重要。由于 Spec 仓库实际上就是一个普通的 git 仓库而已，任何有权限的人都可以修改。一旦有些修改不小心破坏了仓库的结构，就可能直接影响到仓库的正常工作。因此最好只允许少数几个人拥有仓库的写权限，其他人想要发布模块的时候，都把 podspec 交给权限所有者来做。</p>
 <h3>三、开发流程控制</h3>
-<p>现在我们从单一的主工程，变成了主工程+多个拆分好的基础模块+统一的私有 Spec 仓库。为了避免某个人的工作对其他人开发环境造成影响，需要对整个组的开发流程进行统一的规范</p>
+<p>现在我们从单一的主工程，变成了主工程+多个拆分好的基础模块+统一的私有 Spec 仓库。为了避免某个人的工作对其他人开发环境造成影响，需要对整个组的开发流程进行统一的规范。</p>
+<p>不管是对于主仓库和子模块仓库，<a href="http://nvie.com/posts/a-successful-git-branching-model/">git-flow</a> 都是首先推荐的工作流程。</p>
 
 
 </div>

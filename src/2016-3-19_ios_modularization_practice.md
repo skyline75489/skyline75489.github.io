@@ -44,8 +44,7 @@ Pod::Spec.new do |s|
 end
 ```
 
-只需这么简单的几行，这个 pod 就可以在本地工作了，需要注意的一点是，这里的 `name` 一定要和文件夹名称，podspec 本身的名称都是一致的，不然会报错。
-
+只需这么简单的几行，这个 pod 就可以在本地工作了，需要注意的一点是，这里的 `name`，文件夹名称，podspec 本身的文件名，这三个需要都是一致的，不然会报错。
 
 现在主工程已经编译不过去了，因为我们去掉了几个文件，现在我们通过 Podfile 把它们再加到主工程里面，在已有的 Podfile 里加入下面这一行：
 
@@ -163,7 +162,7 @@ pod install --verbose --no-repo-update
 
 通过上面的步骤，我们把模块拆分成了单独的 Pod，为了让整个项目组都能使用这些 Pod，我们需要在内网环境（或者其它的私有环境）上搭建自己的 Spec 仓库，方便所有人在本地安装依赖环境。
 
-在创建 Spec 仓库之前，首先我们要在远端把各个模块的仓库先单独建立起来。继续以 XXBaseHeader 为例，我们在目录下创建 git 仓库：
+在创建 Spec 仓库之前，首先我们要在远端把各个模块的仓库先单独建立起来。继续以 XXBaseHeaders 为例，我们在目录下创建 git 仓库：
 
 ```no-highlight
 git init
@@ -189,7 +188,7 @@ Pod::Spec.new do |s|
 end
 ```
 
-其中 `s.source` 比较重要，写清楚了这个 pod 对应的 git 仓库和分支。其它字段主要是为了通过 CocoaPods 的格式检查。
+其中 `s.source` 比较重要，写清楚了这个 pod 对应的 git 仓库和分支。其它字段主要是为了通过 CocoaPods 的格式检查，对实际使用没有影响。
 
 下面我们把 pod push 到远端：
 
@@ -203,7 +202,7 @@ git push --set-upstream origin master
 pod repo add MySpec git@git.coding.net:skyline75489/MySpec.git
 ```
     
-这里面现在还是空的，下面我们把 XXBaseHeaders 放到上面去，相当于发布出去：
+这里面现在还是空的，下面我们把 XXBaseHeaders push 到仓库中，相当于发布出去：
 
 ```no-highlight
 pod repo push MySpec XXBaseHeaders.podspec --allow-warnings
@@ -275,7 +274,7 @@ git push
 git push --tags
 ```
 
-重复上面的步骤，我们把新版本发布的 MySpec 之后，就可以使用新版本的 Pod 了。所不同的是，通过对 tag 的指定，我们可以确保使用同一个版本号 `1.0.1` 拿到的 XXBaseHeaders 代码一定是相同的。
+重复前面讲过的发布的步骤，我们把新版本发布的 MySpec 之后，就可以使用新版本的 Pod 了。所不同的是，通过对 tag 的指定，我们可以确保使用同一个版本号 `1.0.1` 拿到的 XXBaseHeaders 代码一定是相同的。
 
 #### 风险控制
 
@@ -283,4 +282,6 @@ git push --tags
 
 ### 三、开发流程控制
 
-现在我们从单一的主工程，变成了主工程+多个拆分好的基础模块+统一的私有 Spec 仓库。为了避免某个人的工作对其他人开发环境造成影响，需要对整个组的开发流程进行统一的规范
+现在我们从单一的主工程，变成了主工程+多个拆分好的基础模块+统一的私有 Spec 仓库。为了避免某个人的工作对其他人开发环境造成影响，需要对整个组的开发流程进行统一的规范。
+
+不管是对于主仓库和子模块仓库，[git-flow](http://nvie.com/posts/a-successful-git-branching-model/) 都是首先推荐的工作流程。
