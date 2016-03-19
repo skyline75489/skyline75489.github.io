@@ -134,17 +134,18 @@ pod install --verbose --no-repo-update
 
 对业务量很大的工程来说，我个人更加推荐“业务-分层”这样的结构，而不是“分层-业务”，即类似下面的 group 结构：
 
-    - BusinessA
-      - Model
-      - View
-      - Controller
-      - Network
-    - BusinessB
-      - Model
-      - View
-      - Controller
-      - Network
-    
+```no-highlight
+- BusinessA
+  - Model
+  - View
+  - Controller
+  - Network
+- BusinessB
+  - Model
+  - View
+  - Controller
+  - Network
+```  
 
 这样有利于之后我们把某个业务模块单独剥离出来，也方便开发者快速找到对应业务有关的代码。
 
@@ -165,12 +166,15 @@ pod install --verbose --no-repo-update
 
 在创建 Spec 仓库之前，首先我们要在远端把各个模块的仓库先单独建立起来。继续以 XXBaseHeader 为例，我们在目录下创建 git 仓库：
 
-    git init
-   
+```no-highlight
+git init
+```
+
 并添加远端仓库，这里以我用自己的 Coding 账号创建了公开仓库：
 
-    git remote add origin git@git.coding.net:skyline75489/XXBaseHeader.git
-
+```no-highlight
+git remote add origin git@git.coding.net:skyline75489/XXBaseHeader.git
+```
 
 在 push 仓库之前，我们先对 podspec 做些修改：
 
@@ -190,37 +194,46 @@ end
 
 下面我们把 pod push 到远端：
 
-    git push --set-upstream origin master
-    
+```no-highlight
+git push --set-upstream origin master
+```
  
 下一步，我们创建一个私有的 Spec 仓库，这里面存放的是我们需要的 Pod 的索引，我在 Coding 上创建了一个 MySpec 仓库，我们先把它加到 CocoaPods 当中：
 
-    pod repo add MySpec git@git.coding.net:skyline75489/MySpec.git
+```no-highlight
+pod repo add MySpec git@git.coding.net:skyline75489/MySpec.git
+```
     
 这里面现在还是空的，下面我们把 XXBaseHeaders 放到上面去，相当于发布出去：
 
-    pod repo push MySpec XXBaseHeaders.podspec --allow-warnings
+```no-highlight
+pod repo push MySpec XXBaseHeaders.podspec --allow-warnings
+```
     
 首先要确保有 MySpec 这个仓库的写权限，才能发布成功。成功之后，MySpec 仓库会有下面这样的目录结构：
 
-    XXBaseHeader
-    - 1.0.0
-      - XXBaseHeader.podspec
+```no-highlight
+XXBaseHeader
+- 1.0.0
+  - XXBaseHeader.podspec
+```
 
 现在使用 `pod search XXBaseHeader`，如果操作正确的话，应该可以搜索到我们刚刚发布的 pod：
 
-    -> XXBaseHeaders (1.0.0)
-    XXBaseHeaders
-    pod 'XXBaseHeaders', '~> 1.0.0'
-    - Homepage: https://coding.net/u/skyline75489/p/XXBaseHeader/git
-    - Source:   git@git.coding.net:skyline75489/XXBaseHeader.git
-    - Versions: 1.0.0 [MySpec repo]
-    
+```no-highlight
+-> XXBaseHeaders (1.0.0)
+XXBaseHeaders
+pod 'XXBaseHeaders', '~> 1.0.0'
+- Homepage: https://coding.net/u/skyline75489/p/XXBaseHeader/git
+- Source:   git@git.coding.net:skyline75489/XXBaseHeader.git
+- Versions: 1.0.0 [MySpec repo]
+```   
     
 现在在 Podfile 中我们可以使用远程仓库的 XXBaseHeader 作为依赖了，就像使用普通的第三方库一样：
 
-    pod 'XXBaseHeaders', '1.0.0'
-
+```no-highlight
+pod 'XXBaseHeaders', '1.0.0'
+```
 
 #### 结合 Git Tag 进行版本控制
 
