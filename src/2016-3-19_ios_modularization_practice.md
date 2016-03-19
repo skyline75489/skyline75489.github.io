@@ -25,12 +25,14 @@
 
 具体的做法如下：首先我们把选择一个可以单独拆分的模块，把所有的文件从主工程中删除掉，放到一个新的文件夹里，例如这里我们把一些基础的头文件拆出来，取名为 `XXBaseHeaders`。创建一个新的文件夹，名为 `XXBaseHeaders`，在里面创建一个子文件夹 `Headers` 和 `XXBaseHeaders.podspec`，把旧代码放到 `Headers` 文件夹当中，现在目录结构看起来应该是这样的：
 
-    XXBaseHeaders
-    - Headers
-      - XXFoundation.h
-      - XXMacro.h
-      - ...
-    - XXBaseHeaders.podspec
+```no-highlight
+XXBaseHeaders
+- Headers
+  - XXFoundation.h
+  - XXMacro.h
+  - ...
+- XXBaseHeaders.podspec
+```
 
 然后我们开始编辑 podspec：
 
@@ -55,8 +57,10 @@ pod 'XXBaseHeaders', :path => '../XXBaseHeaders/'
 
 然后我们通过执行下面的命令，把这个 Pod 安装到主工程当中：
 
-    pod install --verbose --no-repo-update
-    
+```no-highlight
+pod install --verbose --no-repo-update
+```
+ 
 由于我们想添加的是一个本地的 Pod，所以我们加入了 `--no-repo-update`  来避免更新远程 Spec 仓库，加快安装速度。
 
 安装成功之后，主工程的 Pods 看起来是这样的：

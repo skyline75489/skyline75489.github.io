@@ -33,7 +33,7 @@
 <h4>基础模块拆分</h4>
 <p>对于基础模块来说，我们直接通过把基础模块单独拆分成 Pod，来进行模块的划分，而不是在旧有的工程上去建立新的 Group 之类的。这样做有一个明显的好处，<strong>Pod 当中如果引用了主工程当中的头文件，会直接造成编译失败</strong>。这样强迫我们拆分出来的 Pod 一定是对主工程没有依赖的（即没有反向依赖）。</p>
 <p>具体的做法如下：首先我们把选择一个可以单独拆分的模块，把所有的文件从主工程中删除掉，放到一个新的文件夹里，例如这里我们把一些基础的头文件拆出来，取名为 <code>XXBaseHeaders</code>。创建一个新的文件夹，名为 <code>XXBaseHeaders</code>，在里面创建一个子文件夹 <code>Headers</code> 和 <code>XXBaseHeaders.podspec</code>，把旧代码放到 <code>Headers</code> 文件夹当中，现在目录结构看起来应该是这样的：</p>
-<pre><code>XXBaseHeaders
+<pre><code class="lang-no-highlight">XXBaseHeaders
 - Headers
   - XXFoundation.h
   - XXMacro.h
@@ -53,7 +53,7 @@ end
 </code></pre>
 <p>注意这里的 <code>:path</code> 我使用的是相对路径，实际使用时不管用哪种路径，只要可以找到我们刚才创建的 Pod 文件夹就可以。还需要注意一点，就是 Pod 的名称也是要和文件夹名称这些保持一致。</p>
 <p>然后我们通过执行下面的命令，把这个 Pod 安装到主工程当中：</p>
-<pre><code>pod install --verbose --no-repo-update
+<pre><code class="lang-no-highlight">pod install --verbose --no-repo-update
 </code></pre>
 <p>由于我们想添加的是一个本地的 Pod，所以我们加入了 <code>--no-repo-update</code>  来避免更新远程 Spec 仓库，加快安装速度。</p>
 <p>安装成功之后，主工程的 Pods 看起来是这样的：</p>
