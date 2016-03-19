@@ -7,7 +7,7 @@
 
 安装 rvm 相对来说比较简单，官方提供了一个脚本可以直接安装
 
-```bash
+```no-highlight
 curl -sSL https://get.rvm.io | bash -s stable
 ```
 
@@ -17,13 +17,13 @@ curl -sSL https://get.rvm.io | bash -s stable
 
 安装 ruby 本来也应该比较简单，只需要执行一个命令:
 
-```bash
+```no-highlight
 rvm install 2.2.3
 ```
 
 但是执行过程中却出现了：
 
-```bash
+```no-highlight
 Searching for binary rubies, this might take some time.
 No binary rubies available for: osx/10.10/x86_64/ruby-2.2.1.
 Continuing with compilation. Please read 'rvm help mount' to get more information on binary rubies.
@@ -31,7 +31,7 @@ Continuing with compilation. Please read 'rvm help mount' to get more informatio
 
 看这意思是没有找到二进制的包，要是自己下源码编译的话，恐怕要花挺长时间了。为什么它找不到二进制的包呢？在网上查了一下资料，知道 rvm 是在 `~/.rvm/config/remote` 中找二进制包的，打开这个文件，里面的内容类似这样：
 
-```bash
+```no-highlight
 https://rvm_io.global.ssl.fastly.net/binaries/amazon/2013.03/x86_64/ruby-1.9.3-p448.tar.bz2
 https://rvm_io.global.ssl.fastly.net/binaries/amazon/2013.03/x86_64/ruby-2.0.0-p247.tar.bz2
 https://rvm_io.global.ssl.fastly.net/binaries/arch/libc-2.15/x86_64/ruby-1.9.3-p194.tar.bz2
@@ -45,7 +45,7 @@ https://rvm_io.global.ssl.fastly.net/binaries/arch/libc-2.15/x86_64/ruby-1.9.3-p
 
 首先用科学上网的方法把二进制包下载下来（除了上面的地址，还可以去 https://rvm.io/binaries/ ），然后使用 
 
-```bash
+```no-highlight
 rvm mount ~/Downloads/ruby-2.2.3.tar.bz2
 ```
 
