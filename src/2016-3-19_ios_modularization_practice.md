@@ -284,4 +284,16 @@ git push --tags
 
 现在我们从单一的主工程，变成了主工程+多个拆分好的基础模块+统一的私有 Spec 仓库。为了避免某个人的工作对其他人开发环境造成影响，需要对整个组的开发流程进行统一的规范。
 
-不管是对于主仓库和子模块仓库，[git-flow](http://nvie.com/posts/a-successful-git-branching-model/) 都是首先推荐的工作流程。
+不管是对于主仓库和子模块仓库，[git-flow](http://nvie.com/posts/a-successful-git-branching-model/) 都是首先推荐的工作流程。对于小型的团队来说，全盘使用 git-flow 可能会带来一些效率上的影响。这时可以使用简化版的 gif-flow——[Github-flow](https://guides.github.com/introduction/flow/)，即基于 Pull Request 的工作流程：
+
+![1](../img/modularization/3.png)
+
+上图来源于 Github 提供的 PDF。下面简单描述一下整个流程：
+
+一个仓库的 master 分支只有所有者可以有权限更改，其他的贡献者想更改的话，需要自己创建新的分支（在 Github 上就是进行 fork），然后进行更改，之后把更改向原仓库发送 Pull Request。Pull Request 就是一个合并的请求，其中可以看到贡献者的更改，项目主人和其他维护者可以对 Pull Request 进行审核，共同探讨修改意见。当项目主人认为修改 OK 之后，就可以合并这个 Pull Request ，把这部分代码合并到主分支。
+
+这个流程是完全分布式的，也就是说可以同时有多个贡献者在不同的分支进行工作，最后统一合并到主分支上，实现并行协作。
+
+同时在审核 Pull Request 阶段，除了人工审核代码之外，Github 还加入了对于持续集成的支持，可以检测这个 Pull Request 是不是能够通过测试的，进一步保证了代码的质量。
+
+结合前面提到的分模块部分，对于主仓库和模块仓库来说，都可以采用这个工作流程。模块仓库要做的就是不断地往 master 分支合并 PR，同时在适当的时候在 master 分支打 tag，发布新版本。主仓库要做的也是类似的工作，同时如果子模块有更新的话，要更新 Podfile 里对应的 Pod 版本号。
