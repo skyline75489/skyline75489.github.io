@@ -1,7 +1,7 @@
 浅析 iOS 应用组件化设计
 ====================
 
-这几天深入地阅读了 casatwy 老师的[iOS应用架构谈 组件化方案](http://casatwy.com/iOS-Modulization.html)，以及蘑菇街的 limboy 所分享的[蘑菇街 App 的组件化之路](http://limboy.me/ios/2016/03/10/mgj-components.html)，还有念纪的[模块化与解耦](http://blog.cnbluebox.com/blog/2015/11/28/module-and-decoupling/)，对于组件化这个概念有了一些新的理解。这几篇文章都有一定的深度，对于初学者来说理解起来有些难度。在这里试着从初学者的角度探讨一下有关组件化的问题，供读者参考。
+这几天深入地阅读了 casatwy 老师的[《iOS应用架构谈 组件化方案》](http://casatwy.com/iOS-Modulization.html)，以及蘑菇街的 limboy 所分享的[《蘑菇街 App 的组件化之路》](http://limboy.me/ios/2016/03/10/mgj-components.html)，还有念纪的[《模块化与解耦》](http://blog.cnbluebox.com/blog/2015/11/28/module-and-decoupling/)，对于组件化这个概念有了一些新的理解。这几篇文章都有一定的深度，对于初学者来说理解起来有些难度。在这里试着从初学者的角度探讨一下有关组件化的问题，供读者参考。
 
 ### 为什么要做组件化
 
@@ -45,9 +45,9 @@ pod 'MGJiPhone-Shop'
 
 #### 基础依赖
 
-哪些模块算是底层的基础依赖？一个判断的办法就是，看这个部分的代码是不是稳定的。最常见的基础依赖，包括稳定的三方库，底层网络通信模块，常用的 category 等等。这些代码不会频繁改动，可以作为基础依赖。
+哪些模块算是底层的基础依赖？一个最简单的判断办法就是，看这个部分的代码是不是稳定的。最常见的基础依赖，包括稳定的三方库，底层网络通信模块，常用的 category 等等。这些代码不会频繁改动，可以作为基础依赖。
 
-基础依赖在保持稳定的基础之上，还需要做到高复用性和单一职责性。这就要涉及到大家经常会去做的一件事了——创建一个 Common 模块。Common  模块可能会存一些常用的 category，helper，utils 等等东西：
+基础依赖在保持稳定的基础之上，还需要做到高复用性和单一职责性。这就要涉及到大家经常会去做的一件事了——创建 Common 模块。Common  模块可能会存一些常用的 category，helper，utils 等等东西：
 
 ```ruby
 pod 'MGJiPhone-Common'
@@ -94,7 +94,7 @@ UIViewController *vc = [[HHRouter shared] matchController:@"/lang/1/"];
 
 以及面向接口思想的 `ModuleManager`，做到了依赖于接口(protocol）而不依赖于实现。
 
-以我浅薄的开发经验看来，基于 Router 的这种解决方案已经能处理大部分情况了，参考 HHRouter 我写过一个 Swift 版的 [SwiftRouter](https://github.com/skyline75489/SwiftRouter)，也获得了一些认可。说明大部分人还是认可这种解耦方式的。再加上 `ModuleManager` 这种面向接口的模块管理工具（代码实现可以参考念纪的 [AppLord](https://github.com/NianJi/AppLord)），如果用的好的话，已经能够把整个代码的依赖拆分的比较清楚了。
+以我浅薄的开发经验看来，基于 Router 的这种解决方案已经能处理大部分情况了，除了 HHRouter 之外，网上还有 [JLRoutes](https://github.com/joeldev/JLRoutes)，[Routable-iOS](https://github.com/clayallsopp/routable-ios)，[ABRouter](https://github.com/aaronbrethorst/ABRouter) 等等开源的方案，以及我写过一个 Swift 版的 [SwiftRouter](https://github.com/skyline75489/SwiftRouter)。说明大部分人还是认可这种解耦方式的。再加上 `ModuleManager` 这种面向接口的模块管理工具（代码实现可以参考念纪的 [AppLord](https://github.com/NianJi/AppLord)），如果用的好的话，已经能够把整个代码的依赖拆分的比较清楚了。
 
 然而 casa 老师对蘑菇街的解决方案提出了批评，蘑菇街的解决方案主要存在下面几个问题：
 
@@ -128,11 +128,11 @@ UIViewController *vc = [[HHRouter shared] matchController:@"/lang/1/"];
 
 1. 学习成本高
    
-   限于自己水平不够，老实说整个架构我看了好久才看明白其核心在哪儿。对于经验不足的开发者来说，想理解这套架构和背后的设计思想有一定难度，更不用说使用了。
+   限于自己水平有限，整个架构我看了好久才看明白其核心在哪儿。对于经验不足的开发者来说，想理解这套架构和背后的设计思想有一定难度，更不用说使用了。
    
-2. 对各端协作要求很高
+2. 对各端协作要求较高
 
-   由于整个架构核心是基于 Runtime 的，这也就要求前后台对于 URL 的规则一定是统一的。如果只有 iOS 端还好，对于蘑菇街来说，同样的 URL 规则对于安卓端可能意味着更高的维护成本（如果安卓端也有类似 Runtime 的机制那倒还好说）。
+   由于整个架构核心是基于 Runtime 的，这也就要求前后台对于 URL 的规则一定是统一的（起码名字上要统一，规则的话可以客户端去 parse）。如果只有 iOS 端还好，对于蘑菇街来说，同样的 URL 规则对于安卓端可能意味着更高的维护成本（如果安卓端也有类似 Runtime 的机制那倒还好说）。
    
 3. 采用 Runtime 机制可能会出现类没有被加载的情况
 
