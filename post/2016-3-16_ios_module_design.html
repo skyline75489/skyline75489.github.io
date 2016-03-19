@@ -18,7 +18,7 @@
 <div class="content">
 
 <h1>浅析 iOS 应用组件化设计</h1>
-<p>这几天深入地阅读了 casatwy 老师的<a href="http://casatwy.com/iOS-Modulization.html">iOS应用架构谈 组件化方案</a>，以及蘑菇街的 limboy 所分享的<a href="http://limboy.me/ios/2016/03/10/mgj-components.html">蘑菇街 App 的组件化之路</a>，还有念纪的<a href="http://blog.cnbluebox.com/blog/2015/11/28/module-and-decoupling/">模块化与解耦</a>，对于组件化这个概念有了一些新的理解。这几篇文章都有一定的深度，对于初学者来说理解起来有些难度。在这里试着从初学者的角度探讨一下有关组件化的问题，供读者参考。</p>
+<p>这几天深入地阅读了 casatwy 老师的<a href="http://casatwy.com/iOS-Modulization.html">《iOS应用架构谈 组件化方案》</a>，以及蘑菇街的 limboy 所分享的<a href="http://limboy.me/ios/2016/03/10/mgj-components.html">《蘑菇街 App 的组件化之路》</a>，还有念纪的<a href="http://blog.cnbluebox.com/blog/2015/11/28/module-and-decoupling/">《模块化与解耦》</a>，对于组件化这个概念有了一些新的理解。这几篇文章都有一定的深度，对于初学者来说理解起来有些难度。在这里试着从初学者的角度探讨一下有关组件化的问题，供读者参考。</p>
 <h3>为什么要做组件化</h3>
 <p>对于个人开发的项目来说，应用的架构通常就体现在 Xcode 项目的目录结构上，关于这部分也有很多文章提到。但是对于公司团队开发的大型项目来说，仅仅在 Xcode 目录这个层次进行分层已经是不够的了。不管你的目录是以业务进行划分还是以 M-V-C 三个部分进行划分，当业务量非常大（成百上千）的时候，你会发现，想找到某个具体业务的某部分代码简直是大海捞针。同时，由于所有文件都在一个 Project 里面，如果开发人员不注意的话，很容易出现头文件各种互相 include，产生各种混乱的依赖关系。</p>
 <p>这时就需要引入多项目开发了，把不同的业务分解成不同的子项目，在主工程内引入子项目。这样我们等于在 <code>目录-文件</code> 的基础之上增加了一个层次，变成了 <code>子项目-目录-文件</code>，增加了一个层次类似于增加了一级索引，可以让我们方便地对项目进行拆分，整个项目的结构层次也更加清晰了。</p>
@@ -46,8 +46,8 @@ pod &#39;MGJiPhone-Shop&#39;
 <p>为什么会出现这么多依赖？因为 Detail 模块本身的业务就需要涉及到和多个不同模块之间进行交换，例如从用户模块获得用户的信息，当用户购物时和购物车模块进行交互，展示商品内容时和 Web 和 Hybrid 模块进行交互等等。这是业务本身决定的，我们没办法改变。我们所能做的是尽可能地减少<strong>横向</strong>的依赖。</p>
 <p>上面也提到了横向依赖这个概念。这里说明一下，业务模块没有依赖是不可能的，我们希望做到的是，它只依赖那些底层的基础模块，而不依赖于和它同级的业务模块。</p>
 <h4>基础依赖</h4>
-<p>哪些模块算是底层的基础依赖？一个判断的办法就是，看这个部分的代码是不是稳定的。最常见的基础依赖，包括稳定的三方库，底层网络通信模块，常用的 category 等等。这些代码不会频繁改动，可以作为基础依赖。</p>
-<p>基础依赖在保持稳定的基础之上，还需要做到高复用性和单一职责性。这就要涉及到大家经常会去做的一件事了——创建一个 Common 模块。Common  模块可能会存一些常用的 category，helper，utils 等等东西：</p>
+<p>哪些模块算是底层的基础依赖？一个最简单的判断办法就是，看这个部分的代码是不是稳定的。最常见的基础依赖，包括稳定的三方库，底层网络通信模块，常用的 category 等等。这些代码不会频繁改动，可以作为基础依赖。</p>
+<p>基础依赖在保持稳定的基础之上，还需要做到高复用性和单一职责性。这就要涉及到大家经常会去做的一件事了——创建 Common 模块。Common  模块可能会存一些常用的 category，helper，utils 等等东西：</p>
 <pre><code class="lang-ruby">pod &#39;MGJiPhone-Common&#39;
 </code></pre>
 <p>最开始的时候这么做会显的很方便，但是随着项目规模的增长，整个 Common 模块最终会成为依赖管理的噩梦。Common 本身作为一个模块集各种依赖于一身，缺乏内部的横向解耦，导致其整体的复用性非常差，简直是剪不断理还乱。因此最好一开始就避免创建 Common 模块，让每个模块都保持尽量少的职责：</p>
@@ -77,7 +77,7 @@ UIViewController *vc = [[HHRouter shared] matchController:@&quot;/lang/1/&quot;]
 }]
 </code></pre>
 <p>以及面向接口思想的 <code>ModuleManager</code>，做到了依赖于接口(protocol）而不依赖于实现。</p>
-<p>以我浅薄的开发经验看来，基于 Router 的这种解决方案已经能处理大部分情况了，参考 HHRouter 我写过一个 Swift 版的 <a href="https://github.com/skyline75489/SwiftRouter">SwiftRouter</a>，也获得了一些认可。说明大部分人还是认可这种解耦方式的。再加上 <code>ModuleManager</code> 这种面向接口的模块管理工具（代码实现可以参考念纪的 <a href="https://github.com/NianJi/AppLord">AppLord</a>），如果用的好的话，已经能够把整个代码的依赖拆分的比较清楚了。</p>
+<p>以我浅薄的开发经验看来，基于 Router 的这种解决方案已经能处理大部分情况了，除了 HHRouter 之外，网上还有 <a href="https://github.com/joeldev/JLRoutes">JLRoutes</a>，<a href="https://github.com/clayallsopp/routable-ios">Routable-iOS</a>，<a href="https://github.com/aaronbrethorst/ABRouter">ABRouter</a> 等等开源的方案，以及我写过一个 Swift 版的 <a href="https://github.com/skyline75489/SwiftRouter">SwiftRouter</a>。说明大部分人还是认可这种解耦方式的。再加上 <code>ModuleManager</code> 这种面向接口的模块管理工具（代码实现可以参考念纪的 <a href="https://github.com/NianJi/AppLord">AppLord</a>），如果用的好的话，已经能够把整个代码的依赖拆分的比较清楚了。</p>
 <p>然而 casa 老师对蘑菇街的解决方案提出了批评，蘑菇街的解决方案主要存在下面几个问题：</p>
 <ol>
 <li><p>基于 URL 的方案无法表达非常规对象</p>
@@ -102,10 +102,10 @@ UIViewController *vc = [[HHRouter shared] matchController:@&quot;/lang/1/&quot;]
 <p>关于它的好处我就不说了，下面说一下我感觉有些问题的地方：</p>
 <ol>
 <li><p>学习成本高</p>
-<p>限于自己水平不够，老实说整个架构我看了好久才看明白其核心在哪儿。对于经验不足的开发者来说，想理解这套架构和背后的设计思想有一定难度，更不用说使用了。</p>
+<p>限于自己水平有限，整个架构我看了好久才看明白其核心在哪儿。对于经验不足的开发者来说，想理解这套架构和背后的设计思想有一定难度，更不用说使用了。</p>
 </li>
-<li><p>对各端协作要求很高</p>
-<p>由于整个架构核心是基于 Runtime 的，这也就要求前后台对于 URL 的规则一定是统一的。如果只有 iOS 端还好，对于蘑菇街来说，同样的 URL 规则对于安卓端可能意味着更高的维护成本（如果安卓端也有类似 Runtime 的机制那倒还好说）。</p>
+<li><p>对各端协作要求较高</p>
+<p>由于整个架构核心是基于 Runtime 的，这也就要求前后台对于 URL 的规则一定是统一的（起码名字上要统一，规则的话可以客户端去 parse）。如果只有 iOS 端还好，对于蘑菇街来说，同样的 URL 规则对于安卓端可能意味着更高的维护成本（如果安卓端也有类似 Runtime 的机制那倒还好说）。</p>
 </li>
 <li><p>采用 Runtime 机制可能会出现类没有被加载的情况</p>
 <p>整个架构对于 Target 部分没有显式的依赖，有可能会在试图通过 <code>NSClassFromString</code> 获取类时，对应的 Target 类还没有加载到 runtime 中。这个属于吹毛求疵了，大家看看就好。</p>
