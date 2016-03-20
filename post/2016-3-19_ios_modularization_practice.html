@@ -194,6 +194,7 @@ git push --tags
 <h4>风险控制</h4>
 <p>搭建私有 Spec 的过程不会对工程代码有破坏性的影响。需要注意的是，对于 Spec 仓库权限的控制很重要。由于 Spec 仓库实际上就是一个普通的 git 仓库而已，任何有权限的人都可以修改。一旦有些修改不小心破坏了仓库的结构，就可能直接影响到仓库的正常工作。因此最好只允许少数几个人拥有仓库的写权限，其他人想要发布模块的时候，都把 podspec 交给权限所有者来做。</p>
 <h3>三、开发流程控制</h3>
+<h4>Git 工作流程</h4>
 <p>现在我们从单一的主工程，变成了主工程+多个拆分好的基础模块+统一的私有 Spec 仓库。为了避免某个人的工作对其他人开发环境造成影响，需要对整个组的开发流程进行统一的规范。</p>
 <p>不管是对于主仓库和子模块仓库，<a href="http://nvie.com/posts/a-successful-git-branching-model/">git-flow</a> 都是首先推荐的工作流程。对于小型的团队来说，全盘使用 git-flow 可能会带来一些效率上的影响。这时可以使用简化版的 gif-flow——<a href="https://guides.github.com/introduction/flow/">Github-flow</a>，即基于 Pull Request 的工作流程：</p>
 <p><img src="../img/modularization/3.png" alt="1"></p>
@@ -202,6 +203,12 @@ git push --tags
 <p>这个流程是完全分布式的，也就是说可以同时有多个贡献者在不同的分支进行工作，最后统一合并到主分支上，实现并行协作。</p>
 <p>同时在审核 Pull Request 阶段，除了人工审核代码之外，Github 还加入了对于持续集成的支持，可以检测这个 Pull Request 是不是能够通过测试的，进一步保证了代码的质量。</p>
 <p>结合前面提到的分模块部分，对于主仓库和模块仓库来说，都可以采用这个工作流程。模块仓库要做的就是不断地往 master 分支合并 PR，同时在适当的时候在 master 分支打 tag，发布新版本。主仓库要做的也是类似的工作，同时如果子模块有更新的话，要更新 Podfile 里对应的 Pod 版本号。</p>
+<h4>托管平台选择</h4>
+<p>要想使用上面提到的 Github Flow 流程，一个在线的代码托管平台是必不可少的。</p>
+<p>付费的选择有 Github 自家的 <a href="https://enterprise.github.com/home">Github Enterprise</a>，以及 Atlanssian 家的 <a href="https://bitbucket.org/product/server">BitBucket Server</a>。</p>
+<p>免费的选择有国内的 <a href="https://coding.net/">Coding</a>，<a href="http://git.oschina.net/">Git@OSChina</a> 以及 <a href="https://code.csdn.net/">CSDN Code</a>。它们的均以不限个数的免费私有仓库作为卖点。另外 BitBucket 本身支持 5 个免费的私有仓库，对于项目不多的团队也够用了。</p>
+<p>如果有服务器资源的话，更好的方案是自己利用开源的方案搭建私有的托管平台，可以最大限制地保证代码的安全。开源方案当中最知名也是最为广泛使用的当属 <a href="https://about.gitlab.com/">Gitlab</a>。它提供了免费开源的社区版，也提供收费的企业版（类似 Github Enterprise）。Gitlab 的功能十分强大，能够完整地支持 Pull Request 工作流程。Gitlab 比较大的缺点是部署很繁琐，尽管有基于 Docker 的虚拟化部署方案，仍然可能会遇到很多问题。</p>
+<p><a href="https://gogs.io/">Gogs</a> 是一个后起之秀，它使用 Go 语言编写，是一个完全开源的项目。借助于 Go 语言的特性，Gogs 的部署十分简单，解决了 Gitlab 一个很大的痛点。同时 Gogs 的功能也不弱于 Gitlab，背后的社区也很活跃。相比于 Gitlab ，我更推荐使用 Gogs 作为自搭 Git 平台的解决方案。</p>
 
 
 </div>

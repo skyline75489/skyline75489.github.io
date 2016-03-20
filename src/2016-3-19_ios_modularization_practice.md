@@ -282,6 +282,8 @@ git push --tags
 
 ### 三、开发流程控制
 
+#### Git 工作流程
+
 现在我们从单一的主工程，变成了主工程+多个拆分好的基础模块+统一的私有 Spec 仓库。为了避免某个人的工作对其他人开发环境造成影响，需要对整个组的开发流程进行统一的规范。
 
 不管是对于主仓库和子模块仓库，[git-flow](http://nvie.com/posts/a-successful-git-branching-model/) 都是首先推荐的工作流程。对于小型的团队来说，全盘使用 git-flow 可能会带来一些效率上的影响。这时可以使用简化版的 gif-flow——[Github-flow](https://guides.github.com/introduction/flow/)，即基于 Pull Request 的工作流程：
@@ -297,3 +299,15 @@ git push --tags
 同时在审核 Pull Request 阶段，除了人工审核代码之外，Github 还加入了对于持续集成的支持，可以检测这个 Pull Request 是不是能够通过测试的，进一步保证了代码的质量。
 
 结合前面提到的分模块部分，对于主仓库和模块仓库来说，都可以采用这个工作流程。模块仓库要做的就是不断地往 master 分支合并 PR，同时在适当的时候在 master 分支打 tag，发布新版本。主仓库要做的也是类似的工作，同时如果子模块有更新的话，要更新 Podfile 里对应的 Pod 版本号。
+
+#### 托管平台选择
+
+要想使用上面提到的 Github Flow 流程，一个在线的代码托管平台是必不可少的。
+
+付费的选择有 Github 自家的 [Github Enterprise](https://enterprise.github.com/home)，以及 Atlanssian 家的 [BitBucket Server](https://bitbucket.org/product/server)。
+
+免费的选择有国内的 [Coding](https://coding.net/)，[Git@OSChina](http://git.oschina.net/) 以及 [CSDN Code](https://code.csdn.net/)。它们的均以不限个数的免费私有仓库作为卖点。另外 BitBucket 本身支持 5 个免费的私有仓库，对于项目不多的团队也够用了。
+
+如果有服务器资源的话，更好的方案是自己利用开源的方案搭建私有的托管平台，可以最大限制地保证代码的安全。开源方案当中最知名也是最为广泛使用的当属 [Gitlab](https://about.gitlab.com/)。它提供了免费开源的社区版，也提供收费的企业版（类似 Github Enterprise）。Gitlab 的功能十分强大，能够完整地支持 Pull Request 工作流程。Gitlab 比较大的缺点是部署很繁琐，尽管有基于 Docker 的虚拟化部署方案，仍然可能会遇到很多问题。
+
+[Gogs](https://gogs.io/) 是一个后起之秀，它使用 Go 语言编写，是一个完全开源的项目。借助于 Go 语言的特性，Gogs 的部署十分简单，解决了 Gitlab 一个很大的痛点。同时 Gogs 的功能也不弱于 Gitlab，背后的社区也很活跃。相比于 Gitlab ，我更推荐使用 Gogs 作为自搭 Git 平台的解决方案。
