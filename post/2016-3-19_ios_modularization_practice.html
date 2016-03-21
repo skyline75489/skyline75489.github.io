@@ -61,6 +61,8 @@ end
 <p>可以看到这里 CocoaPods 把我们本地的仓库放到了 <code>Development Pods</code> 里面。这里和下面那些 Pods 的区别在于，下面的 Pods 本身是从主仓库下载然后拷贝到当前工程中，默认权限是只读的，如果尝试修改会出现类似下面的提示：</p>
 <p><img src="../img/modularization/2.png" alt="1"></p>
 <p>而 <code>Development Pods</code> 则不是进行的拷贝，而是直接<strong>引用</strong>了本地 Pod 的文件，可以直接做修改，因为实际上就是在修改 <code>XXBaseHeaders</code> 这个文件夹里的文件。</p>
+<blockquote><p>这里建议直接把 <code>Pods</code> 和 <code>Podfile.lock</code> 移出版本控制系统，因为之后的操作会频繁进行 Pods 的增删，同时由于各个模块本身已经独立成单独的仓库，再放到主工程的代码控制中也没有什么意义了。</p>
+</blockquote>
 <p>现在我们已经把模块的代码拆分成了单独的 Pods，可以尝试进行编译了。如果原有的代码依赖控制的比较好的话，进行不多的改动就可以编译成功了。如果发现没办法通过简单的改动让代码通过编译的话，有可能有下面几种情况：</p>
 <ul>
 <li>出现了反向引用，即引用了主工程中头文件</li>
@@ -209,6 +211,9 @@ git push --tags
 <p>免费的选择有国内的 <a href="https://coding.net/">Coding</a>，<a href="http://git.oschina.net/">Git@OSChina</a> 以及 <a href="https://code.csdn.net/">CSDN Code</a>。它们的均以不限个数的免费私有仓库作为卖点。另外 BitBucket 本身支持 5 个免费的私有仓库，对于项目不多的团队也够用了。</p>
 <p>如果有服务器资源的话，更好的方案是自己利用开源的方案搭建私有的托管平台，可以最大限制地保证代码的安全。开源方案当中最知名也是最为广泛使用的当属 <a href="https://about.gitlab.com/">Gitlab</a>。它提供了免费开源的社区版，也提供收费的企业版（类似 Github Enterprise）。Gitlab 的功能十分强大，能够完整地支持 Pull Request 工作流程。Gitlab 比较大的缺点是部署很繁琐，尽管有基于 Docker 的虚拟化部署方案，仍然可能会遇到很多问题。</p>
 <p><a href="https://gogs.io/">Gogs</a> 是一个后起之秀，它使用 Go 语言编写，是一个完全开源的项目。借助于 Go 语言的特性，Gogs 的部署十分简单，解决了 Gitlab 一个很大的痛点。同时 Gogs 的功能也不弱于 Gitlab，背后的社区也很活跃。相比于 Gitlab ，我更推荐使用 Gogs 作为自搭 Git 平台的解决方案。</p>
+<h4>风险控制</h4>
+<p>把代码从旧平台迁移到新的托管平台，需要小心谨慎，最好提前做好备份，方便出错之后通过备份进行恢复。</p>
+<p>对于代码权限的管理也很重要，哪怕是私有的托管平台，最好也要把项目创建成私有项目，同时通过用户组来对仓库权限进行细化管理，确保无关的人员不能看到或者修改代码。</p>
 
 
 </div>
