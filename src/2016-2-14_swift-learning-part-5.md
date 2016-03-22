@@ -3,7 +3,7 @@ Swift学习笔记(五)——类型系统初探
 
 ### 从头学习 Swift
 
-尽管 Swift 的语法参考了 Python，JavaScript 等，然而 Swift 是一个不折不扣的**强类型**，**静态类型**语言。Swift 对于类型的检查非常严格，以至于让我这样写熟了 Python 的人写起来非常不适应 :(
+尽管 Swift 的语法参考了 Python，JavaScript 等动态类型语言，然而 Swift 是一个不折不扣的**强类型**，**静态类型**语言。Swift 对于类型的检查非常严格，以至于让我这样写熟了 Python 的人写起来非常不适应 :(
 
 ```swift
 var a = 10; // 自动类型推导

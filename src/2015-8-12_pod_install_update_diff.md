@@ -32,3 +32,5 @@ pod install 和 pod update 的区别（译）
 通常情况下，当你在 `Podfile` 中添加了新 pod，你应该使用 `pod install`，而不是 `pod update`。这样你可以只安装新的 pod ，不会同时把已经存在的 pod 也更新掉。
 
 只有当你想更新某个或者全部 pod 时，你才应该使用 `pod update`。
+
+更详尽的描述可以参考官方的 [Guide](http://guides.cocoapods.org/using/pod-install-vs-update.html)。
