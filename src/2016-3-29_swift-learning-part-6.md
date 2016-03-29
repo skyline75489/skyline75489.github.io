@@ -16,7 +16,7 @@ Swift学习笔记(六)——下一代Swift
 使用开发版 Swift 需要注意的地方有两点：
 
 1. 不支持 Playground
-2. 不能用于发布到 Swift 的 Build
+2. 不能用于发布到 App Store
 
 ### 语法变化
 
@@ -46,9 +46,9 @@ let content = listItemView.text.trimming(.whitespaceAndNewlines)
 |`advancedBy(i)`|`advanced(by: i)`|
 |`setValuesForKeysWithDictionary(dict)`|`setValuesForKeysWith(dict)`|
 
-可以看到原有的名称不同，改名使用的规则也不尽相同。具体的规则在 swift-evolution 对于的 proposal 中有详尽说明。
+可以看到原有的名称不同，改名使用的规则也不尽相同。具体的规则在 swift-evolution 对应的 proposal 中有详尽说明。
 
-对于 Cocoa 自己的 API 来说，由于本身 API 命名就比较规范，可以很好地通过重命名导入 Swift。对于开发者自己撰写的代码来说，很可能重命名得到的结果并不好。目前因为 Swift 3 尚在开发中，对应的 migrator 也没办法看到，根据之前的 migrator 的坑爹表现，也不能对 Swift 3 的 migrator 报太大期望。因此想继续使用旧有 Objective-C 代码，更好的办法可能仍然是使用 `NS_SWIFT_NAME`：
+对于 Cocoa 自己的 API 来说，由于本身 API 命名就比较规范，可以很好地通过重命名导入 Swift。对于开发者自己撰写的代码来说，很可能重命名得到的结果并不好。目前因为 Swift 3 尚在开发中，对应的 migrator 也没办法看到。根据之前的 migrator 的坑爹表现来看，也不能对 Swift 3 的 migrator 报太大期望。因此想继续使用旧有 Objective-C 代码，更好的办法可能仍然是使用 `NS_SWIFT_NAME`：
 
 ```swift
 + (id)recordWithQuality:(double)quality NS_SWIFT_NAME(record(quality:));
