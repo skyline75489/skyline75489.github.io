@@ -38,7 +38,7 @@
 <p><em>新 API</em></p>
 <pre><code class="lang-swift">let content = listItemView.text.trimming(.whitespaceAndNewlines)
 </code></pre>
-<p>可以看到主要是去除了 Objective-C API 中常见的冗余名称。下面是几个我在重构已有代码是碰到的例子：</p>
+<p>可以看到主要是去除了 Objective-C API 中常见的冗余名称。下面是几个我在重构已有代码时碰到的例子：</p>
 <table>
 <thead><tr>
 <th>旧 API</th>
@@ -73,7 +73,7 @@
 </tbody>
 </table>
 <p>可以看到原有的名称不同，改名使用的规则也不尽相同。具体的规则在 swift-evolution 对应的 proposal 中有详尽说明。</p>
-<p>对于 Cocoa 自己的 API 来说，由于本身 API 命名就比较规范，可以很好地通过重命名导入 Swift。对于开发者自己撰写的代码来说，很可能重命名得到的结果并不好。目前因为 Swift 3 尚在开发中，对应的 migrator 也没办法看到。根据之前的 migrator 的坑爹表现来看，也不能对 Swift 3 的 migrator 报太大期望。因此想继续使用旧有 Objective-C 代码，更好的办法可能仍然是使用 <code>NS_SWIFT_NAME</code>：</p>
+<p>对于 Cocoa 自己的 API 来说，由于本身 API 命名就比较规范，可以很好地通过重命名导入 Swift。对于开发者自己撰写的代码来说，很可能重命名得到的结果并不好。目前因为 Swift 3 尚在开发中，对应的 migrator 也没办法看到（猜测应该还没有完成）。根据之前的 migrator 的坑爹表现来看，也不能对 Swift 3 的 migrator 报太大期望。因此想继续使用旧有 Objective-C 代码，更好的办法可能仍然是使用 <code>NS_SWIFT_NAME</code>：</p>
 <pre><code class="lang-swift">+ (id)recordWithQuality:(double)quality NS_SWIFT_NAME(record(quality:));
 </code></pre>
 <h3>包管理</h3>
