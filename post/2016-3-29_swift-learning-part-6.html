@@ -1,0 +1,108 @@
+<!DOCTYPE html> 
+<html>
+<head>
+<title>Skyline75489</title>
+ <meta charset='utf-8'>
+<link rel="stylesheet" href="../static/styles/github.css">
+<link rel="stylesheet" href="../static/post.css">
+</head>
+<body>
+
+<div class="wrapper">
+<div class="header">
+	<span class="blog-name">Skyline75489</span>
+
+<a class="nav" href="../index.html">Home</a>
+<a class="nav" href="about.html">About</a>
+</div>
+<div class="content">
+
+<h1>Swift学习笔记(六)——下一代Swift</h1>
+<h3>前言</h3>
+<p>从 Swift 学习笔记第一篇到现在，Swift 本身已经从 1.0 发展到 2.2，秋季即将发布 3.0，Swift 本身也已经在 Github 上开源了。在这段期间，Swift 语言本身发生了非常大的变化。从 1.0 到 1.1，1.2，以及到 2.0 大版本，每次 Swift 的升级几乎都会带来破坏性的改变。即将发布的 Swift 3 据说是最后一个包含大量 breaking change 的版本了。因此本着不想再被坑的心态，笔者打算放弃当前的 2.2 版本，直接开始学习尚在开发中的 Swift 3.0 版本了...</p>
+<h3>安装开发版的 Swift</h3>
+<p>目前随 Xcode 7.3 附带的是 Swift 2.2，要安装 Swift 3.0 版本，需要从 <a href="https://swift.org/download/#releases">Swift 官网</a> 下载开发版 snapshot。下载完安装之后，在 Xcode 的 <code>Preference</code> 里可以找到切换 Swift 版本的地方：</p>
+<p><img src="../img/swift3-preview/1.png" alt="1"></p>
+<p>选择切换之后需要重启 Xcode。</p>
+<p>使用开发版 Swift 需要注意的地方有两点：</p>
+<ol>
+<li>不支持 Playground</li>
+<li>不能用于发布到 Swift 的 Build</li>
+</ol>
+<h3>语法变化</h3>
+<p>从 2.0 系列到 3.0 版本，Swift 当中最大的变化就是在 API 命名上了，也是造成破坏性的最大源头。<strong>几乎所有</strong>的 Cocoa API 都经过重命名，以符合 Swift 的命名规范。来自 <a href="https://github.com/apple/swift-evolution/blob/master/proposals/0005-objective-c-name-translation.md">swift-evolution</a> 的例子如下：</p>
+<p><em>旧 API</em></p>
+<pre><code class="lang-swift">let content = listItemView.text.stringByTrimmingCharactersInSet(
+   NSCharacterSet.whitespaceAndNewlineCharacterSet())
+</code></pre>
+<p><em>新 API</em></p>
+<pre><code class="lang-swift">let content = listItemView.text.trimming(.whitespaceAndNewlines)
+</code></pre>
+<p>可以看到主要是去除了 Objective-C API 中常见的冗余名称。下面是几个我在重构已有代码是碰到的例子：</p>
+<table>
+<thead><tr>
+<th>旧 API</th>
+<th>新 API</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>UIScreen.mainScreen()</code></td>
+<td><code>UIScreen.main()</code></td>
+</tr>
+<tr>
+<td><code>UIColor.whiteColor()</code></td>
+<td><code>UIColor.white()</code></td>
+</tr>
+<tr>
+<td><code>rangeOfString(string)</code></td>
+<td><code>range(of:string)</code></td>
+</tr>
+<tr>
+<td><code>componentsSeparatedByString(string)</code></td>
+<td><code>componentsSeparated(by:string)</code></td>
+</tr>
+<tr>
+<td><code>advancedBy(i)</code></td>
+<td><code>advanced(by: i)</code></td>
+</tr>
+<tr>
+<td><code>setValuesForKeysWithDictionary(dict)</code></td>
+<td><code>setValuesForKeysWith(dict)</code></td>
+</tr>
+</tbody>
+</table>
+<p>可以看到原有的名称不同，改名使用的规则也不尽相同。具体的规则在 swift-evolution 对于的 proposal 中有详尽说明。</p>
+<p>对于 Cocoa 自己的 API 来说，由于本身 API 命名就比较规范，可以很好地通过重命名导入 Swift。对于开发者自己撰写的代码来说，很可能重命名得到的结果并不好。目前因为 Swift 3 尚在开发中，对应的 migrator 也没办法看到，根据之前的 migrator 的坑爹表现，也不能对 Swift 3 的 migrator 报太大期望。因此想继续使用旧有 Objective-C 代码，更好的办法可能仍然是使用 <code>NS_SWIFT_NAME</code>：</p>
+<pre><code class="lang-swift">+ (id)recordWithQuality:(double)quality NS_SWIFT_NAME(record(quality:));
+</code></pre>
+<h3>包管理</h3>
+<p>Swift Package Manager 作为 Swift 3 的一部分，也可以在 Swift 3 当中使用了。作为第一个官方推出的依赖管理工具，想想还是挺让人兴奋的，只不过这货目前还处于半残的状态。</p>
+<p>首先想在命令行里使用 Swift 的开发版，需要设置环境变量：</p>
+<pre><code class="lang-bash">export TOOLCHAINS=swift
+</code></pre>
+<p>然后测试一下：</p>
+<pre><code class="lang-bash">$ swift build --version
+</code></pre>
+<p>这时候我碰到了报错：</p>
+<pre><code class="lang-no-highlight">dyld: Library not loaded: @rpath/libswiftCore.dylib
+  Referenced from: /Library/Developer/Toolchains/swift-DEVELOPMENT-SNAPSHOT-2016-03-16-a.xctoolchain/usr/bin/swift-build
+  Reason: image not found
+</code></pre>
+<p>找了一圈才在 <a href="http://blog.yourtion.com/install-swift-and-solve-library-not-loaded.html">这里</a> 找到解决方案，需要同时设置 <code>PATH</code> 和 <code>DYLD_LIBRARY_PATH</code> 搜索路径：</p>
+<pre><code class="lang-bash">export PATH=/Library/Developer/Toolchains/swift-latest.xctoolchain/usr/bin:$PATH
+export DYLD_LIBRARY_PATH=/Library/Developer/Toolchains/swift-latest.xctoolchain/usr/lib/swift/macosx:$DYLD_LIBRARY_PATH
+</code></pre>
+<p>然后再执行 <code>swift build --version</code> 终于看到了想要的结果：</p>
+<pre><code class="lang-no-highlight">Apple Swift Package Manager 0.1
+</code></pre>
+<p>所以...你应该也了解到现在这货的状态了。目前还是乖乖地用 CocoaPods 吧。</p>
+
+
+</div>
+</div>
+<script src="../static/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+</body>
+
+</html>
