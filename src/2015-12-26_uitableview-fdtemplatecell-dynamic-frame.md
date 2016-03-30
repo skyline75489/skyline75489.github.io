@@ -24,7 +24,7 @@ if (cell == nil) {
 ```
 
 然后再使用`dequeueReusableCellWithIdentifier:forIndexPath:
-`这个方法（注意和上面方法名称上的区别，多了一个 forIndexPath 参数）取出 cell:
+`这个方法（注意和上面方法名称上的区别，多了一个 `forIndexPath` 参数）取出 cell:
 
 ```objectivec
 TableViewCell *cell = (TableViewCell *)[tableView dequeueReusableCellWithIdentifier:kCellIdentifier forIndexPath:indexPath];
@@ -58,7 +58,7 @@ FDTemplateLayoutCell 也是根据 cell identifier 来得到 cell 的，因此需
 ```objectivec
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     FDFeedCell *cell = [tableView dequeueReusableCellWithIdentifier:@"FDFeedCell" forIndexPath:indexPath];
-    [self configureCell:cell atIndexPath:indexPath];
+    [self configureCell:cell atIndexPath:indexPath]; // 第一次
     return cell;
 }
 
@@ -67,7 +67,7 @@ FDTemplateLayoutCell 也是根据 cell identifier 来得到 cell 的，因此需
     switch (mode) {
         case FDSimulatedCacheModeNone:
             return [tableView fd_heightForCellWithIdentifier:@"FDFeedCell" configuration:^(FDFeedCell *cell) {
-                [self configureCell:cell atIndexPath:indexPath];
+                [self configureCell:cell atIndexPath:indexPath]; // 第二次
             }];
             // ...
 }
@@ -132,7 +132,6 @@ FD 本身对于高度计算提供了缓存机制，可以很大程度上减少�
 注意在 configure 中也是要做 update 高度的，因为真正 configure 的 Cell 和 `fd_height` 当中的 cell 不是一个 cell，如果不做这一步的话，真正显示出来的 cell 的 label 中 caculatedHeight 这个属性还是会为 0（不知道这么说大家理解没理解，没理解的话可以去跑一下 FD 的代码，你会发现在 `fd_height` 这个函数的 configuration block 中出现的 cell 一直就是那一个，地址没变过，它和真正显示出来的 Cell 不是一个实例）。
 
 现在出来的结果是这样的：
-
 
 ![1](../img/fd_frame/1.png)
 

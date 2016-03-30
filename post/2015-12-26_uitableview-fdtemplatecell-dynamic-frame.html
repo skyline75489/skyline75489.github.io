@@ -31,7 +31,7 @@ if (cell == nil) {
 <p>这种方法确实是可行的，但是现在已经不再推荐了。推荐使用的方法是，先把 cell 的 class 和 identifier 注册到 tableView:</p>
 <pre><code class="lang-objectivec">[self.tableView registerClass:[TableViewCell class] forCellReuseIdentifier:kCellIdentifier];
 </code></pre>
-<p>然后再使用<code>dequeueReusableCellWithIdentifier:forIndexPath:</code>这个方法（注意和上面方法名称上的区别，多了一个 forIndexPath 参数）取出 cell:</p>
+<p>然后再使用<code>dequeueReusableCellWithIdentifier:forIndexPath:</code>这个方法（注意和上面方法名称上的区别，多了一个 <code>forIndexPath</code> 参数）取出 cell:</p>
 <pre><code class="lang-objectivec">TableViewCell *cell = (TableViewCell *)[tableView dequeueReusableCellWithIdentifier:kCellIdentifier forIndexPath:indexPath];
 // ... 
 return cell;
@@ -54,7 +54,7 @@ return cell;
 <p>看一下 FD 自己的 Demo 和它的源码我才发现，还是自己太 naive 了。<code>fd_height</code> 这个函数在实现里面这个 cell 和真正显示的 cell 并不是一回事，真正显示的 cell 还是在 cellForRowAtIndexPath 那个里返回的。<code>fd_height</code> 里的 cell 就是单纯地算了一下高度而已。因此我们可以看到，FD 自己的 Demo 里，configure 其实是使用了两次的：</p>
 <pre><code class="lang-objectivec">- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     FDFeedCell *cell = [tableView dequeueReusableCellWithIdentifier:@&quot;FDFeedCell&quot; forIndexPath:indexPath];
-    [self configureCell:cell atIndexPath:indexPath];
+    [self configureCell:cell atIndexPath:indexPath]; // 第一次
     return cell;
 }
 
@@ -63,7 +63,7 @@ return cell;
     switch (mode) {
         case FDSimulatedCacheModeNone:
             return [tableView fd_heightForCellWithIdentifier:@&quot;FDFeedCell&quot; configuration:^(FDFeedCell *cell) {
-                [self configureCell:cell atIndexPath:indexPath];
+                [self configureCell:cell atIndexPath:indexPath]; // 第二次
             }];
             // ...
 }
