@@ -92,3 +92,9 @@ Apple Swift Package Manager 0.1
 ```
 
 所以...你应该也了解到现在这货的状态了。目前还是乖乖地用 CocoaPods 吧。
+
+### 跨平台 & 服务器端
+
+Swift 开源之后，已经出现了诸如 Linux，FreeBSD，以及 Windows 等平台的 Port，进行服务器端的 Swift 开发也成为了可能，相对完善的Web 开发框架有 [Perfect](https://github.com/PerfectlySoft/Perfect) 和 [Kitura](https://github.com/IBM-Swift/Kitura) 等。
+
+不过现在为止，Swift 的基本库在 OS X 以外的平台基本还处于半残废的状态，只有随编译器自带的 [Core](https://github.com/apple/swift/tree/master/stdlib/public/core) 这部分库是可以用的。其余的诸如 NSURL 等 Foundation 的内容，苹果打算在 [swift-corelibs-foundation](https://github.com/apple/swift-corelibs-foundation) 里面实现。之所以说“打算”是这部分目前还没有实现，上面提到了 Swift 3.0 的 API 变化。这个 corelibs 苹果也打算直接用 3.0 的标准来写了，因此现在它本身也是半残状态。社区当中有 [SwiftFoundation](https://github.com/PureSwift/SwiftFoundation) 这样的开源实现，目测完成度也不是很高。
