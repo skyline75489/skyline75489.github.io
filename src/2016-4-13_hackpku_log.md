@@ -45,7 +45,7 @@ HackPKU 这次的奖项设置并没有在官网挂出来，在开幕式上都是
 <embed src="http://player.youku.com/player.php/sid/XMTUzMTg1MjIyOA==/v.swf" allowFullScreen="true" quality="high" width="480" height="400" align="middle" allowScriptAccess="always" type="application/x-shockwave-flash"></embed>
 </div>
 
-</br>
+
 
 另一个是铨哥身体力行，演示使用 Kinect 作为输入端，使用树莓派控制的 LED 灯给用户提供反馈，通过动作来创建节奏：
 
@@ -53,7 +53,7 @@ HackPKU 这次的奖项设置并没有在官网挂出来，在开幕式上都是
 <embed src="http://player.youku.com/player.php/sid/XMTUzMTg1MTA3Ng==/v.swf" allowFullScreen="true" quality="high" width="480" height="400" align="middle" allowScriptAccess="always" type="application/x-shockwave-flash"></embed>
 </div>
 
-</br>
+
 
 整个项目从创意到实现到最后展示，并没有大家看起来那么一帆风顺，实际情况可谓是一波三折。
 
