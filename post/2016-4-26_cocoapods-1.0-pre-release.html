@@ -18,12 +18,12 @@
 <div class="content">
 
 <h1>拥抱 CocoaPods 1.0</h1>
-<p>CocoaPods 作为 iOS 社区应用最广泛的依赖管理工具，终于要发布 1.0 版本了。虽然我没有找到具体的 roadmap，不过现在已经发布到 1.0.0 Beta8 了，距离正式版应该也就是几个 Beta 或者 rc 的问题了。尽管 CocoaPods 早就已经成了事实上 iOS 界依赖管理的标准，开发者们还是很谦虚的表示 1.0 版本才是真正实现了一个依赖管理工具的所有需求。</p>
+<p>CocoaPods 作为 iOS 社区应用最广泛的依赖管理工具，终于快要发布 1.0 版本了。虽然我没有找到具体的 roadmap，不过现在已经发布到 1.0.0 Beta8 了，距离正式版应该也就是几个 Beta 或者 rc 的问题了。尽管 CocoaPods 早就已经成了事实上 iOS 界依赖管理的标准，开发者们还是很谦虚的表示 1.0 版本才是真正实现了一个依赖管理工具的所有需求。</p>
 <blockquote><p>1.0.0 will be the milestone where we feel confident that all the basic requirements of a Cocoa dependency manager are fulfilled.</p>
 </blockquote>
 <p>这句话在 CocoaPods 的 FAQ 里存在了许多年，现在这个目标终于近在眼前了。</p>
 <p>下面进入正题，CocoaPods 的 1.0 版本出现了很多改变，有一些是 breaking changes，官网上的 <a href="http://blog.cocoapods.org/CocoaPods-1.0/">Migration Guide</a> 里面有很全面的介绍。我把其中感觉比较重要的几点在这里说明一些，辅以我自己的一些使用经验，希望对读者有所帮助。</p>
-<h4>Podfile 语法改变</h4>
+<h3>Podfile 语法改变</h3>
 <p>这部分改变差不多是最直接的了，有几个改变会直接让现在已有的 Podfile 不能工作：</p>
 <ol>
 <li><p>必须指明 <code>target</code></p>
@@ -52,7 +52,7 @@ end
 </li>
 <li><code>:local</code> 被去掉了，现在想使用本地的 pod 只能使用 <code>:path</code>。</li>
 </ol>
-<h4>CocoaPods 行为改变</h4>
+<h3>CocoaPods 行为改变</h3>
 <ol>
 <li><p>对于 Pod 仓库，不再使用 shallow clone，而是使用完整 clone。</p>
 <p>在 <a href="https://github.com/CocoaPods/CocoaPods/issues/5016">这个 issue</a> 里提到之前使用 shallow clone(depth=1) 的方法会给 git 服务器带来额外的压力，因此改为使用完整的 clone。这个改变实话说对于国内用户来说是非常不利的，因为会导致 repo 初次 clone 的时间进一步增加。由于国内的网络环境，现在 clone 需要的时间就已经很长了，这个改动更是雪上加霜。因此我更加推荐使用 CocoaPods 国内的非官方镜像（例如 <a href="https://git.oschina.net/6david9/Specs.git">https://git.oschina.net/6david9/Specs.git</a> )，以加快访问速度。</p>
@@ -61,7 +61,7 @@ end
 <p>这是个值得喜大普奔的消息。之前 CocoaPods 新手上来遇到的最大的问题就是 <code>pod install</code> 会“卡死”在 <code>git pull</code> 上，后来我们知道可以用 <code>pod install --no-repo-update</code>。现在不更新仓库成了默认行为，之前更新仓库的行为需要增加参数 <code>--repo-update</code>。这个改变让 CocoaPods 对于新手来说更加友好了。</p>
 </li>
 <li><p>Development pods 默认不再解锁</p>
-<p><a href="https://github.com/CocoaPods/CocoaPods/issues/4211">对应 issue</a> 这个改动本意是好的，不过具体效果怎么样，还有待观察。</p>
+<p><a href="https://github.com/CocoaPods/CocoaPods/issues/4211">对应 issue</a>。 这个改动本意是好的，不过具体效果怎么样，还有待观察。</p>
 </li>
 <li><p>link 库的命名发生改变</p>
 <p>这一点是我在升级旧版本的时候发现的，也是有点坑人的部分，希望官方后面会进一步完善吧。具体说，所以依赖库最后形成的那个大库，如果之前没有使用 <code>target</code> 的话，命名是 <code>libPods.a</code>，现在强制使用 <code>target</code>，对应的命名会变成 <code>libPods-{target}.a</code>。可能需要手动去改一下 Build Phase，避免 link 错误的库，导致程序行为发生错误。</p>
