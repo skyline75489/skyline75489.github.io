@@ -41,19 +41,11 @@ HackPKU 这次的奖项设置并没有在官网挂出来，在开幕式上都是
 
 为了现场演示时的效果，我们制作了演示视频。其中一个是演示分屏游戏：
 
-<div style="text-align: center;">
-<embed src="http://player.youku.com/player.php/sid/XMTUzMTg1MjIyOA==/v.swf" allowFullScreen="true" quality="high" width="480" height="400" align="middle" allowScriptAccess="always" type="application/x-shockwave-flash"></embed>
-</div>
-
-
+http://v.youku.com/v_show/id_XMTUzMTg1MjIyOA==.html
 
 另一个是铨哥身体力行，演示使用 Kinect 作为输入端，使用树莓派控制的 LED 灯给用户提供反馈，通过动作来创建节奏：
 
-<div style="text-align: center;">
-<embed src="http://player.youku.com/player.php/sid/XMTUzMTg1MTA3Ng==/v.swf" allowFullScreen="true" quality="high" width="480" height="400" align="middle" allowScriptAccess="always" type="application/x-shockwave-flash"></embed>
-</div>
-
-
+http://v.youku.com/v_show/id_XMTUzMTg1MTA3Ng==.html?from=y1.2-1-105.3.1-1.1-1-1-0-0
 
 整个项目从创意到实现到最后展示，并没有大家想象的那么一帆风顺，实际情况可谓是一波三折。
 
