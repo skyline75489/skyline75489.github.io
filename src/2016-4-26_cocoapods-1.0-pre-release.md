@@ -59,4 +59,5 @@ CocoaPods 作为 iOS 社区应用最广泛的依赖管理工具，终于快要�
 4. link 库的命名发生改变
 
     这一点是我在升级旧版本的时候发现的，也是有点坑人的部分，希望官方后面会进一步完善吧。具体说，所以依赖库最后形成的那个大库，如果之前没有使用 `target` 的话，命名是 `libPods.a`，现在强制使用 `target`，对应的命名会变成 `libPods-{target}.a`。可能需要手动去改一下 Build Phase，避免 link 错误的库，导致程序行为发生错误。
-
+    
+    **更新**：问题产生的原因是 xcodproj 和 Podfile 不在同一个目录下，参考[这个 issue](https://github.com/CocoaPods/CocoaPods/issues/5208)。
