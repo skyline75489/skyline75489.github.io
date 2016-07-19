@@ -39,14 +39,14 @@
 </code></pre>
 <p>有几个地方需要注意：</p>
 <ol>
-<li>Dispatch Source Timer 是间隔定时器，也就是说每隔一段时间间隔定时器就会触发。在 NSTimer 中要做到同样的效果需要把 repeat 设置为 YES。</li>
+<li>Dispatch Source Timer 是间隔定时器，也就是说每隔一段时间间隔定时器就会触发。在 NSTimer 中要做到同样的效果需要手动把 repeat 设置为 YES。</li>
 <li><code>dispatch_source_set_timer</code> 中第二个参数，当我们使用<code>dispatch_time</code> 或者 <code>DISPATCH_TIME_NOW</code> 时，系统会使用默认时钟来进行计时。然而当系统休眠的时候，默认时钟是不走的，也就会导致计时器停止。使用 <code>dispatch_walltime</code> 可以让计时器按照真实时间间隔进行计时。</li>
 <li><code>dispatch_source_set_timer</code> 的第四个参数 <code>leeway</code> 指的是一个期望的容忍时间，将它设置为 1 秒，意味着系统有可能在定时器时间到达的前 1 秒或者后 1 秒才真正触发定时器。推荐在调用时设置一个合理的 leeway 值。同时，就算指定 leeway 值为 0，系统也是无法保证完全精确的触发时间，只是会尽可能满足这个需求。</li>
 <li><code>dispatch_source_set_event_handler</code> 这个函数在执行完之后，block 会立马执行一遍，后面隔一定时间间隔再执行一次。这也是和 NSTimer 之间的一个显著区别。</li>
 </ol>
 <h3>停止 Timer</h3>
 <p>停止 Dispatch Timer 有两种方法，一种是使用 <code>dispatch_suspend</code>，另外一种是使用 <code>dispatch_source_cancel</code>。</p>
-<p><code>dispatch_suspend</code> 严格上只是把 Timer 暂时挂起，它和 <code>dispatch_resume</code> 是一个平衡调用，两者分别会减少和增加 dispatch 对象的挂起计数。当这个计数大于 0 的时候，Timer 就会执行。在挂起期间，所有的事件会积累起来，等到 resume 的时候会融合为一个事件发送。需要注意的是，dispatch source 并没有提供 API 用于检测 source 本身的挂起计数，也就是外部不能得知一个 source 当前是不是挂起状态。</p>
+<p><code>dispatch_suspend</code> 严格上只是把 Timer 暂时挂起，它和 <code>dispatch_resume</code> 是一个平衡调用，两者分别会减少和增加 dispatch 对象的挂起计数。当这个计数大于 0 的时候，Timer 就会执行。在挂起期间，产生的事件会积累起来，等到 resume 的时候会融合为一个事件发送。需要注意的是，dispatch source 并没有提供 API 用于检测 source 本身的挂起计数，也就是外部不能得知一个 source 当前是不是挂起状态。</p>
 <p><code>dispatch_source_cancel</code> 则是真正意义上的取消 Timer。被取消之后如果想再次执行 Timer，只能重新创建新的 Timer。这个过程类似于对 NSTimer 执行 <code>invalidate</code>。</p>
 <p>另外一个很重要的注意事项，<code>dispatch_suspend</code> 之后的 Timer，是不能被释放的！下面的代码会引起崩溃：</p>
 <pre><code class="lang-objectivec">- (void)stopTimer
@@ -55,7 +55,7 @@
     _timer = nil; // EXC_BAD_INSTRUCTION 崩溃
 }
 </code></pre>
-<p>因此使用 <code>dispatch_suspend</code> 时，Timer 本身的实例需要一直保持。使用 <code>dispatch_source_cancel</code> 没有这个限制：</p>
+<p>因此使用 <code>dispatch_suspend</code> 时，Timer 本身的实例需要一直保持。使用 <code>dispatch_source_cancel</code> 则没有这个限制：</p>
 <pre><code class="lang-objectivec">- (void)stopTimer
 {
     dispatch_source_cancel(_timer);
