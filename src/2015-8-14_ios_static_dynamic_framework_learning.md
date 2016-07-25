@@ -44,7 +44,8 @@ iOS 8/Xcode 6 推出之后，iOS 平台添加了动态库的支持，同时 Xcod
 
 当不想发布代码的时候，也可以使用 Framework 发布 Pod，CocoaPods 提供了 `vendored_framework` 选项来使用第三方 Framework，具体的做法可以参考[这里](http://www.telerik.com/blogs/how-to-use-a-third-party-framework-in-a-private-cocoapod)和[这里](https://stackoverflow.com/questions/18219286/podspec-link-binary-library)。
 
-对于 Swift 项目，CocoaPods 提供了动态 Framework 的支持，通过 `use_frameworks!` 选项控制。
+对于 Swift 项目，CocoaPods 提供了动态 Framework 的支持。通过 `use_frameworks!` 选项控制。对于 Swift 写的库来说，想通过 CocoaPods 引入工程，必须加入 `use_frameworks!` 选项。具体原因参见上一节对于 Swift 部分的介绍。
+
 
 更多有关代码分发的扩展资料可以参考这篇博客： http://geeklu.com/2014/02/objc-lib/
 

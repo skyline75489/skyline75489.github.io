@@ -39,7 +39,7 @@
 <h2>CocoaPods 的做法</h2>
 <p>在纯 ObjC 的项目中，CocoaPods 使用编译静态库 .a 方法将代码集成到项目中。在 Pods 项目中的每个 target 都对应这一个 Pod 的静态库。不过在编译过程中并不会真的产出 .a 文件。如果需要 .a 文件的话，可以参考<a href="http://www.cnblogs.com/brycezhang/p/4117180.html">这里</a>，或者使用 <a href="https://github.com/CocoaPods/cocoapods-packager">CocoasPods-Packager</a> 这个插件。</p>
 <p>当不想发布代码的时候，也可以使用 Framework 发布 Pod，CocoaPods 提供了 <code>vendored_framework</code> 选项来使用第三方 Framework，具体的做法可以参考<a href="http://www.telerik.com/blogs/how-to-use-a-third-party-framework-in-a-private-cocoapod">这里</a>和<a href="https://stackoverflow.com/questions/18219286/podspec-link-binary-library">这里</a>。</p>
-<p>对于 Swift 项目，CocoaPods 提供了动态 Framework 的支持，通过 <code>use_frameworks!</code> 选项控制。</p>
+<p>对于 Swift 项目，CocoaPods 提供了动态 Framework 的支持。通过 <code>use_frameworks!</code> 选项控制。对于 Swift 写的库来说，想通过 CocoaPods 引入工程，必须加入 <code>use_frameworks!</code> 选项。具体原因参见上一节对于 Swift 部分的介绍。</p>
 <p>更多有关代码分发的扩展资料可以参考这篇博客： <a href="http://geeklu.com/2014/02/objc-lib/">http://geeklu.com/2014/02/objc-lib/</a></p>
 <h4>参考资料</h4>
 <ul>
