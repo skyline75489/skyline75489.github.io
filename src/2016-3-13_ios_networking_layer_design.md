@@ -103,7 +103,7 @@ JLGithubApi.h
 
 通过类似这样的方式，我们可以给所有的请求加入 token 头部，以通过服务器端的验证。
 
-采用中心化的设计一个很优秀的例子是 [Moya](https://github.com/Moya/Moya/blob/master/docs/Examples.md) 这个 Swift 库，其底层依赖于 [Alamofire](https://github.com/Alamofire/Alamofire)（即 AFN 3.0 的 Swift 版）。它利用 Swift 强大的枚举类型，实现了很优雅的 API 设计：
+采用中心化的设计一个很优秀的例子是 [Moya](https://github.com/Moya/Moya) 这个 Swift 库，其底层依赖于 [Alamofire](https://github.com/Alamofire/Alamofire)（即 AFN 3.0 的 Swift 版）。它利用 Swift 强大的枚举类型，实现了很优雅的 API 设计：
 
 ```swift
 // API 配置
