@@ -1,0 +1,87 @@
+WPF 当中使用 HwndHost 遇到的坑
+===========================
+
+在 WPF 中嵌入 Win32 控件，需要使用微软提供的 HwndHost 类（对于 WinForm 控件来说可以使用 WindowsFormsHost 类，它继承自 HwndHost，因此这篇文章的内容也适用于 WindowsFormsHost），然而在实际使用中，这个类有一些隐藏的很深的坑，在这里记录一下和读者分享。
+
+#### Handle 准备就绪的时机
+
+根据微软的[官方文档](https://msdn.microsoft.com/en-us/library/ms752055(v=vs.110).aspx)，我们可以很容易地写出一个满足最基本功能的 HwndHost 继承类
+
+```csharp
+namespace My.Wpf.Application
+{
+    public class ControlHost : HwndHost
+    {
+        internal const int WS_CHILD = 0x40000000;
+        internal const int WS_VISIBLE = 0x10000000;
+        internal const int HOST_ID = 0x00000002;
+        
+        private readonly int _hostHeight;
+        private readonly int _hostWidth;
+        
+        public VideoWindowHost(double height, double width)
+        {
+            _hostHeight = (int)height;
+            _hostWidth = (int)width;
+        }
+
+        protected override HandleRef BuildWindowCore(HandleRef hwndParent)
+        {
+            var hwnd = User32Api.CreateWindowEx(0,
+                "static",
+                null,
+                WS_CHILD | WS_VISIBLE,
+                0,
+                0,
+                _hostWidth,
+                _hostHeight,
+                hwndParent.Handle,
+                (IntPtr)HOST_ID,
+                IntPtr.Zero,
+                0);
+            return new HandleRef(this, hwnd);
+        }
+        
+        protected override void DestroyWindowCore(HandleRef hwnd)
+        {
+            User32Api.DestroyWindow(hwnd.Handle);
+        }
+        
+        protected override IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        {
+            handled = false;
+            return IntPtr.Zero;
+        }
+    }
+}
+```
+
+在使用时，需要把它设置为 Border 元素的 Child：
+
+```csharp
+// 这里的 UIReady 实际上是 Window 的 Loaded 回调
+private void On_UIReady(object sender, EventArgs e)
+{
+	app = System.Windows.Application.Current;
+	myWindow = app.MainWindow;
+	myWindow.SizeToContent = SizeToContent.WidthAndHeight;
+	myControl = new ControlHost(ControlHostElement.ActualHeight, ControlHostElement.ActualWidth);
+	ControlHostElement.Child = myControl;
+}
+```
+
+然而通过这样的方法，实际上 myControl 对应的 Win32 Handle 不一定是完全准备好的，尽管它的指针不为空。在微软的例子中它创建了一个 ListBox 可以直接进行渲染，然后做 SendMessage 之类的操作。如果我们需要在 HwndHost 准备好之后对 Handle 做自定义的渲染（我们的用例是视频渲染），这样使用就会遇到问题。
+
+如果没有 ListBox 只是一个单纯的 static Control，通过 debugger 可以看到在一段时间内，这个 HwndHost 对应的 Handle 的宽度和高度都是 0，也就是说实际上没有完全准备好。一个最直接的解决办法就是，后台跑一个循环，轮询 Handle 的宽高，就能知道什么时候 Handle 是真正可以用于渲染了。
+
+在此基础上，还有一个隐藏的更深的坑。myControl 的 parent，也就是上面提到的 Border，一开始必须是最顶层的元素。如果有别的 WPF 控件遮挡住它，哪怕把它的 Visibility 设置为 Visible，HwndHost 也不会进行准备。实际表现就是上面提到的轮询永远不会返回，对应 Handle 的宽高一直是 0。不过初次准备好之后，Border 的 Visibility 就可以随意设置了。
+
+因此，注意 **HwndHost 最开始一定要设置为顶层元素，不能被任何东西遮挡**。幸而这个准备过程相对来说非常快，准备好之后把它隐藏掉就好了，几乎不会影响外观表现。
+
+#### Win32 内容的显示
+
+Win32 内容的显示受到所谓的 Airspace 问题的影响，简单来说同一块儿窗口区域，只能使用 WPF，Win32 和 DirectX 这三种技术当中的一种来显示。有关的具体内容推荐[这篇文章](http://www.abhishekshukla.com/wpf/advanced-wpf-part-5-of-5-interop-in-windows-presentation-foundation/)，写的质量很高，值得一看。
+
+具体到表现上，如果一块儿区域是 HwndHost 渲染的，那么它一定会无视所有 WPF 元素的层级，显示在最上层。换句话说，**WPF 元素是不能遮盖 HwndHost 内容的**。这个问题的源头来自于 WPF 本身的设计，目前看来是无解的，除非使用 Win32 控件来重写，当然这已经不是我们讨论的范畴了。
+
+同时，受到 Airspace 问题的影响，反过来 WPF 也会影响到 Win32 的显示。一个最明显的表现是，如果 Window 的 `AllowsTransparency` 设置为 True，那么 HwndHost 内容就会完全展示不出来。对于有 transparent 需求的应用来说，这是一个不小的问题。网上有一些利用 Win32 Api 的黑科技解决办法，在这里也不再赘述了。
