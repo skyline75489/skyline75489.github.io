@@ -82,6 +82,6 @@ private void On_UIReady(object sender, EventArgs e)
 
 Win32 内容的显示受到所谓的 Airspace 问题的影响，简单来说同一块儿窗口区域，只能使用 WPF，Win32 和 DirectX 这三种技术当中的一种来显示。有关的具体内容推荐[这篇文章](http://www.abhishekshukla.com/wpf/advanced-wpf-part-5-of-5-interop-in-windows-presentation-foundation/)，写的质量很高，值得一看。
 
-具体到表现上，如果一块儿区域是 HwndHost 渲染的，那么它一定会无视所有 WPF 元素的层级，显示在最上层。换句话说，**WPF 元素是不能遮盖 HwndHost 内容的**。这个问题的源头来自于 WPF 本身的设计，目前看来是无解的，除非使用 Win32 控件来重写，当然这已经不是我们讨论的范畴了。
+具体到表现上，如果一块儿区域是 HwndHost 渲染的，那么它会无视所有 WPF 元素的层级，显示在最上层。换句话说，**WPF 元素是不能遮盖 HwndHost 内容的**。这个问题的源头来自于 WPF 本身的设计，目前看来是无解的，除非使用 Win32 控件来重写，当然这已经不是我们讨论的范畴了。
 
 同时，受到 Airspace 问题的影响，反过来 WPF 也会影响到 Win32 的显示。一个最明显的表现是，如果 Window 的 `AllowsTransparency` 设置为 True，那么 HwndHost 内容就会完全展示不出来。对于有 transparent 需求的应用来说，这是一个不小的问题。网上有一些利用 Win32 Api 的黑科技解决办法，在这里也不再赘述了。
