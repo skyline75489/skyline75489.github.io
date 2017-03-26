@@ -5,7 +5,7 @@ WPF 当中使用 HwndHost 遇到的坑
 
 #### Handle 准备就绪的时机
 
-根据微软的[官方文档](https://msdn.microsoft.com/en-us/library/ms752055(v=vs.110).aspx)，我们可以很容易地写出一个满足最基本功能的 HwndHost 继承类
+根据微软的[官方文档](https://msdn.microsoft.com/en-us/library/ms752055.aspx)，我们可以很容易地写出一个满足最基本功能的 HwndHost 继承类
 
 ```csharp
 namespace My.Wpf.Application
