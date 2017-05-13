@@ -17,7 +17,7 @@
 </div>
 <div class="content">
 
-<h1>C# 中使用 DateTime 作为排序 Unique Key 遇到的坑</h1>
+<h1>使用 DateTime 作为排序 Unique Key 需要注意的地方</h1>
 <p>最近我们在实现自己的一个 <code>IComparable</code> 对象时遇到了一个不大不小的坑。想要做的是这样一个事情：根据任务加入队列的时间进行排序。为了方便使用了 .NET 自带的 <code>SortedSet</code> 类型，同时实现了自己的 Comparer:</p>
 <pre><code class="lang-csharp">internal class MyComparer : IComparer&lt;MyTask&gt;
 {
