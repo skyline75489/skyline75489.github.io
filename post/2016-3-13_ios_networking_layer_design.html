@@ -62,12 +62,12 @@ JLGithubApi.h
 */
 
 /**
-*    获取用户信息
+*   获取用户信息
 */
 - (NSURLSessionTask *)getUserInfo:(NSString*)userId success:(void (^)(NSURLSessionDataTask *task, id responseObject))success failure:(void (^)(NSURLSessionDataTask *task, NSError *error))failure;
 
 /**
-*    获取仓库信息
+*   获取仓库信息
 */
 - (NSURLSessionTask *)getRepoInfo:(NSString*)repoId success:(void (^)(NSURLSessionDataTask *task, id responseObject))success failure:(void (^)(NSURLSessionDataTask *task, NSError *error))failure;
 </code></pre>
@@ -163,7 +163,7 @@ provider.request(.Zen) { result in
 <ul>
 <li>请求数量在 10 种以下：随便选</li>
 <li>10 - 100：中心化更加方便</li>
-<li>>100：分散化是必然的趋势</li>
+<li>&gt;100：分散化是必然的趋势</li>
 </ul>
 <p>这种选择主要是取决于这两种设计在下面几个方面的区别：</p>
 <h4>实现的复杂度</h4>

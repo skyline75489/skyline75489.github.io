@@ -74,7 +74,7 @@ end
 <p>第二种情况，当我们拆分出几个模块之后，可能碰到。在前期的拆分中，基础模块的循环引用还是能够接受的，如果这几个基础模块不会引用到业务模块，就可以暂时先放着，之后再处理。</p>
 <p>最难办的是第三种情况，有的时候我们为了方便，会定义一个包含了其它很多 Header 的 Header，类似这样：</p>
 <pre><code class="lang-objectivec">/*
-*    XXKit.h
+*   XXKit.h
 */
 
 #import &quot;XXFoundation.h&quot;

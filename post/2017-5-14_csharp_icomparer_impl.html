@@ -1,0 +1,59 @@
+<!DOCTYPE html> 
+<html>
+<head>
+<title>Skyline75489</title>
+ <meta charset='utf-8'>
+<link rel="stylesheet" href="../static/styles/github.css">
+<link rel="stylesheet" href="../static/post.css">
+</head>
+<body>
+
+<div class="wrapper">
+<div class="header">
+	<span class="blog-name">Skyline75489</span>
+
+<a class="nav" href="../index.html">Home</a>
+<a class="nav" href="about.html">About</a>
+</div>
+<div class="content">
+
+<h1>C# 中使用 DateTime 作为排序 Unique Key 遇到的坑</h1>
+<p>最近我们在实现自己的一个 <code>IComparable</code> 对象时遇到了一个不大不小的坑。想要做的是这样一个事情：根据任务加入队列的时间进行排序。为了方便使用了 .NET 自带的 <code>SortedSet</code> 类型，同时实现了自己的 Comparer:</p>
+<pre><code class="lang-csharp">internal class MyComparer : IComparer&lt;MyTask&gt;
+{
+    public IComparer.Compare(MyTask x, MyTask y)
+    {
+        if (x.Equals(y))
+        {
+                return 0;
+            }
+            if (x.PendingTime &lt; y.PendingTime)
+            {
+                return -1;
+            }
+            return 1;
+    }
+}
+</code></pre>
+<p>其中 <code>PendingTime</code> 是 <code>DateTime</code> 类型，每次有任务加入队列的时候使用 <code>DateTime.Now</code> 获取。这样的实现看起来没有什么大问题，但是实际使用中却发现，有时候会出现一个任务加入队列中，<code>SortedSet</code> 的 <code>Contains</code> 方法却返回了 <code>false</code>，进而导致后面的逻辑出错。后面经过仔细的 Debug 找到了问题所在：当加入队列的速度过快时，<code>DateTime.Now</code> 对于不同的任务返回了完全相同的值，由于 <code>SortedSet</code> 内部使用了红黑树作为数据结构，内部查找元素时如果有发现两个节点的 key 是完全相同的就可能失败。</p>
+<p>查阅资料后发现，尽管 <code>DateTime</code> 的 <code>Ticks</code> 是以 100 nanosecond 为粒度的，<code>DateTime.Now</code> 调用却没有足够小的解析度，根据<a href="https://msdn.microsoft.com/en-us/library/system.datetime.now(v=vs.110">微软的文档</a>.aspx)，<code>DateTime.Now</code> 的解析粒度大概在 15 millisecond 左右。<code>DateTime.Now</code> 之所以这么慢，猜测很大程度上是因为它的实现是<a href="http://stackoverflow.com/q/26144436">线程安全</a>的。</p>
+<p>找到问题原因之后解决的思路就比较清晰了，我们需要一个更细粒度的时间戳。</p>
+<p>Windows 提供了 <code>QueryPerformanceCounter</code> 这个 API 可以用来做高精度时间戳，它的精度 &lt; 1us （即1000ns）。它的实际精度可以用 <code>QueryPerformanceFrequency</code> 算出来（或者 <code>StopWatch.Frequency</code>，<code>StopWatch</code> 实际上就是对 QPC 系列 API 的封装），在我的机器上显示是 &lt; 300ns。QPC API 底层使用的是硬件计时器，根据硬件和操作系统不同，可能会使用 TSC 或者 HPET 等硬件 API，具体可以看<a href="http://aakinshin.net/en/blog/dotnet/stopwatch/">这篇文章</a>。</p>
+<p>通过改用 QPC API 之后，产生问题的概率已经大大下降了。我们可以区分出发生时间在 1us 以上的两个任务的先后。更进一步的，因为 <code>SortedSet</code> 的失败是由于 key 完全相同，同时我们其实可以容忍这种情况下的顺序的不正确性，我们可以在发现 key 完全相同的时候直接给其中的某一个值加一个随机数，让两个值不相等。</p>
+<p>总结：</p>
+<ul>
+<li>实现 <code>IComparable</code> 要小心，没有必要的情况下最好不要自己实现</li>
+<li><code>SortedSet</code> 类型使用的时候要特别注意操作失败的情况</li>
+<li>时间戳 API 选择要结合具体用例，选择合适粒度的 API。</li>
+</ul>
+<p>Bonus：</p>
+<p>大家肯定都知道 <code>DateTime</code> 的 <code>Ticks</code>，但是可能有人不知道 <code>StopWatch</code> 的 <code>ElapsedTicks</code>。这两个命名看起来有关系，实际表示的单位却完全没有关系。<code>DateTime.Ticks</code> 的单位永远是 100ns，如上面所说 <code>StopWatch</code> 实际上是 QPC 系列 API 的封装，由于 Frequency 会受到硬件和操作系统的影响，<code>StopWatch.ElapsedTicks</code> 要和 <code>StopWatch.Frequency</code> 结合起来使用才能算出时间。如果想直接获得时间，使用 <code>Stopwatch.Elapsed</code> <code>StopWatch.ElapsedMilliseconds</code>。千万不要直接使用 <code>StopWatch.ElapsedTicks</code>，更不要使用这个值去初始化 <code>DateTime</code>。</p>
+
+
+</div>
+</div>
+<script src="../static/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+</body>
+
+</html>

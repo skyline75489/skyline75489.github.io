@@ -62,11 +62,11 @@ $ sudo killall -HUP mDNSResponder
 </code></pre>
 <p>然后就可以查询一下，看看效果了</p>
 <pre><code class="lang-nohighlight">$ nslookup www.facebook.com
-Server:        127.0.0.1
+Server:     127.0.0.1
 Address:    127.0.0.1#53
 Non-authoritative answer:
 www.facebook.com    canonical name = star.c10r.facebook.com.
-Name:    star.c10r.facebook.com
+Name:   star.c10r.facebook.com
 Address: 31.13.90.17
 </code></pre>
 <p>查询结果已经不是那个诡异的韩国地址了。第一次查询用的时间会比较长，之后由于缓存，在一定时间内查询会很快。另外，浏览器可能会对DNS进行缓存，启动DNSMasq之后推荐清空浏览器的DNS缓存。</p>
