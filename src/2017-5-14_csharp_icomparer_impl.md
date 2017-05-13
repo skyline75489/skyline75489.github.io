@@ -1,0 +1,47 @@
+C# 中使用 DateTime 作为排序 Unique Key 遇到的坑
+===========================================
+
+最近我们在实现自己的一个 `IComparable` 对象时遇到了一个不大不小的坑。想要做的是这样一个事情：根据任务加入队列的时间进行排序。为了方便使用了 .NET 自带的 `SortedSet` 类型，同时实现了自己的 Comparer:
+
+```csharp
+internal class MyComparer : IComparer<MyTask>
+{
+    public IComparer.Compare(MyTask x, MyTask y)
+    {
+        if (x.Equals(y))
+        {
+        		return 0;
+        	}
+        	if (x.PendingTime < y.PendingTime)
+        	{
+        		return -1;
+        	}
+        	return 1;
+    }
+}
+```
+
+其中 `PendingTime` 是 `DateTime` 类型，每次有任务加入队列的时候使用 `DateTime.Now` 获取。这样的实现看起来没有什么大问题，但是实际使用中却发现，有时候会出现一个任务加入队列中，`SortedSet` 的 `Contains` 方法却返回了 `false`，进而导致后面的逻辑出错。后面经过仔细的 Debug 找到了问题所在：当加入队列的速度过快时，`DateTime.Now` 对于不同的任务返回了完全相同的值，由于 `SortedSet` 内部使用了红黑树作为数据结构，内部查找元素时如果有发现两个节点的 key 是完全相同的就可能失败。
+
+查阅资料后发现，尽管 `DateTime` 的 `Ticks` 是以 100 nanosecond 为粒度的，`DateTime.Now` 调用却没有足够小的解析度，根据[微软的文档](https://msdn.microsoft.com/en-us/library/system.datetime.now(v=vs.110).aspx)，`DateTime.Now` 的解析粒度大概在 15 millisecond 左右。`DateTime.Now` 之所以这么慢，猜测很大程度上是因为它的实现是[线程安全](http://stackoverflow.com/q/26144436)的。
+
+找到问题原因之后解决的思路就比较清晰了，我们需要一个更细粒度的时间戳。
+
+Windows 提供了 `QueryPerformanceCounter` 这个 API 可以用来做高精度时间戳，它的精度 < 1us （即1000ns）。它的实际精度可以用 `QueryPerformanceFrequency` 算出来（或者 `StopWatch.Frequency`，`StopWatch` 实际上就是对 QPC 系列 API 的封装），在我的机器上显示是 < 300ns。QPC API 底层使用的是硬件计时器，根据硬件和操作系统不同，可能会使用 TSC 或者 HPET 等硬件 API，具体可以看[这篇文章](http://aakinshin.net/en/blog/dotnet/stopwatch/)。
+
+通过改用 QPC API 之后，产生问题的概率已经大大下降了。我们可以区分出发生时间在 1us 以上的两个任务的先后。更进一步的，因为 `SortedSet` 的失败是由于 key 完全相同，同时我们其实可以容忍这种情况下的顺序的不正确性，我们可以在发现 key 完全相同的时候直接给其中的某一个值加一个随机数，让两个值不相等。
+
+总结：
+
+* 实现 `IComparable` 要小心，没有必要的情况下最好不要自己实现
+* `SortedSet` 类型使用的时候要特别注意操作失败的情况
+* 时间戳 API 选择要结合具体用例，选择合适粒度的 API。
+
+Bonus：
+
+大家肯定都知道 `DateTime` 的 `Ticks`，但是可能有人不知道 `StopWatch` 的 `ElapsedTicks`。这两个命名看起来有关系，实际表示的单位却完全没有关系。`DateTime.Ticks` 的单位永远是 100ns，如上面所说 `StopWatch` 实际上是 QPC 系列 API 的封装，由于 Frequency 会受到硬件和操作系统的影响，`StopWatch.ElapsedTicks` 要和 `StopWatch.Frequency` 结合起来使用才能算出时间。如果想直接获得时间，使用 `Stopwatch.Elapsed` `StopWatch.ElapsedMilliseconds`。千万不要直接使用 `StopWatch.ElapsedTicks`，更不要使用这个值去初始化 `DateTime`。
+
+
+
+
+
