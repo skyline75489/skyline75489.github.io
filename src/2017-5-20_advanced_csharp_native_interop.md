@@ -29,3 +29,4 @@ C# Native Interop：从入门到再次入门
 
 * https://msdn.microsoft.com/en-us/library/eaw10et3(v=vs.110).aspx
 * https://msdn.microsoft.com/en-us/library/04fy9ya1(v=vs.80).aspx
+* https://www.codeproject.com/Articles/28969/HowTo-Export-C-classes-from-a-DLL
