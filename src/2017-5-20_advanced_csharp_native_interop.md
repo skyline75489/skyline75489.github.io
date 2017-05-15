@@ -3,15 +3,13 @@ C# Native Interop：从入门到再次入门
 
 ## C# 与 Native API 的互操作性
 
-## Native DLL
-
-### DLL 简介
-
-### DLL 导出
-
-### DLL Runtime Linking
-
 ## P/Invoke
+
+### Native DLL
+
+#### DLL 导出
+
+#### DLL Runtime Linking
 
 ### blittable 类型
 
@@ -30,4 +28,4 @@ C# Native Interop：从入门到再次入门
 ## 参考资料
 
 * https://msdn.microsoft.com/en-us/library/eaw10et3(v=vs.110).aspx
-
+* https://msdn.microsoft.com/en-us/library/04fy9ya1(v=vs.80).aspx
