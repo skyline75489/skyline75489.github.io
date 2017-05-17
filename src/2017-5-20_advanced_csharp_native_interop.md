@@ -11,7 +11,7 @@ C# Native Interop：从入门到再次入门
 2. C++/CLI Interop, 即在 Managed C++(托管C++)中调用 C/C++ 类库
 3. COM Interop, 主要用于在 .NET 中调用 COM 组件
 
-其中 C++/CLI Interop 实质上和 P/Invoke 技术在底层实现上是一致的，只是在上层使用上有所差异。因此本文对于 C++/CLI 不再单独讲述，感兴趣的读者可以自行查阅有关资料。本文就 P/Invoke 和 COM Interop 两种技术进行一些探讨，希望能给读者以启发和收获。
+其中 C++/CLI Interop 和 P/Invoke 技术在底层实现上实质是一致的，只是在上层使用上有所差异。因此本文对于 C++/CLI 技术不再单独讲述，感兴趣的读者可以自行查阅有关资料。本文就 P/Invoke 和 COM Interop 两种技术进行一些探讨，希望能给读者以启发和收获。
 
 ## P/Invoke
 
@@ -21,9 +21,13 @@ P/Invoke 依托于 CLR 和 JIT，实现了在 .NET 平台对于非托管 DLL 的
 
 ### Native DLL
 
-DLL 是 Windows 平台上专属的动态库格式。
+DLL 是 Windows 平台上专属的动态库格式，具体来说应该被称为 PE/COFF 文件。注意 DLL 实际上是有很多种的，有最普通的 Native 代码生成的 DLL，还有后面会涉及到的 COM DLL，以及 .NET assembly DLL。这里主要介绍 Native DLL，Win32 大部分类库，以及我们自己使用 C/C++ 代码编译生成的都是这种 DLL。
+
+DLL 技术是整个 Win32 运行库的基础。Win32 绝大部分 API 都是通过 DLL 暴露给开发者的。DLL 技术本身也极其复杂，这里我们只涉及一些和本文内容有关的知识。
 
 #### DLL 导出
+
+DLL 当中的内容需要显式地导出之后才能使用。这里 DLL 同 Linux 上的 ELF （以及苹果 Darwin 平台上的 Mach-O？）显著不同的一点。ELF 格式是默认导出所有符号的，因此也就不存在导出这个概念了。而 DLL 如果一个符号没有被导出，那么外部是没有办法使用的，Linker 会找不到对应的内容。
 
 #### DLL Runtime Linking
 
