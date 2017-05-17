@@ -28,7 +28,10 @@
 </ol>
 <p>其中 C++/CLI Interop 实质上和 P/Invoke 技术在底层实现上是一致的，只是在上层使用上有所差异。因此本文对于 C++/CLI 不再单独讲述，感兴趣的读者可以自行查阅有关资料。本文就 P/Invoke 和 COM Interop 两种技术进行一些探讨，希望能给读者以启发和收获。</p>
 <h2>P/Invoke</h2>
+<p>P/Invoke 的前身是当年微软专属的 Java 实现 J++ 当中使用的 J/Direct 技术。和 JNI 技术不同，J/Direct 通过跨过 Java 虚拟机直接和 Native 代码进行交互达到了相对更高的性能。后来随着 .NET 技术的兴起，J/Direct 也在 .NET 的世界里以 P/Invoke 的方式得到的重生。</p>
+<p>P/Invoke 依托于 CLR 和 JIT，实现了在 .NET 平台对于非托管 DLL 的加载和调用。在介绍 P/Invoke 之前，我们首先了解一下非托管 DLL 的有关知识。</p>
 <h3>Native DLL</h3>
+<p>DLL 是 Windows 平台上专属的动态库格式。</p>
 <h4>DLL 导出</h4>
 <h4>DLL Runtime Linking</h4>
 <h3>blittable 类型</h3>
@@ -42,6 +45,7 @@
 <ul>
 <li><a href="https://msdn.microsoft.com/en-us/library/eaw10et3(v=vs.110).aspx">https://msdn.microsoft.com/en-us/library/eaw10et3(v=vs.110).aspx</a></li>
 <li><a href="https://msdn.microsoft.com/en-us/library/04fy9ya1(v=vs.80).aspx">https://msdn.microsoft.com/en-us/library/04fy9ya1(v=vs.80).aspx</a></li>
+<li><a href="https://msdn.microsoft.com/zh-cn/library/aa686045.aspx">https://msdn.microsoft.com/zh-cn/library/aa686045.aspx</a></li>
 <li><a href="https://www.codeproject.com/Articles/28969/HowTo-Export-C-classes-from-a-DLL">https://www.codeproject.com/Articles/28969/HowTo-Export-C-classes-from-a-DLL</a></li>
 </ul>
 
