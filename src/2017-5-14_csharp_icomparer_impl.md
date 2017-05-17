@@ -23,7 +23,7 @@ internal class MyComparer : IComparer<MyTask>
 
 其中 `PendingTime` 是 `DateTime` 类型，每次有任务加入队列的时候使用 `DateTime.Now` 获取。这样的实现看起来没有什么大问题，但是实际使用中却发现，有时候会出现一个任务加入队列中，`SortedSet` 的 `Contains` 方法却返回了 `false`，进而导致后面的逻辑出错。后面经过仔细的 Debug 找到了问题所在：当加入队列的速度过快时，`DateTime.Now` 对于不同的任务返回了完全相同的值，由于 `SortedSet` 内部使用了红黑树作为数据结构，内部查找元素时如果有发现两个节点的 key 是完全相同的就可能失败。
 
-查阅资料后发现，尽管 `DateTime` 的 `Ticks` 是以 100 nanosecond 为粒度的，`DateTime.Now` 调用却没有足够小的解析度，根据[微软的文档](https://msdn.microsoft.com/en-us/library/system.datetime.now(v=vs.110).aspx)，`DateTime.Now` 的解析粒度大概在 15 millisecond 左右。`DateTime.Now` 之所以这么慢，猜测很大程度上是因为它的实现是[线程安全](http://stackoverflow.com/q/26144436)的。
+查阅资料后发现，尽管 `DateTime` 的 `Ticks` 是以 100 nanosecond 为粒度的，`DateTime.Now` 调用却没有足够小的解析度，根据[微软的文档](https://msdn.microsoft.com/en-us/library/system.datetime.now.aspx)，`DateTime.Now` 的解析粒度大概在 15 millisecond 左右。`DateTime.Now` 之所以这么慢，猜测很大程度上是因为它的实现是[线程安全](http://stackoverflow.com/q/26144436)的。
 
 找到问题原因之后解决的思路就比较清晰了，我们需要一个更细粒度的时间戳。
 
