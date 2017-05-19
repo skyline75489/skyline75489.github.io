@@ -51,6 +51,7 @@ DLL 当中的内容需要显式地导出之后才能使用。这里 DLL 同 Linu
 * https://msdn.microsoft.com/en-us/library/04fy9ya1(v=vs.80).aspx
 * https://msdn.microsoft.com/zh-cn/library/aa686045.aspx
 * https://msdn.microsoft.com/en-us/library/system.gc.keepalive(v=vs.110).aspx
+* https://msdn.microsoft.com/en-us/library/ms235282.aspx
 * https://www.codeproject.com/Articles/28969/HowTo-Export-C-classes-from-a-DLL
 
 
