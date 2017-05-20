@@ -55,11 +55,11 @@ dumpbin /exports testcpp.dll
 ...
 ```
 
-这里我们省略了部分输出，只保留了我们关心的部分，这里和本文有关的只有两个值 ordinal 和 name。
+这里我们省略了部分输出，只保留了我们关心的部分。和本文有关的只有两个值 ordinal 和 name。可以看到我们导出的函数 `PrintNumber` 的 ordinal 是 1，name 是 `?PrintNumber@@YAXH@Z`。下面我们分别介绍一下。
 
-可以看到我们导出的函数 `PrintNumber` 的 ordinal 是 1，name 是 `?PrintNumber@@YAXH@Z`。其中 ordinal 即函数序号，在上古时期由于内存十分有限，需要通过序号而不是名字来对 DLL 中的函数进行查找。现在你仍然可以这么做，不过这种做法已经不推荐了。因为使用序号会导致 DLL 更新变得异常困难，维护名字显示要比维护序号更加自然和容易。因此我们对于 DLL 函数中的调用主要依赖于函数的名字，即这里的 name。熟悉 C\+\+ 的同学可以看出来，这里编译器对于 C++ 的函数名称进行了修饰(mangling)，因此导出的函数名字和最初定义的并不完全一致。
+ordinal，即函数序号，在上古时期由于内存十分有限，需要通过序号而不是名字来对 DLL 中的函数进行查找。现在你仍然可以这么做，不过这种做法已经不推荐了。因为使用序号会导致 DLL 更新变得异常困难，维护名字显示要比维护序号更加自然和容易。因此我们对于 DLL 函数中的调用主要依赖于函数的名字，即这里的 name。
 
-由于这种命名修饰和编译器版本相关，即可能随着编译器更新而发生变化。因此为了方便外部调用，通常我们会使用 C 的方式对函数进行导出：
+熟悉 C\+\+ 的同学可以看出来，这里编译器对于 C++ 的函数名称进行了修饰(mangling)，因此导出的函数名字和最初定义的并不完全一致。由于这种命名修饰和编译器版本相关，即可能随着编译器更新而发生变化。因此为了方便外部调用，通常我们会使用 C 的方式对函数进行导出：
 
 ```cpp
 #ifdef __cplusplus
@@ -131,11 +131,11 @@ EXPORTS
 
 第一个维度的选择很容易，VS 默认也会帮我们配置好，在 Debug 配置下使用 Debug 版本的 runtime library，可以得到更好的调试体验，在 Release 配置下使用版本的 runtime library，可以获得更好的性能。
 
-另一个维度就需要我们根据具体需求来决定了。在 Debug 环境下使用动态库和静态库除了调试的体验之外实际上没有什么区别，这里就不讨论了。我们只讨论 Release 环境下。
+另一个维度就需要我们根据具体需求来决定了。在 Debug 环境下使用动态库和静态库除了调试的体验之外实际上没有什么区别，这里就不讨论了。我们只讨论 Release 环境下对于 runtime 库的选择。
 
 **动态库**
 
-一般情况下推荐使用动态库，因为可以减小库的大小。但是这就要求部署的时候对应的 runtime library 库也需要部署到用户机器上，一种方式是安装微软提供的 Visual C\+\+ Redistributable，另一种方式是跟随程序把 runtime library 也一起部署到用户机器上。
+一般情况下推荐使用动态库，这样做一个好处是可以减小用户程序的大小，另一个好处是如果 runtime 有更新我们的程序也可以自动用上最新的 runtime。而动态库的坏处就是要求部署的时候对应的 runtime library 也需要部署到用户机器上。可以通过两种方式做到这一点，一种方式是在用户机器上安装微软提供的 Visual C\+\+ Redistributable，另一种方式是跟随程序把 runtime library 也一起部署到用户机器上。
 
 需要特别注意的是，runtime library 是有版本要求的，使用不同版本的 VS 会导致编译出的库依赖不同版本的 runtime library。如果版本对不上，那么 DLL 是没有办法正确加载的。这就是为什么一些程序和游戏在安装的时候，要求我们安装对应版本的 Visual C\+\+ Redistributable。
 
@@ -174,6 +174,12 @@ File Type: DLL
 
 使用静态库的话，就不需要额外在客户的电脑上进行部署了，有关的依赖会被打进 DLL 里面。这样带来的坏处是，如果程序依赖了多个 Native DLL 库，就会保留多份同样的依赖。同时如果不同的 Native 库依赖的 runtime 版本还不是一个，就会导致更加混乱的状况：同一个程序中加载了不同版本的多个 runtime。这种情况会导致程序占用内存变大，同时在 runtime 边界进行编程时也可能会产生错误。
 
+**Bonus**
+
+Debug 版本的 DLL 原则上讲是不能用于分发的。如果你部署把 Debug 版本的应用程序部署到客户机上，同时附带上 Debug 版本的 runtime DLL 理论上讲也能够运行，不过这违反了 VS 的使用条款。
+
+### P/Invoke 基础
+
 ### blittable 类型
 
 ### 托管堆与非托管堆
@@ -198,3 +204,5 @@ File Type: DLL
 * https://www.codeproject.com/Articles/28969/HowTo-Export-C-classes-from-a-DLL
 * http://www.davidlenihan.com/2008/01/choosing_the_correct_cc_runtim.html
 * http://siomsystems.com/mixing-visual-studio-versions/
+
+
