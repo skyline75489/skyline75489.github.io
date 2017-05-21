@@ -180,13 +180,104 @@ Debug 版本的 DLL 原则上讲是不能用于分发的。如果你部署把 De
 
 ### P/Invoke 基础
 
+非托管代码在 .NET 的世界中被认为是不安全的，要想使用 P/Invoke，首先要在项目中勾选 Allow unsafe code。惯例上我们会把 P/Invoke 方法专门封装到一个类中，其中类的名字指明这些方法是 Native 的。例如我们对前面提到的 PrintNumber 进行封装：
+
+```csharp
+public unsafe class NativeApi
+{
+    [DllImport(".\\testcpp.dll", CallingConvention = CallingConvention.Cdecl)]
+    internal static extern void PrintNumber(int number);
+}
+```
+
+在 C# 中可以直接调用这个方法：
+
+```csharp
+
+private static void InteropCppTest()
+{
+    NativeApi.PrintNumber(42);
+}
+```
+
+其中对于 NativeApi 的定义有几个需要注意的点：
+
+* 必须使用 extern，表明这个方法不需要方法体
+* 必须使用 static，所有的非托管方法都是可以直接调用的
+* 必须给方法加上 DllImport 属性
+
+其中 DllImport 属性我们使用了两个参数，一个是 DLL 路径，另一个是 CallingConvetnion。CallingConvention 在后面的内容中会提到，我们首先看下找 DLL 的问题。DllImport 当中给出了 DLL 的路径，这个位置可以是相对路径，也可以是绝对路径，如果 CLR 找不到对应的 DLL 就会抛出 DllNotFoundException。
+
 ### 托管与非托管 DLL 的目标架构
+
+有些时候 DLL 明明找到了，但是系统却抛出了 BadImageFormatException ，排除 DLL 本身是损坏的这种情况，这个 exception 通常是托管程序和非托管 DLL 的架构不一致导致的。
+
+.NET 托管程序默认是平台无关的，并且由于有 JIT 的存在，可以实现在 x86 平台上跑 32 位，在 x64 平台上会跑 64 位，以尽可能地利用平台优势。然而非托管 DLL 则是和平台相关的，并且是在编译时就确定的。对于非托管 DLL 可以使用 dumpbin 命令查看它的架构：
+
+```plaintext
+dumpbin /headers testcpp.dll
+```
+
+前面若干行输出如下：
+
+
+```plaintext
+
+File Type: DLL
+
+FILE HEADER VALUES
+            8664 machine (x64)
+               7 number of sections
+        591FCCC4 time date stamp Sat May 20 12:57:40 2017
+               0 file pointer to symbol table
+               0 number of symbols
+              F0 size of optional header
+            2022 characteristics
+                   Executable
+                   Application can handle large (>2GB) addresses
+                   DLL
+```
+
+可以看到 DLL 头部中清晰地标明了这个一个 64 位的 DLL。
+
+当我们使用 `AnyCpu` 配置编译 .NET 程序时，生成的是完全平台无关的 DLL。如果我们想在这样的 DLL 中调用非托管 DLL，就产生了一个问题：在 x86 平台跑时它只能加载 x86 的非托管 DLL，在 x64 平台跑时同理。如果非托管 DLL 和目标架构和托管程序不一致，就会导致 DLL 不能正确加载，即上面提到的 BadImageFormatException。
+
+要解决这个问题，一种办法是分别给 x86 和 x64 两个平台准备一份非托管 DLL，例如 `testcpp.dll` 和 `testcpp64.dll`，同时在托管代码中也需要根据当前环境，判断调用哪个 DLL 当中的方法。
+
+另一种办法是，强制让 .NET 程序跑在 32 位上，这样只准备一份 x86 位的非托管 DLL 就可以了。这种解决方案之所以可行，一是因为 64 位的 Windows 上本身就可以借助微软的 WoW64 技术直接运行 32 位程序，二是因为 .NET 本身也支持了这个特性。
+
+.NET assembly 支持标志位表明自己是不是要求跑在 32 位下。可以使用 `corflags` 工具查看 .NET assembly 的标志位：
+
+```plaintext
+corflags test.exe
+```
+
+输出如下所示：
+
+```plaintext
+Version   : v4.0.30319
+CLR Header: 2.5
+PE        : PE32
+CorFlags  : 0x1
+ILONLY    : 1
+32BITREQ  : 0
+32BITPREF : 0
+Signed    : 0
+```
+
+其中 32BITREQ 即表示这个 assembly 是不是要求在 32 位模式下运行。这里输出为 0 表示不要求，那么在 64 位机器上这个程序就会跑在 64 位下。
+
+当我们使用 `x86` 而不是 `AnyCpu` 配置编译程序时，生成的可执行文件会设置 32BITREQ 位。这样这个程序在 64 位机器上会以 32 位程序的形式跑在 WoW64 上，也就可以正常加载 32 位的非托管 DLL 了。
+
+**Bonus**：
+
+如果有同学观察到了 32BITPREF 这个标志位并且对此感到疑惑的话，你需要知道你并不孤单。这个标志位是 .NET 4.5 加入的。它在 VS 里对应的配置是 Any CPU 32-bit preferred。它和 x86 配置的表现是一致的，唯一的区别是在 ARM 平台上 x86 配置编译的程序不能运行，而 Any CPU 32-bit preferred 可以。
+
+### Calling Convention
 
 ### blittable 类型
 
 ### 托管堆与非托管堆
-
-### Calling Convention
 
 ### Delegate 与 Callback
 
@@ -208,5 +299,4 @@ Debug 版本的 DLL 原则上讲是不能用于分发的。如果你部署把 De
 * https://www.codeproject.com/Articles/28969/HowTo-Export-C-classes-from-a-DLL
 * http://www.davidlenihan.com/2008/01/choosing_the_correct_cc_runtim.html
 * http://siomsystems.com/mixing-visual-studio-versions/
-
-
+* http://blogs.microsoft.co.il/sasha/2012/04/04/what-anycpu-really-means-as-of-net-45-and-visual-studio-11/
