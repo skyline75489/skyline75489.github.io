@@ -185,7 +185,7 @@ Debug 版本的 DLL 原则上讲是不能用于分发的。如果你部署把 De
 ```csharp
 public unsafe class NativeApi
 {
-    [DllImport(".\\testcpp.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(".\\testcpp.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "PrintNumber")]
     internal static extern void PrintNumber(int number);
 }
 ```
@@ -206,7 +206,7 @@ private static void InteropCppTest()
 * 必须使用 static，所有的非托管方法都是可以直接调用的
 * 必须给方法加上 DllImport 属性
 
-其中 DllImport 属性我们使用了两个参数，一个是 DLL 路径，另一个是 CallingConvetnion。CallingConvention 在后面的内容中会提到，我们首先看下找 DLL 的问题。DllImport 当中给出了 DLL 的路径，这个位置可以是相对路径，也可以是绝对路径，如果 CLR 找不到对应的 DLL 就会抛出 DllNotFoundException。
+其中 DllImport 属性我们使用了三个参数，一个是 DLL 路径，一个是 DLL 当中对应函数的名字，另一个是 CallingConvetnion。CallingConvention 在后面的内容中会提到，我们首先看下找 DLL 的问题。DllImport 当中给出了 DLL 的路径，这个位置可以是相对路径，也可以是绝对路径，如果 CLR 找不到对应的 DLL 就会抛出 DllNotFoundException。
 
 ### 托管与非托管 DLL 的目标架构
 
@@ -267,7 +267,7 @@ Signed    : 0
 
 其中 32BITREQ 即表示这个 assembly 是不是要求在 32 位模式下运行。这里输出为 0 表示不要求，那么在 64 位机器上这个程序就会跑在 64 位下。
 
-当我们使用 `x86` 而不是 `AnyCpu` 配置编译程序时，生成的可执行文件会设置 32BITREQ 位。这样这个程序在 64 位机器上会以 32 位程序的形式跑在 WoW64 上，也就可以正常加载 32 位的非托管 DLL 了。
+当我们修改 .NET Build 配置的 Platform target 为 x86 之后，生成的可执行文件会设置 32BITREQ 位。这样这个程序在 64 位机器上会以 32 位程序的形式跑在 WoW64 上，也就可以正常加载 32 位的非托管 DLL 了。
 
 **Bonus**：
 
@@ -275,9 +275,165 @@ Signed    : 0
 
 ### Calling Convention
 
-### blittable 类型
+对于函数调用来说，调用方和被调用方对于函数如果调用必须有一个统一的理解，才能保证函数调用的成功，即双方应该有一个共同的约定，其中约定的内容包括：
+
+* 参数的传递方式
+* 调用完成之后栈的清理方式
+
+在 C/C\+\+ 中存在多种调用惯例，即 Calling Convention，关于调用惯例的具体内容就不在这里赘述了，这里只讲和我们使用有关的内容。在 .NET 当中定义了五种调用惯例：
+
+* Cdecl：C/C\+\+ 语言默认的调用惯例，任何没有显式指明调用惯例的函数都会采用 Cdecl。
+* StdCall：Win32 函数所采用的调用惯例
+* ThisCall：C\+\+ 中调用类成员函数所使用的调用惯例
+* FastCall：.NET 实质上不支持这个调用惯例
+* WinApi：实质上不是一种调用惯例，而是一种声明，表明采用当前平台默认的调用方式，在 Windows 上是 StdCall，在 Windows CE 上是 Cdecl。
+
+我们通过 DllImport 表明的 Calling Convention 和对应 C/C\+\+ 代码中函数需保持一致。否则会出现调用错误。例如上文我们的 PrintNumber 函数需要指明 CallingConvention = CallingConvention.Cdecl。
+
+我们改变一下 PrintNumber2 的定义：
+
+```cpp
+void __stdcall PrintNumber2(int number)
+{
+  printf("%d\n", number);
+}
+```
+
+这里 `__stdcall` 表明这个函数的 Calling Convention 是 StdCall，在 C# 中的 P/Invoke 声明就可以写成这样：
+
+```csharp
+[DllImport(".\\testcpp.dll")]
+internal static extern void PrintNumber2(int number);
+```
+
+DllImport 在 Windows 平台上默认就使用 StdCall，同时如果函数名称和 EntryPoint 完全一致的话也可以省略掉，这样这个声明只需要 DLL 位置就足够了。
+
+**Bonus**：
+
+你可能会想，为什么默认采用 StdCall 呢？其实也很简单，因为前面提到 Win32 API 都是采用 StdCall 的，况且 P/Invoke 一开始就是为了解决调用 Win32 API 的问题的。作为微软亲儿子之一的 Win32 API 享受这样的待遇也并不显得稀奇。
+
+### blittable 类型和 marshaller
+
+上面的 PrintNumber 函数两兄弟都是直接采用 int 作为参数类型，我们在 C# 中也是直接使用了 CLR 的 int 类型。然而并不是所有类型都能这么简单的进行处理。
+
+.NET 当中把可以在托管和非托管代码之间内存层面直接进行交换的类型称为 blittable 类型。它们在托管和非托管内存中有着完全一样的内存表示，因此不需要额外处理就可以在托管代码和非托管代码之间进行传递。这样的类型有下面几种：
+
+* System.Byte
+* System.SByte
+* System.Int16
+* System.UInt16
+* System.Int32
+* System.UInt32
+* System.Int64
+* System.UInt64
+* System.IntPtr
+* System.UIntPtr
+* System.Single
+* System.Double
+
+其余的类型（数组，字符串，布尔，对象，结构体，以及 delegate 等）都属于 non-blittable 类型，这样的类型在作为参数传递，以及作为返回值返回的时候，都需要 marshaller 介入。marshaller 相当于托管内存和非托管内存之间的翻译官。通过它数据才能正确地在托管和非托管世界之间传递。
+
+.NET 本身提供了大量的 marshaller 工具，方便我们使用，下面通过一个例子看一下，例如我们有下面的数据结构：
+
+```cpp
+struct Entry {
+  const char * name;
+  int value;
+};
+```
+
+以及一个使用到这个数据结构的方法：
+
+```cpp
+int PrintEntry(Entry* entry);
+```
+
+在 C# 中这个数据结构需要这样定义：
+
+```csharp
+[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+public class Entry
+{
+    [MarshalAs(UnmanagedType.LPStr)]
+    public string name;
+    public int value;
+}
+```
+
+方法的定义：
+
+```csharp
+[DllImport(".\\testcpp.dll", CallingConvention = CallingConvention.Cdecl)]
+[return:MarshalAs(UnmanagedType.Bool)]
+internal static extern bool PrintEntry(Entry entry);
+```
+
+在 C# 中调用：
+
+```csharp
+var ret = NativeApi.PrintEntry(new Entry
+                         {
+                             name = "answer",
+                             value = 111
+                         });
+```
+
+可以看到我们使用了 .NET 提供了 marshaller 帮助我们实现了 const char * 到 string 类型，以及 int 到 bool 类型的转换。
+
+Marshaller 支持了很多种类型直接的自动转换，可以根据参考 MSDN 文档查看具体使用方法。
 
 ### 托管堆与非托管堆
+
+在上面的例子中，我们创建一个 Entry 对象，并且把它通过引用传递给了非托管代码。这里涉及到一个问题，我们都知道 .NET 世界当中对象的地址是有可能在 GC 过程中发生变化的。也就是说所有托管堆上的对象地址都是可能发生变化的，如何保证这个地址非托管代码中还是可以使用的呢？
+
+答案是 Pinning。在 P/Invoke 调用时会暂时把当前作为参数的托管对象 pin 住，让它的地址在 P/Invokve 这一次 call 的过程中不会发生变化。
+
+注意上面特意强调了是这一次 call。也就是说当这一次调用结束之后， pinning 也就失效了。如果我们需要传递的数据在非托管代码中可以一直使用，要么在非托管代码中将数据复制一份，要么直接在 C# 中创建非托管堆上的对象。下面通过一个例子介绍一下如何在托管代码中操作非托管堆。
+
+定义另一个函数：
+
+```cpp
+void PrintEntry2(Entry* entry);
+```
+
+不同的是，这次我们使用 IntPtr 作为 C# 的传递参数：
+
+```csharp
+[DllImport(".\\testcpp.dll", CallingConvention = CallingConvention.Cdecl)]
+internal static extern void PrintEntry2(IntPtr entry);
+```
+
+调用：
+
+```csharp
+var e = new Entry { name = "answer", value = 111111 };
+// 注意这里我们是在非托管堆上创建出了一个 Entry 对象
+var ptr = Marshal.AllocHGlobal(Marshal.SizeOf(e));
+Marshal.StructureToPtr(e, ptr, false);
+NativeApi.PrintEntry2(ptr);
+// 这个对象是不会受 GC 控制的，需要手动销毁
+Marshal.DestroyStructure(ptr, typeof(Entry));
+```
+
+上面的例子中，我们通过 .NET API 直接在非托管堆上创建出我们想要的对象，然后传递给了非托管代码，这样就避免了对象受到 GC 的影响。
+
+在操作非托管堆时要特别注意，创建出的对象一定要在适当的时候销毁掉，不然会造成内存泄露。
+
+**Bonus**
+
+实际上我们也可以在非托管代码里销毁 .NET 创建出的对象：
+
+```cpp
+void PrintEntry2(Entry* entry)
+{
+  printf("%s : %d\n", entry->name, entry->value);
+  GlobalFree(entry);
+}
+```
+
+不过这样做违反了谁创建谁销毁的基本原则，也破坏了代码的架构。
+
+其实不管在什么情况下，都是不推荐像上面这样在托管堆和非托管堆之间进行互相操作的。因为这种操作一旦出错就很容易破坏堆的结构，导致程序不能正常运行。
 
 ### Delegate 与 Callback
 
