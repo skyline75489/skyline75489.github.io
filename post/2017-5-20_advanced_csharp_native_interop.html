@@ -26,7 +26,7 @@
 <li>C++/CLI Interop, 即在 Managed C++(托管C++)中调用 C/C++ 类库</li>
 <li>COM Interop, 主要用于在 .NET 中调用 COM 组件</li>
 </ol>
-<p>其中 C++/CLI Interop 和 P/Invoke 技术在底层实现上实质是一致的，只是在上层使用上有所差异。因此本文对于 C++/CLI 技术不再单独讲述，感兴趣的读者可以自行查阅有关资料。本文就 P/Invoke 和 COM Interop 两种技术进行一些探讨，希望能给读者以启发和收获。</p>
+<p>其中 C++/CLI Interop 和 P/Invoke 技术在底层实现上实质是一致的，只是在上层使用上有所差异。因此本文对于 C++/CLI 技术不再单独讲述，感兴趣的读者可以自行查阅有关资料。本文主要对使用场景最多的 P/Invoke 技术进行一些探讨，同时对 COM 技术以及 COM Interop 进行一下简单介绍，希望能给读者以启发和帮助。</p>
 <h2>P/Invoke</h2>
 <p>P/Invoke 的前身是当年微软专属的 Java 实现 J++ 当中使用的 J/Direct 技术。和 JNI 技术不同，J/Direct 跨过 Java 虚拟机直接和 Native 代码进行交互，达到了相对更高的性能。后来随着 .NET 技术的兴起，J/Direct 也在 .NET 的世界里以 P/Invoke 的方式得到了重生。</p>
 <p>P/Invoke 依托于 CLR 和 JIT，实现了在 .NET 平台对于非托管 DLL 的加载和调用。在介绍 P/Invoke 之前，我们首先了解一下非托管 DLL 的有关知识。</p>
@@ -137,9 +137,11 @@ File Type: DLL
 <p><strong>Bonus</strong></p>
 <p>Debug 版本的 DLL 原则上讲是不能用于分发的。如果你部署把 Debug 版本的应用程序部署到客户机上，同时附带上 Debug 版本的 runtime DLL 理论上讲也能够运行，不过这违反了 VS 的使用条款。</p>
 <h3>P/Invoke 基础</h3>
+<h3>托管与非托管 DLL 的目标架构</h3>
 <h3>blittable 类型</h3>
 <h3>托管堆与非托管堆</h3>
 <h3>Calling Convention</h3>
+<h3>Delegate 与 Callback</h3>
 <h2>COM Interop</h2>
 <h3>COM - A Better C++</h3>
 <h3>COM 内存机制</h3>

@@ -11,7 +11,7 @@ C# Native Interop：从入门到再次入门
 2. C\+\+/CLI Interop, 即在 Managed C++(托管C++)中调用 C/C++ 类库
 3. COM Interop, 主要用于在 .NET 中调用 COM 组件
 
-其中 C\+\+/CLI Interop 和 P/Invoke 技术在底层实现上实质是一致的，只是在上层使用上有所差异。因此本文对于 C++/CLI 技术不再单独讲述，感兴趣的读者可以自行查阅有关资料。本文就 P/Invoke 和 COM Interop 两种技术进行一些探讨，希望能给读者以启发和收获。
+其中 C\+\+/CLI Interop 和 P/Invoke 技术在底层实现上实质是一致的，只是在上层使用上有所差异。因此本文对于 C++/CLI 技术不再单独讲述，感兴趣的读者可以自行查阅有关资料。本文主要对使用场景最多的 P/Invoke 技术进行一些探讨，同时对 COM 技术以及 COM Interop 进行一下简单介绍，希望能给读者以启发和帮助。
 
 ## P/Invoke
 
@@ -180,11 +180,15 @@ Debug 版本的 DLL 原则上讲是不能用于分发的。如果你部署把 De
 
 ### P/Invoke 基础
 
+### 托管与非托管 DLL 的目标架构
+
 ### blittable 类型
 
 ### 托管堆与非托管堆
 
 ### Calling Convention
+
+### Delegate 与 Callback
 
 ## COM Interop
 
