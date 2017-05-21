@@ -10,6 +10,8 @@ pod 'Quick', '0.5.0'
 pod 'Nimble', '2.0.0-rc.1'
 ```
 
+**更新**：CocoaPods 1.0 之后要求 Podfile 当中必须指明 target，所以上面的写法就变成错误写法了。
+
 如果我们需要给多个 target 设置依赖的话，有两种办法，第一种是给每个 target 都写一遍依赖：
 
 ```ruby
@@ -68,3 +70,5 @@ target :keyboard do
 * http://natashatherobot.com/cocoapods-installing-same-pod-multiple-targets/
 * http://www.tuicool.com/articles/e6VrieN
 * https://guides.cocoapods.org/using/the-podfile.html
+
+
