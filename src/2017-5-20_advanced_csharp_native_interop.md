@@ -504,7 +504,7 @@ public delegate bool ChangeDelegate([MarshalAs(UnmanagedType.LPWStr) string S);
 
 注意到中间有两句 GC 的代码被注释掉了。如果加上这两句代码，程序是不能正确运行的，会报 callbackOnCollectedDelegate。这里涉及到 delegate 的生命周期问题。
 
-尽管这里的 Target 方法是 static 方法，delegate 本身则是一个实例化的类型(System.Delegate)。上面创建 Entry 类型的时候，故意没有赋值，让这个实例可以被 GC 掉，当它被 GC 掉时对应的 delegate 实例也跟着被 GC 掉，就导致非托管代码回调的时候，对应的托管 delegate 已经被释放了。
+尽管这里的 Target 方法是 static 方法，delegate 本身则是一个实例化的类型(System.Delegate)。上面创建 Entry 类型的时候，故意没有赋值，让这个实例可以被 GC 掉，当它被 GC 掉时对应的 delegate 实例也跟着被 GC 掉，就导致非托管代码回调的时候，对应的托管 delegate 已经被释放了。有关详情可以参考[这篇](https://msdn.microsoft.com/en-us/library/43yky316.aspx) MSDN 文档。
 
 要解决这个问题，一种方法是维持一个 delegate 的引用，另一种方法是通过 `GC.KeepAlive` 让 delegate 不用被释放掉。
 
