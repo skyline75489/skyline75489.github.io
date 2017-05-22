@@ -1,7 +1,7 @@
 C# Native Interop：从入门到再次入门
 ================================
 
-## C# 与 Native API 的互操作性
+### C# 与 Native API 的互操作性
 
 .NET 平台对于 C/C\+\+ 等 Native 库具有良好的互操作性，其中一部分原因是，微软本身在实现 .NET Framework 的过程中发现，Win32 API 经过多年的发展已经过于庞大，大到无法也没有必要使用 C# 全部重新实现一遍，不如直接通过 C# 调用 Win32 API 来的实际。如今 .NET Framework 中很多类库到最底层也是使用的 Win32 或 COM 的 API。因此，当我们自己需要调用 C++ 类库时也可以放心大胆的使用 C# 的互操作技术。
 
@@ -11,9 +11,9 @@ C# Native Interop：从入门到再次入门
 2. C\+\+/CLI Interop, 即在 Managed C++(托管C++)中调用 C/C++ 类库
 3. COM Interop, 主要用于在 .NET 中调用 COM 组件
 
-其中 C\+\+/CLI Interop 和 P/Invoke 技术在底层实现上实质是一致的，只是在上层使用上有所差异。因此本文对于 C++/CLI 技术不再单独讲述，感兴趣的读者可以自行查阅有关资料。本文主要对使用场景最多的 P/Invoke 技术进行一些探讨，同时对 COM 技术以及 COM Interop 进行一下简单介绍，希望能给读者以启发和帮助。
+其中 C\+\+/CLI Interop 和 P/Invoke 技术在底层实现上实质是一致的，只是在上层使用上有所差异。因此本文对于 C++/CLI 技术不再单独讲述，感兴趣的读者可以自行查阅有关资料。本文主要对使用场景最多的 P/Invoke 技术进行一些探讨，希望能给读者以启发和帮助。
 
-## P/Invoke
+### P/Invoke 简介
 
 P/Invoke 的前身是当年微软专属的 Java 实现 J++ 当中使用的 J/Direct 技术。和 JNI 技术不同，J/Direct 跨过 Java 虚拟机直接和 Native 代码进行交互，达到了相对更高的性能。后来随着 .NET 技术的兴起，J/Direct 也在 .NET 的世界里以 P/Invoke 的方式得到了重生。
 
@@ -185,7 +185,7 @@ Debug 版本的 DLL 原则上讲是不能用于分发的。如果你部署把 De
 ```csharp
 public unsafe class NativeApi
 {
-        [DllImport(".\\testcpp.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "PrintNumber")]
+    [DllImport(".\\testcpp.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "PrintNumber")]
     internal static extern void PrintNumber(int number);
 }
 ```
@@ -433,17 +433,80 @@ void PrintEntry2(Entry* entry)
 
 不过这样做违反了谁创建谁销毁的基本原则，也破坏了代码的架构。
 
-其实不管在什么情况下，都是不推荐像上面这样在托管堆和非托管堆之间进行互相操作的。因为这种操作一旦出错就很容易破坏堆的结构，导致程序不能正常运行。
+其实不管在什么情况下，都不推荐像上面这样在托管堆和非托管堆之间进行互相操作。因为这种操作一旦出错就很容易破坏堆的结构，导致程序不能正常运行。
 
 ### Delegate 与 Callback
 
-## COM Interop
+很多时候我们需要处理异步的 C/C\+\+ API，这时候不可避免地要处理 callback。.NET 的 marshaller 支持非托管函数指针和 delegate 之间的互相转换。
 
-### COM - A Better C++
+这里贴一个微软官方的例子：
 
-### COM 内存机制
+```cpp
+// Library.cpp : Defines the unmanaged entry point for the DLL application.
+#include "windows.h"
+#include "stdio.h"
 
-### COM 与 C#
+void (__stdcall *g_pfTarget)();
+
+void __stdcall Initialize(void __stdcall pfTarget())
+{
+    g_pfTarget = pfTarget;
+}
+
+void __stdcall Callback()
+{
+    g_pfTarget();
+}
+```
+
+```csharp
+using System;
+using System.Runtime.InteropServices;
+
+public class Entry
+{
+    public delegate void DCallback();
+
+    public static void Main()
+    {
+        new Entry();
+        Initialize(Target);
+        //GC.Collect();
+        //GC.WaitForPendingFinalizers();
+        Callback();
+    }
+
+    public static void Target()
+    {
+    }
+
+    [DllImport("Library", CallingConvention = CallingConvention.StdCall)]
+    public static extern void Initialize(DCallback pfDelegate);
+
+    [DllImport ("Library", CallingConvention = CallingConvention.StdCall)]
+    public static extern void Callback();
+
+    ~Entry() { Console.Error.WriteLine("Entry Collected"); }
+}
+```
+
+这个例子可能是能写出来的最简单的展现函数指针 marshalling 的例子了，其中需要注意的点有：
+
+**函数指针类型**
+
+函数指针的类型必须是 StdCall 的，这样才能正确地和 delegate 类型进行匹配，同时参数和返回值的类型也需要匹配，必要的情况下也可以加入 marshaller 选项，例如下面这样：
+
+```csharp
+public delegate bool ChangeDelegate([MarshalAs(UnmanagedType.LPWStr) string S);
+```
+
+**delegate 生命周期**
+
+注意到中间有两句 GC 的代码被注释掉了。如果加上这两句代码，程序是不能正确运行的，会报 callbackOnCollectedDelegate。这里涉及到 delegate 的生命周期问题。
+
+尽管这里的 Target 方法是 static 方法，delegate 本身则是一个实例化的类型(System.Delegate)。上面创建 Entry 类型的时候，故意没有赋值，让这个实例可以被 GC 掉，当它被 GC 掉时对应的 delegate 实例也跟着被 GC 掉，就导致非托管代码回调的时候，对应的托管 delegate 已经被释放了。
+
+要解决这个问题，一种方法是维持一个 delegate 的引用，另一种方法是通过 `GC.KeepAlive` 让 delegate 不用被释放掉。
 
 ## 参考资料
 
