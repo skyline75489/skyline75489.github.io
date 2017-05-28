@@ -18,7 +18,7 @@
 <div class="content">
 
 <h1>C# Native Interop：从入门到再次入门</h1>
-<h2>C# 与 Native API 的互操作性</h2>
+<h3>C# 与 Native API 的互操作性</h3>
 <p>.NET 平台对于 C/C++ 等 Native 库具有良好的互操作性，其中一部分原因是，微软本身在实现 .NET Framework 的过程中发现，Win32 API 经过多年的发展已经过于庞大，大到无法也没有必要使用 C# 全部重新实现一遍，不如直接通过 C# 调用 Win32 API 来的实际。如今 .NET Framework 中很多类库到最底层也是使用的 Win32 或 COM 的 API。因此，当我们自己需要调用 C++ 类库时也可以放心大胆的使用 C# 的互操作技术。</p>
 <p>目前 .NET 平台提供了下面三种互操作技术：</p>
 <ol>
@@ -26,8 +26,8 @@
 <li>C++/CLI Interop, 即在 Managed C++(托管C++)中调用 C/C++ 类库</li>
 <li>COM Interop, 主要用于在 .NET 中调用 COM 组件</li>
 </ol>
-<p>其中 C++/CLI Interop 和 P/Invoke 技术在底层实现上实质是一致的，只是在上层使用上有所差异。因此本文对于 C++/CLI 技术不再单独讲述，感兴趣的读者可以自行查阅有关资料。本文主要对使用场景最多的 P/Invoke 技术进行一些探讨，同时对 COM 技术以及 COM Interop 进行一下简单介绍，希望能给读者以启发和帮助。</p>
-<h2>P/Invoke</h2>
+<p>其中 C++/CLI Interop 和 P/Invoke 技术在底层实现上实质是一致的，只是在上层使用上有所差异。因此本文对于 C++/CLI 技术不再单独讲述，感兴趣的读者可以自行查阅有关资料。本文主要对使用场景最多的 P/Invoke 技术进行一些探讨，希望能给读者以启发和帮助。</p>
+<h3>P/Invoke 简介</h3>
 <p>P/Invoke 的前身是当年微软专属的 Java 实现 J++ 当中使用的 J/Direct 技术。和 JNI 技术不同，J/Direct 跨过 Java 虚拟机直接和 Native 代码进行交互，达到了相对更高的性能。后来随着 .NET 技术的兴起，J/Direct 也在 .NET 的世界里以 P/Invoke 的方式得到了重生。</p>
 <p>P/Invoke 依托于 CLR 和 JIT，实现了在 .NET 平台对于非托管 DLL 的加载和调用。在介绍 P/Invoke 之前，我们首先了解一下非托管 DLL 的有关知识。</p>
 <h3>Native DLL</h3>
@@ -137,15 +137,236 @@ File Type: DLL
 <p><strong>Bonus</strong></p>
 <p>Debug 版本的 DLL 原则上讲是不能用于分发的。如果你部署把 Debug 版本的应用程序部署到客户机上，同时附带上 Debug 版本的 runtime DLL 理论上讲也能够运行，不过这违反了 VS 的使用条款。</p>
 <h3>P/Invoke 基础</h3>
+<p>非托管代码在 .NET 的世界中被认为是不安全的，要想使用 P/Invoke，首先要在项目中勾选 Allow unsafe code。惯例上我们会把 P/Invoke 方法专门封装到一个类中，其中类的名字指明这些方法是 Native 的。例如我们对前面提到的 PrintNumber 进行封装：</p>
+<pre><code class="lang-csharp">public unsafe class NativeApi
+{
+    [DllImport(&quot;.\\testcpp.dll&quot;, CallingConvention = CallingConvention.Cdecl, EntryPoint = &quot;PrintNumber&quot;)]
+    internal static extern void PrintNumber(int number);
+}
+</code></pre>
+<p>在 C# 中可以直接调用这个方法：</p>
+<pre><code class="lang-csharp">
+private static void InteropCppTest()
+{
+    NativeApi.PrintNumber(42);
+}
+</code></pre>
+<p>其中对于 NativeApi 的定义有几个需要注意的点：</p>
+<ul>
+<li>必须使用 extern，表明这个方法不需要方法体</li>
+<li>必须使用 static，所有的非托管方法都是可以直接调用的</li>
+<li>必须给方法加上 DllImport 属性</li>
+</ul>
+<p>其中 DllImport 属性我们使用了三个参数，一个是 DLL 路径，一个是 DLL 当中对应函数的名字，另一个是 CallingConvetnion。CallingConvention 在后面的内容中会提到，我们首先看下找 DLL 的问题。DllImport 当中给出了 DLL 的路径，这个位置可以是相对路径，也可以是绝对路径，如果 CLR 找不到对应的 DLL 就会抛出 DllNotFoundException。</p>
 <h3>托管与非托管 DLL 的目标架构</h3>
-<h3>blittable 类型</h3>
-<h3>托管堆与非托管堆</h3>
+<p>有些时候 DLL 明明找到了，但是系统却抛出了 BadImageFormatException ，排除 DLL 本身是损坏的这种情况，这个 exception 通常是托管程序和非托管 DLL 的架构不一致导致的。</p>
+<p>.NET 托管程序默认是平台无关的，并且由于有 JIT 的存在，可以实现在 x86 平台上跑 32 位，在 x64 平台上会跑 64 位，以尽可能地利用平台优势。然而非托管 DLL 则是和平台相关的，并且是在编译时就确定的。对于非托管 DLL 可以使用 dumpbin 命令查看它的架构：</p>
+<pre><code class="lang-plaintext">dumpbin /headers testcpp.dll
+</code></pre>
+<p>前面若干行输出如下：</p>
+<pre><code class="lang-plaintext">
+File Type: DLL
+
+FILE HEADER VALUES
+            8664 machine (x64)
+               7 number of sections
+        591FCCC4 time date stamp Sat May 20 12:57:40 2017
+               0 file pointer to symbol table
+               0 number of symbols
+              F0 size of optional header
+            2022 characteristics
+                   Executable
+                   Application can handle large (&gt;2GB) addresses
+                   DLL
+</code></pre>
+<p>可以看到 DLL 头部中清晰地标明了这个一个 64 位的 DLL。</p>
+<p>当我们使用 <code>AnyCpu</code> 配置编译 .NET 程序时，生成的是完全平台无关的 DLL。如果我们想在这样的 DLL 中调用非托管 DLL，就产生了一个问题：在 x86 平台跑时它只能加载 x86 的非托管 DLL，在 x64 平台跑时同理。如果非托管 DLL 和目标架构和托管程序不一致，就会导致 DLL 不能正确加载，即上面提到的 BadImageFormatException。</p>
+<p>要解决这个问题，一种办法是分别给 x86 和 x64 两个平台准备一份非托管 DLL，例如 <code>testcpp.dll</code> 和 <code>testcpp64.dll</code>，同时在托管代码中也需要根据当前环境，判断调用哪个 DLL 当中的方法。</p>
+<p>另一种办法是，强制让 .NET 程序跑在 32 位上，这样只准备一份 x86 位的非托管 DLL 就可以了。这种解决方案之所以可行，一是因为 64 位的 Windows 上本身就可以借助微软的 WoW64 技术直接运行 32 位程序，二是因为 .NET 本身也支持了这个特性。</p>
+<p>.NET assembly 支持标志位表明自己是不是要求跑在 32 位下。可以使用 <code>corflags</code> 工具查看 .NET assembly 的标志位：</p>
+<pre><code class="lang-plaintext">corflags test.exe
+</code></pre>
+<p>输出如下所示：</p>
+<pre><code class="lang-plaintext">Version   : v4.0.30319
+CLR Header: 2.5
+PE        : PE32
+CorFlags  : 0x1
+ILONLY    : 1
+32BITREQ  : 0
+32BITPREF : 0
+Signed    : 0
+</code></pre>
+<p>其中 32BITREQ 即表示这个 assembly 是不是要求在 32 位模式下运行。这里输出为 0 表示不要求，那么在 64 位机器上这个程序就会跑在 64 位下。</p>
+<p>当我们修改 .NET Build 配置的 Platform target 为 x86 之后，生成的可执行文件会设置 32BITREQ 位。这样这个程序在 64 位机器上会以 32 位程序的形式跑在 WoW64 上，也就可以正常加载 32 位的非托管 DLL 了。</p>
+<p><strong>Bonus</strong>：</p>
+<p>如果有同学观察到了 32BITPREF 这个标志位并且对此感到疑惑的话，你需要知道你并不孤单。这个标志位是 .NET 4.5 加入的。它在 VS 里对应的配置是 Any CPU 32-bit preferred。它和 x86 配置的表现是一致的，唯一的区别是在 ARM 平台上 x86 配置编译的程序不能运行，而 Any CPU 32-bit preferred 可以。</p>
 <h3>Calling Convention</h3>
+<p>对于函数调用来说，调用方和被调用方对于函数如果调用必须有一个统一的理解，才能保证函数调用的成功，即双方应该有一个共同的约定，其中约定的内容包括：</p>
+<ul>
+<li>参数的传递方式</li>
+<li>调用完成之后栈的清理方式</li>
+</ul>
+<p>在 C/C++ 中存在多种调用惯例，即 Calling Convention，关于调用惯例的具体内容就不在这里赘述了，这里只讲和我们使用有关的内容。在 .NET 当中定义了五种调用惯例：</p>
+<ul>
+<li>Cdecl：C/C++ 语言默认的调用惯例，任何没有显式指明调用惯例的函数都会采用 Cdecl。</li>
+<li>StdCall：Win32 函数所采用的调用惯例</li>
+<li>ThisCall：C++ 中调用类成员函数所使用的调用惯例</li>
+<li>FastCall：.NET 实质上不支持这个调用惯例</li>
+<li>WinApi：实质上不是一种调用惯例，而是一种声明，表明采用当前平台默认的调用方式，在 Windows 上是 StdCall，在 Windows CE 上是 Cdecl。</li>
+</ul>
+<p>我们通过 DllImport 表明的 Calling Convention 和对应 C/C++ 代码中函数需保持一致。否则会出现调用错误。例如上文我们的 PrintNumber 函数需要指明 CallingConvention = CallingConvention.Cdecl。</p>
+<p>我们改变一下 PrintNumber2 的定义：</p>
+<pre><code class="lang-cpp">void __stdcall PrintNumber2(int number)
+{
+  printf(&quot;%d\n&quot;, number);
+}
+</code></pre>
+<p>这里 <code>__stdcall</code> 表明这个函数的 Calling Convention 是 StdCall，在 C# 中的 P/Invoke 声明就可以写成这样：</p>
+<pre><code class="lang-csharp">[DllImport(&quot;.\\testcpp.dll&quot;)]
+internal static extern void PrintNumber2(int number);
+</code></pre>
+<p>DllImport 在 Windows 平台上默认就使用 StdCall，同时如果函数名称和 EntryPoint 完全一致的话也可以省略掉，这样这个声明只需要 DLL 位置就足够了。</p>
+<p><strong>Bonus</strong>：</p>
+<p>你可能会想，为什么默认采用 StdCall 呢？其实也很简单，因为前面提到 Win32 API 都是采用 StdCall 的，况且 P/Invoke 一开始就是为了解决调用 Win32 API 的问题的。作为微软亲儿子之一的 Win32 API 享受这样的待遇也并不显得稀奇。</p>
+<h3>blittable 类型和 marshaller</h3>
+<p>上面的 PrintNumber 函数两兄弟都是直接采用 int 作为参数类型，我们在 C# 中也是直接使用了 CLR 的 int 类型。然而并不是所有类型都能这么简单的进行处理。</p>
+<p>.NET 当中把可以在托管和非托管代码之间内存层面直接进行交换的类型称为 blittable 类型。它们在托管和非托管内存中有着完全一样的内存表示，因此不需要额外处理就可以在托管代码和非托管代码之间进行传递。这样的类型有下面几种：</p>
+<ul>
+<li>System.Byte</li>
+<li>System.SByte</li>
+<li>System.Int16</li>
+<li>System.UInt16</li>
+<li>System.Int32</li>
+<li>System.UInt32</li>
+<li>System.Int64</li>
+<li>System.UInt64</li>
+<li>System.IntPtr</li>
+<li>System.UIntPtr</li>
+<li>System.Single</li>
+<li>System.Double</li>
+</ul>
+<p>其余的类型（数组，字符串，布尔，对象，结构体，以及 delegate 等）都属于 non-blittable 类型，这样的类型在作为参数传递，以及作为返回值返回的时候，都需要 marshaller 介入。marshaller 相当于托管内存和非托管内存之间的翻译官。通过它数据才能正确地在托管和非托管世界之间传递。</p>
+<p>.NET 本身提供了大量的 marshaller 工具，方便我们使用，下面通过一个例子看一下，例如我们有下面的数据结构：</p>
+<pre><code class="lang-cpp">struct Entry {
+  const char * name;
+  int value;
+};
+</code></pre>
+<p>以及一个使用到这个数据结构的方法：</p>
+<pre><code class="lang-cpp">int PrintEntry(Entry* entry);
+</code></pre>
+<p>在 C# 中这个数据结构需要这样定义：</p>
+<pre><code class="lang-csharp">[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+public class Entry
+{
+    [MarshalAs(UnmanagedType.LPStr)]
+    public string name;
+    public int value;
+}
+</code></pre>
+<p>方法的定义：</p>
+<pre><code class="lang-csharp">[DllImport(&quot;.\\testcpp.dll&quot;, CallingConvention = CallingConvention.Cdecl)]
+[return:MarshalAs(UnmanagedType.Bool)]
+internal static extern bool PrintEntry(Entry entry);
+</code></pre>
+<p>在 C# 中调用：</p>
+<pre><code class="lang-csharp">var ret = NativeApi.PrintEntry(new Entry
+                         {
+                             name = &quot;answer&quot;,
+                             value = 111
+                         });
+</code></pre>
+<p>可以看到我们使用了 .NET 提供了 marshaller 帮助我们实现了 const char * 到 string 类型，以及 int 到 bool 类型的转换。</p>
+<p>Marshaller 支持了很多种类型直接的自动转换，可以根据参考 MSDN 文档查看具体使用方法。</p>
+<h3>托管堆与非托管堆</h3>
+<p>在上面的例子中，我们创建一个 Entry 对象，并且把它通过引用传递给了非托管代码。这里涉及到一个问题，我们都知道 .NET 世界当中对象的地址是有可能在 GC 过程中发生变化的。也就是说所有托管堆上的对象地址都是可能发生变化的，如何保证这个地址非托管代码中还是可以使用的呢？</p>
+<p>答案是 Pinning。在 P/Invoke 调用时会暂时把当前作为参数的托管对象 pin 住，让它的地址在 P/Invokve 这一次 call 的过程中不会发生变化。</p>
+<p>注意上面特意强调了是这一次 call。也就是说当这一次调用结束之后， pinning 也就失效了。如果我们需要传递的数据在非托管代码中可以一直使用，要么在非托管代码中将数据复制一份，要么直接在 C# 中创建非托管堆上的对象。下面通过一个例子介绍一下如何在托管代码中操作非托管堆。</p>
+<p>定义另一个函数：</p>
+<pre><code class="lang-cpp">void PrintEntry2(Entry* entry);
+</code></pre>
+<p>不同的是，这次我们使用 IntPtr 作为 C# 的传递参数：</p>
+<pre><code class="lang-csharp">[DllImport(&quot;.\\testcpp.dll&quot;, CallingConvention = CallingConvention.Cdecl)]
+internal static extern void PrintEntry2(IntPtr entry);
+</code></pre>
+<p>调用：</p>
+<pre><code class="lang-csharp">var e = new Entry { name = &quot;answer&quot;, value = 111111 };
+// 注意这里我们是在非托管堆上创建出了一个 Entry 对象
+var ptr = Marshal.AllocHGlobal(Marshal.SizeOf(e));
+Marshal.StructureToPtr(e, ptr, false);
+NativeApi.PrintEntry2(ptr);
+// 这个对象是不会受 GC 控制的，需要手动销毁
+Marshal.DestroyStructure(ptr, typeof(Entry));
+</code></pre>
+<p>上面的例子中，我们通过 .NET API 直接在非托管堆上创建出我们想要的对象，然后传递给了非托管代码，这样就避免了对象受到 GC 的影响。</p>
+<p>在操作非托管堆时要特别注意，创建出的对象一定要在适当的时候销毁掉，不然会造成内存泄露。</p>
+<p><strong>Bonus</strong></p>
+<p>实际上我们也可以在非托管代码里销毁 .NET 创建出的对象：</p>
+<pre><code class="lang-cpp">void PrintEntry2(Entry* entry)
+{
+  printf(&quot;%s : %d\n&quot;, entry-&gt;name, entry-&gt;value);
+  GlobalFree(entry);
+}
+</code></pre>
+<p>不过这样做违反了谁创建谁销毁的基本原则，也破坏了代码的架构。</p>
+<p>其实不管在什么情况下，都不推荐像上面这样在托管堆和非托管堆之间进行互相操作。因为这种操作一旦出错就很容易破坏堆的结构，导致程序不能正常运行。</p>
 <h3>Delegate 与 Callback</h3>
-<h2>COM Interop</h2>
-<h3>COM - A Better C++</h3>
-<h3>COM 内存机制</h3>
-<h3>COM 与 C</h3>
+<p>很多时候我们需要处理异步的 C/C++ API，这时候不可避免地要处理 callback。.NET 的 marshaller 支持非托管函数指针和 delegate 之间的互相转换。</p>
+<p>这里贴一个微软官方的例子：</p>
+<pre><code class="lang-cpp">// Library.cpp : Defines the unmanaged entry point for the DLL application.
+#include &quot;windows.h&quot;
+#include &quot;stdio.h&quot;
+
+void (__stdcall *g_pfTarget)();
+
+void __stdcall Initialize(void __stdcall pfTarget())
+{
+    g_pfTarget = pfTarget;
+}
+
+void __stdcall Callback()
+{
+    g_pfTarget();
+}
+</code></pre>
+<pre><code class="lang-csharp">using System;
+using System.Runtime.InteropServices;
+
+public class Entry
+{
+    public delegate void DCallback();
+
+    public static void Main()
+    {
+        new Entry();
+        Initialize(Target);
+        //GC.Collect();
+        //GC.WaitForPendingFinalizers();
+        Callback();
+    }
+
+    public static void Target()
+    {
+    }
+
+    [DllImport(&quot;Library&quot;, CallingConvention = CallingConvention.StdCall)]
+    public static extern void Initialize(DCallback pfDelegate);
+
+    [DllImport (&quot;Library&quot;, CallingConvention = CallingConvention.StdCall)]
+    public static extern void Callback();
+
+    ~Entry() { Console.Error.WriteLine(&quot;Entry Collected&quot;); }
+}
+</code></pre>
+<p>这个例子可能是能写出来的最简单的展现函数指针 marshalling 的例子了，其中需要注意的点有：</p>
+<p><strong>函数指针类型</strong></p>
+<p>函数指针的类型必须是 StdCall 的，这样才能正确地和 delegate 类型进行匹配，同时参数和返回值的类型也需要匹配，必要的情况下也可以加入 marshaller 选项，例如下面这样：</p>
+<pre><code class="lang-csharp">public delegate bool ChangeDelegate([MarshalAs(UnmanagedType.LPWStr) string S);
+</code></pre>
+<p><strong>delegate 生命周期</strong></p>
+<p>注意到中间有两句 GC 的代码被注释掉了。如果加上这两句代码，程序是不能正确运行的，会报 callbackOnCollectedDelegate。这里涉及到 delegate 的生命周期问题。</p>
+<p>尽管这里的 Target 方法是 static 方法，delegate 本身则是一个实例化的类型(System.Delegate)。上面创建 Entry 类型的时候，故意没有赋值，让这个实例可以被 GC 掉，当它被 GC 掉时对应的 delegate 实例也跟着被 GC 掉，就导致非托管代码回调的时候，对应的托管 delegate 已经被释放了。有关详情可以参考<a href="https://msdn.microsoft.com/en-us/library/43yky316.aspx">这篇</a> MSDN 文档。</p>
+<p>要解决这个问题，一种方法是维持一个 delegate 的引用，另一种方法是通过 <code>GC.KeepAlive</code> 让 delegate 不用被释放掉。</p>
 <h2>参考资料</h2>
 <ul>
 <li><a href="https://msdn.microsoft.com/en-us/library/eaw10et3(v=vs.110).aspx">https://msdn.microsoft.com/en-us/library/eaw10et3(v=vs.110).aspx</a></li>
@@ -156,6 +377,7 @@ File Type: DLL
 <li><a href="https://www.codeproject.com/Articles/28969/HowTo-Export-C-classes-from-a-DLL">https://www.codeproject.com/Articles/28969/HowTo-Export-C-classes-from-a-DLL</a></li>
 <li><a href="http://www.davidlenihan.com/2008/01/choosing_the_correct_cc_runtim.html">http://www.davidlenihan.com/2008/01/choosing_the_correct_cc_runtim.html</a></li>
 <li><a href="http://siomsystems.com/mixing-visual-studio-versions/">http://siomsystems.com/mixing-visual-studio-versions/</a></li>
+<li><a href="http://blogs.microsoft.co.il/sasha/2012/04/04/what-anycpu-really-means-as-of-net-45-and-visual-studio-11/">http://blogs.microsoft.co.il/sasha/2012/04/04/what-anycpu-really-means-as-of-net-45-and-visual-studio-11/</a></li>
 </ul>
 
 
