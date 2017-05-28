@@ -279,6 +279,7 @@ Signed    : 0
 
 * 参数的传递方式
 * 调用完成之后栈的清理方式
+* 名称修饰方法
 
 在 C/C\+\+ 中存在多种调用惯例，即 Calling Convention，关于调用惯例的具体内容就不在这里赘述了，这里只讲和我们使用有关的内容。在 .NET 当中定义了五种调用惯例：
 
@@ -494,7 +495,14 @@ public class Entry
 
 **函数指针类型**
 
-函数指针的类型必须是 StdCall 的，这样才能正确地和 delegate 类型进行匹配，同时参数和返回值的类型也需要匹配，必要的情况下也可以加入 marshaller 选项，例如下面这样：
+对于 delegate 类型，默认的 marshal 对应类型是 StdCall 的函数指针，因此这里函数指针的类型也必须是 StdCall 的，这样才能正确地和 delegate 类型进行匹配。也可以更改 marshal 的行为：
+
+```csharp
+[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+public delegate void MyFunctionDelegate(IntPtr frame);
+```
+
+同时参数和返回值的类型也需要匹配，必要的情况下也可以加入 marshaller 选项，例如下面这样：
 
 ```csharp
 public delegate bool ChangeDelegate([MarshalAs(UnmanagedType.LPWStr) string S);
