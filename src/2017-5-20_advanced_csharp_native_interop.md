@@ -1,6 +1,8 @@
 C# Native Interop：从入门到再次入门
 ================================
 
+本文有关示例代码可以在 https://github.com/skyline75489/TestCppInterop 找到
+
 ### C# 与 Native API 的互操作性
 
 .NET 平台对于 C/C\+\+ 等 Native 库具有良好的互操作性，其中一部分原因是，微软本身在实现 .NET Framework 的过程中发现，Win32 API 经过多年的发展已经过于庞大，大到无法也没有必要使用 C# 全部重新实现一遍，不如直接通过 C# 调用 Win32 API 来的实际。如今 .NET Framework 中很多类库到最底层也是使用的 Win32 或 COM 的 API。因此，当我们自己需要调用 C++ 类库时也可以放心大胆的使用 C# 的互操作技术。
