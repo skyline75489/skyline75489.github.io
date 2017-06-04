@@ -1,0 +1,32 @@
+<!DOCTYPE html> 
+<html>
+<head>
+<title>Skyline75489</title>
+ <meta charset='utf-8'>
+<link rel="stylesheet" href="../static/styles/github.css">
+<link rel="stylesheet" href="../static/post.css">
+</head>
+<body>
+
+<div class="wrapper">
+<div class="header">
+	<span class="blog-name">Skyline75489</span>
+
+<a class="nav" href="../index.html">Home</a>
+<a class="nav" href="about.html">About</a>
+</div>
+<div class="content">
+
+<h1>VC++ 工程中含有同名源代码文件导致的坑</h1>
+<p>工作中遇到一个 VC++ 的一个深坑，在这里记录一下。</p>
+<p>如果一个 VC++ 工程中含有两个出于不同目录的同名的源代码文件，那么默认情况下它们生成的中间文件(obj)会发生冲突。由于默认 VC++ 按照文件名输出 obj 文件，同名的源代码文件产生的 obj 文件名称也是完全一样的，同时由于 VC++ 默认所有的 obj 文件输出路径是一样的，就导致同名的 obj 文件之间发生覆盖，造成符号丢失。</p>
+<p>最简单的解决办法自然是改名了，把其中一个的名称改掉就不会有问题。另一种办法是更改 obj 文件的输出路径，在其中加入相对路径，这样 obj 文件会按照和源代码路径一样的相对路径输出。</p>
+
+
+</div>
+</div>
+<script src="../static/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+</body>
+
+</html>
