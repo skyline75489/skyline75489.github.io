@@ -3,11 +3,25 @@
 }
 
 body {
-	font-family: 微软雅黑, Hiragino Sans GB, serif;
+    font-family: Microsoft YaHei, 微软雅黑, Hiragino Sans GB;
 }
 
 p {
     line-height:1.6em;
+}
+
+@media (min-width:480px)
+{    
+    .wrapper {
+        min-width: 400px !important;
+    }
+}
+
+@media (min-width:1024px)
+{
+    .wrapper {
+        min-width: 700px !important;
+    }
 }
 
 .wrapper {
@@ -21,7 +35,6 @@ p {
     padding-left: 30px;
     padding-right: 30px;
     padding-bottom: 10px;
-    min-width: 700px !important;
 }
 
 a.nav:visited {
