@@ -63,11 +63,64 @@ int & squarePtr(int number) {
 }
 ```
 
-可以看到，C++ 的引用某种程度上是想引入更加严格的生命周期管理，不过限于很多地方对于 C 语言兼容的要求，引用类型往往还是被当做一个 const 的指针来使用，没有发挥出太大的作用。
+可以看到，C++ 的引用某种程度上是想引入更加严格的生命周期管理，不过限于很多地方对于 C 语言兼容的要求，引用类型往往还是被当做一个 const 的指针来使用。C++ 的引用更像是对象的一个 alias，而不是一个可以保证对象存活的 reference。同时 C++ 引用也没有（想）解决更加 common 的内存过早释放问题：
+
+```c++
+const char * getString() {
+  std::string(a);
+  return a.c_str(); // a 提前释放，返回值不再有意义
+}
+```
 
 ### 自动内存管理
 
-C++ 语言在 C++ 11 标准中引入了智能指针类型，让 C++ 内存管理进入了自动时代。智能指针类型本身是基于引用计数的，不可避免的就会有引用循环的问题：
+C++ 语言在 C++ 11 标准中引入了智能指针类型，让 C++ 内存管理进入了自动时代。智能指针类型本身是基于引用计数的，可以表达出对于对象的“拥有”关系。
+
+1. `unique_ptr` 唯一拥有
+
+```c++
+void SmartPointerDemo()
+{    
+    // 创建对象 unique_ptr
+    std::unique_ptr<LargeObject> pLarge(new LargeObject());
+
+    // 调用方法
+    pLarge->DoSomething();
+
+    // 传递对象引用
+    ProcessLargeObject(*pLarge);
+
+} // 对象出 scope 被自动释放
+```
+
+2. `shared_ptr` 共享拥有
+
+```c++
+std::shared_ptr<int> p1(new int(5));
+std::shared_ptr<int> p2 = p1; // 两个指针同时拥有对象
+
+p1.reset(); // p2 还在，因此对象不会被释放
+p2.reset(); // 释放对象，因为已经没有人拥有它
+```
+
+3. `weak_ptr` 弱拥有
+
+实际上表达了一种只是使用，而不拥有的语义：
+
+```c++
+std::shared_ptr<int> p1(new int(5)); // p1 拥有对象
+std::weak_ptr<int> wp1 = p1; 
+
+p1.reset(); // 释放对象
+
+std::shared_ptr<int> p3 = wp1.lock(); // 返回一个空指针
+if(p3)
+{
+  // 不会执行
+}
+```
+
+同时，由于采用引用计数，不可避免的会存在引用循环的问题：
 
 ```c++
 struct B;
@@ -86,8 +139,11 @@ void useAnB() {
   auto b = std::make_shared<B>();
   a->b = b;
   b->a = a;
+  // A 和 B 互相引用
 }
 ```
+
+将其中一个指针改为 weak 可以解决引用循环的问题。
 
 ### Objective-C & Swift 中的 weak
 
@@ -101,3 +157,4 @@ void useAnB() {
 * https://stackoverflow.com/questions/57483/what-are-the-differences-between-a-pointer-variable-and-a-reference-variable-in
 * https://www.ntu.edu.sg/home/ehchua/programming/cpp/cp4_PointerReference.html
 * https://stackoverflow.com/questions/27085782/how-to-break-shared-ptr-cyclic-reference-using-weak-ptr
+* https://en.wikipedia.org/wiki/Smart_pointer#shared_ptr_and_weak_ptr
