@@ -1,11 +1,9 @@
 弱引用 weak 的前世今生
-===================
+====================
 
-### 为什么需要弱引用？
+### 手动内存管理
 
-#### 手动内存管理
-
-在 C 语言中，严格意义上说并没有引用这种东西存在，唯一存在的是指针（pointer）——一个威力和杀伤力都十分巨大的东西。
+在 C 语言的世界中，严格意义上说并没有引用这种东西存在，唯一存在的是指针（pointer）——一个威力和杀伤力都十分巨大的东西。
 
 ```c
 int *p = (int *)malloc(sizeof(int));
@@ -65,19 +63,35 @@ int & squarePtr(int number) {
 }
 ```
 
-### 非 GC 环境下的弱引用
+可以看到，C++ 的引用某种程度上是想引入更加严格的生命周期管理，不过限于很多地方对于 C 语言兼容的要求，引用类型往往还是被当做一个 const 的指针来使用，没有发挥出太大的作用。
 
-#### C++ 中的 weak_ptr
+### 自动内存管理
 
-#### OC & Swift 中的 weak
+C++ 语言在 C++ 11 标准中引入了智能指针类型，让 C++ 内存管理进入了自动时代。智能指针类型本身是基于引用计数的，不可避免的就会有引用循环的问题：
 
-#### Rust 中的弱引用
+```c++
+struct B;
+struct A {
+  std::shared_ptr<B> b;  
+  ~A() { std::cout << "~A()\n"; }
+};
 
-### GC 环境下的弱引用
+struct B {
+  std::shared_ptr<A> a;
+  ~B() { std::cout << "~B()\n"; }  
+};
 
-#### .NET 中的弱引用
+void useAnB() {
+  auto a = std::make_shared<A>();
+  auto b = std::make_shared<B>();
+  a->b = b;
+  b->a = a;
+}
+```
 
-#### Python 中的弱引用
+### Objective-C & Swift 中的 weak
+
+### GC 环境下的 Weak
 
 ### 总结
 
@@ -86,4 +100,4 @@ int & squarePtr(int number) {
 
 * https://stackoverflow.com/questions/57483/what-are-the-differences-between-a-pointer-variable-and-a-reference-variable-in
 * https://www.ntu.edu.sg/home/ehchua/programming/cpp/cp4_PointerReference.html
-
+* https://stackoverflow.com/questions/27085782/how-to-break-shared-ptr-cyclic-reference-using-weak-ptr
