@@ -30,25 +30,19 @@ int b = *p; // 危险操作！
 </code></pre>
 <p>上面的代码可以通过编译，没有任何警告，但是实际上已经跑飞了。C 语言要求程序员手动对内存进行管理，编译器却没有对于程序行为进行足够多的检查，加上指针操作本身十分灵活，如果没有对于程序足够强的掌控能力，程序的可维护性很可能将成为一场灾难。</p>
 <p>C 语言的后辈 C++，在内存管理上做出了一些新的尝试，一个比较大的变化就是增加了引用类型。和指针相比，引用类型在安全上的限制更加严格了：</p>
-<ol>
-<li>引用必须被初始化，必须有初始化绑定，且不能初始化为 nullptr</li>
-</ol>
+<p>1 引用必须被初始化，必须有初始化绑定，且不能初始化为 nullptr</p>
 <pre><code class="lang-c++">int &amp;r1; // error: references must be initialized
 int &amp;r2 = 0; // error: cannot convert from &#39;int&#39; to &#39;int &amp;&#39;
 int &amp;r3 = nullptr; // error: cannot convert from &#39;nullptr&#39; to &#39;int &amp;&#39;
 </code></pre>
-<ol>
-<li>引用不能被重新绑定</li>
-</ol>
+<p>2 引用不能被重新绑定</p>
 <pre><code class="lang-c++">int a1 = 5;
 int a2 = 6;
 
 int &amp;b = a1; // b 和 a1 绑定在一起，并且再也不能绑定别的值
 b = a2; // a1 的值也被改变，a1 = a2 = 6
 </code></pre>
-<ol>
-<li>引用没有多层关系，即没有引用的引用</li>
-</ol>
+<p>3 引用没有多层关系，即没有引用的引用</p>
 <pre><code class="lang-c++">int x = 0;
 int y = 0;
 int *p = &amp;x;
@@ -59,9 +53,7 @@ pp = &amp;q; // *pp = q，而 p 不受影响
 assert(y == 4);
 assert(x == 0);
 </code></pre>
-<ol>
-<li>引用作为返回值，如果用法不当，会有 warning</li>
-</ol>
+<p>4 引用作为返回值，如果用法不当，会有 warning</p>
 <pre><code class="lang-c++">int * squarePtr(int number) {
   int localResult = number * number;
   return &amp;localResult; // warning: returning address of local variable or temporary: localResult
@@ -79,9 +71,7 @@ int &amp; squarePtr(int number) {
 }
 </code></pre>
 <p>C++ 语言在 C++ 11 标准中引入了智能指针类型，让 C++ 内存管理进入了自动时代。智能指针类型本身是基于引用计数的，可以表达出对于对象的“拥有”关系。</p>
-<ol>
-<li><code>unique_ptr</code> 唯一拥有</li>
-</ol>
+<p>1 <code>unique_ptr</code> 唯一拥有</p>
 <pre><code class="lang-c++">void SmartPointerDemo()
 {    
     // 创建对象 unique_ptr
@@ -95,18 +85,14 @@ int &amp; squarePtr(int number) {
 
 } // 对象出 scope 被自动释放
 </code></pre>
-<ol>
-<li><code>shared_ptr</code> 共享拥有</li>
-</ol>
+<p>2 <code>shared_ptr</code> 共享拥有</p>
 <pre><code class="lang-c++">std::shared_ptr&lt;int&gt; p1(new int(5));
 std::shared_ptr&lt;int&gt; p2 = p1; // 两个指针同时拥有对象
 
 p1.reset(); // p2 还在，因此对象不会被释放
 p2.reset(); // 释放对象，因为已经没有人拥有它
 </code></pre>
-<ol>
-<li><code>weak_ptr</code> 弱拥有</li>
-</ol>
+<p>3 <code>weak_ptr</code> 弱拥有</p>
 <p>实际上表达了一种只是使用，而不拥有的语义：</p>
 <pre><code class="lang-c++">std::shared_ptr&lt;int&gt; p1(new int(5)); // p1 拥有对象
 std::weak_ptr&lt;int&gt; wp1 = p1; 
