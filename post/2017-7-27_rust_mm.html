@@ -20,9 +20,9 @@
 
 <h1>Rust——内存管理的究极进化？</h1>
 <p><strong>注</strong>：因为内存管理这个话题实在过于庞大，本文没有打算对于这个话题进行多么深刻和全面的探讨，只是作者本身的一点思考，记录在此。</p>
-<h3>C++——手动内存管理的自我反思</h3>
+<h3>C++——江山代有才人出</h3>
 <p>在 C 语言的世界中，所以的内存管理都是手动的，甚至并没有引用这种东西存在，唯一存在的是指针（pointer）——一个威力和杀伤力都十分巨大的东西。</p>
-<pre><code class="lang-c">int *p = (int *)malloc(sizeof(int));
+<pre><code class="lang-cpp">int *p = (int *)malloc(sizeof(int));
 *p = 10;
 free(p);
 // p 成为了野指针
@@ -31,19 +31,19 @@ int b = *p; // 危险操作！
 <p>上面的代码可以通过编译，没有任何警告，但是实际上已经跑飞了。C 语言要求程序员手动对内存进行管理，编译器却没有对于程序行为进行足够多的检查，加上指针操作本身十分灵活，如果没有对于程序足够强的掌控能力，程序的可维护性很可能将成为一场灾难。</p>
 <p>C 语言的后辈 C++，在内存管理上做出了一些新的尝试，一个比较大的变化就是增加了引用类型。和指针相比，引用类型在安全上的限制更加严格了：</p>
 <p>1 引用必须被初始化，必须有初始化绑定，且不能初始化为 nullptr</p>
-<pre><code class="lang-c++">int &amp;r1; // error: references must be initialized
+<pre><code class="lang-cpp">int &amp;r1; // error: references must be initialized
 int &amp;r2 = 0; // error: cannot convert from &#39;int&#39; to &#39;int &amp;&#39;
 int &amp;r3 = nullptr; // error: cannot convert from &#39;nullptr&#39; to &#39;int &amp;&#39;
 </code></pre>
 <p>2 引用不能被重新绑定</p>
-<pre><code class="lang-c++">int a1 = 5;
+<pre><code class="lang-cpp">int a1 = 5;
 int a2 = 6;
 
 int &amp;b = a1; // b 和 a1 绑定在一起，并且再也不能绑定别的值
 b = a2; // a1 的值也被改变，a1 = a2 = 6
 </code></pre>
 <p>3 引用没有多层关系，即没有引用的引用</p>
-<pre><code class="lang-c++">int x = 0;
+<pre><code class="lang-cpp">int x = 0;
 int y = 0;
 int *p = &amp;x;
 int *q = &amp;y;
@@ -54,7 +54,7 @@ assert(y == 4);
 assert(x == 0);
 </code></pre>
 <p>4 引用作为返回值，如果用法不当，会有 warning</p>
-<pre><code class="lang-c++">int * squarePtr(int number) {
+<pre><code class="lang-cpp">int * squarePtr(int number) {
   int localResult = number * number;
   return &amp;localResult; // warning: returning address of local variable or temporary: localResult
 }
@@ -65,14 +65,14 @@ int &amp; squarePtr(int number) {
 }
 </code></pre>
 <p>可以看到，C++ 的引用某种程度上是想引入更加严格的生命周期管理，不过限于很多地方对于 C 语言兼容的要求，引用类型往往还是被当做一个 const 的指针来使用。C++ 的引用更像是对象的一个 alias，而不是一个可以保证对象存活的 reference。同时 C++ 引用也没有（想）解决更加 common 的内存过早释放问题：</p>
-<pre><code class="lang-c++">const char * getString() {
+<pre><code class="lang-cpp">const char * getString() {
   std::string(a);
   return a.c_str(); // a 提前释放，返回值不再有意义
 }
 </code></pre>
 <p>C++ 语言在 C++ 11 标准中引入了智能指针类型，让 C++ 内存管理进入了自动时代。智能指针类型本身是基于引用计数的，可以表达出对于对象的“拥有”关系。</p>
 <p>1 <code>unique_ptr</code> 唯一拥有</p>
-<pre><code class="lang-c++">void SmartPointerDemo()
+<pre><code class="lang-cpp">void SmartPointerDemo()
 {    
     // 创建对象 unique_ptr
     std::unique_ptr&lt;LargeObject&gt; pLarge(new LargeObject());
@@ -86,7 +86,7 @@ int &amp; squarePtr(int number) {
 } // 对象出 scope 被自动释放
 </code></pre>
 <p>2 <code>shared_ptr</code> 共享拥有</p>
-<pre><code class="lang-c++">std::shared_ptr&lt;int&gt; p1(new int(5));
+<pre><code class="lang-cpp">std::shared_ptr&lt;int&gt; p1(new int(5));
 std::shared_ptr&lt;int&gt; p2 = p1; // 两个指针同时拥有对象
 
 p1.reset(); // p2 还在，因此对象不会被释放
@@ -94,7 +94,7 @@ p2.reset(); // 释放对象，因为已经没有人拥有它
 </code></pre>
 <p>3 <code>weak_ptr</code> 弱拥有</p>
 <p>实际上表达了一种只是使用，而不拥有的语义：</p>
-<pre><code class="lang-c++">std::shared_ptr&lt;int&gt; p1(new int(5)); // p1 拥有对象
+<pre><code class="lang-cpp">std::shared_ptr&lt;int&gt; p1(new int(5)); // p1 拥有对象
 std::weak_ptr&lt;int&gt; wp1 = p1; 
 
 p1.reset(); // 释放对象
@@ -106,7 +106,7 @@ if(p3)
 }
 </code></pre>
 <p>同时，由于采用引用计数，不可避免的会存在引用循环的问题：</p>
-<pre><code class="lang-c++">struct B;
+<pre><code class="lang-cpp">struct B;
 struct A {
   std::shared_ptr&lt;B&gt; b;  
   ~A() { std::cout &lt;&lt; &quot;~A()\n&quot;; }
@@ -126,14 +126,59 @@ void useAnB() {
 }
 </code></pre>
 <p>将其中一个指针改为 weak 可以解决引用循环的问题。</p>
-<h3>Objective-C &amp; Swift ——特立独行且一枝独秀</h3>
+<h3>Objective-C &amp; Swift ——我辈岂是蓬蒿人</h3>
 <p>早期的 Objective-C 内存管理是通过手动引用计数（即 MRC）来进行的。这种方式和 C++ 的手动内存管理有类似的地方。Objective-C Runtime 的一些特性，例如 Autorelease 和向 nil 发送消息不崩溃等，让 MRC 比 C++ 的 new &amp; delete 显得友好了那么一些。不过开发者为了管理内存还是要加入大量的 MRC 代码，同时对于 Objective-C 本身的内存机制需要有一定的了解，无形之中提升了开发 Objective-C 的门槛。</p>
 <p>苹果自己显然也认识到了这一点。苹果掌握了 Objective-C 的工具链（Clang/LLVM），Runtime，以及 IDE 等整套生态环境，对于 Objective-C 的发展可以说是有绝对的话语权。在 2013 年苹果拿出了自己的解决方案——自动引用计数（ARC）。ARC 通过在编译期间分析对象的生命周期，自动插入内存管理的代码，减轻了开发者的负担，大幅度降低了 Objective-C 的入门门槛。在 ARC 的帮助下，编写 Objective-C 代码的体验接近于编写 GC 环境下的代码，开发者几乎不再需要为内存管理担心，可以专心于业务逻辑。同时 ARC 在 Runtime 上可以说是非常轻量，没有像 GC 机制一样带来很大的 Runtime 负担。如今 ARC 已经成为苹果平台开发的绝对主流。</p>
 <p>后面苹果不再满足于 Objective-C 语言本身进行修修补补，推出了自己的编程语言 Swift。Swift 在苹果平台上也继承了 Objective-C 的遗产，使用 ARC 作为内存管理机制。</p>
 <p>有关 ARC 的具体内容这里不打算做详细介绍了，可以参考<a href="https://developer.apple.com/library/content/releasenotes/ObjectiveC/RN-TransitioningToARC/Introduction/Introduction.html">苹果官方文档</a>。这里只提一下 ARC 没有解决的那部分问题。</p>
-<h4>TODO: __weak</h4>
-<h3>GC 环境——我笑他人看不穿</h3>
-<p>使用 GC 环境的语言以 Java（跑在虚拟机上）和 C#（跑在 CLR 上）两大语言为代表。GC 可以说是一种非常重的 Runtime 环境。其优点很明显，开发者几乎完全不需要考虑内存管理问题，其缺点更加明显，GC 带来了性能上的下降以及不可预测性。</p>
+<p>由于同样采用了引用计数机制，ARC 也没有避免引用循环带来的问题。在 Objective-C 时期，编译器不会对可能产生引用循环的代码产生任何警告，引用循环也是 ARC 环境下最容易犯的错误之一：</p>
+<pre><code class="lang-ObjectiveC">MyViewController *myController = [[MyViewController alloc] init…];
+// ...
+
+myController.completionHandler =  ^(NSInteger result) {
+   [myController dismissViewControllerAnimated:YES completion:nil];
+};
+</code></pre>
+<p>上面的代码里，myController 和 Block 互相持有对方，导致两者都不能被正确释放。破除引用循环的办法有两种，以上面的代码为例，一种办法是把 myController 置为 nil：</p>
+<pre><code class="lang-ObjectiveC">MyViewController * __block myController = [[MyViewController alloc] init…];
+// ...
+
+myController.completionHandler =  ^(NSInteger result) {
+    [myController dismissViewControllerAnimated:YES completion:nil];
+    myController = nil;
+};
+</code></pre>
+<p>另一种是使用 <code>__weak</code>：</p>
+<pre><code class="lang-ObjectiveC">
+MyViewController *myController = [[MyViewController alloc] init…];
+// ...
+
+MyViewController * __weak weakMyViewController = myController;
+myController.completionHandler =  ^(NSInteger result) {
+    [weakMyViewController dismissViewControllerAnimated:YES completion:nil];
+};
+</code></pre>
+<p>在 Swift 语言中，编译器可以对简单的引用循环问题给出警告，同时 Swift 中也引入了更加简单的 <code>weak</code> 和 <code>unowned</code> 写法：</p>
+<pre><code class="lang-swift">let closure = { [weak self] in 
+    self?.doSomething()
+}
+</code></pre>
+<h4>Bonus</h4>
+<p>ARC 相对于 MRC 而言，一个缺点是生成的代码会大一些，因为自动插入的内存管理代码，和开发者手工编写的相比，会有一定程度上的冗余。不过如今存储设备容量已经足够大，ARC 这个缺点也变得不明显了。</p>
+<h3>GC 环境——别人笑我太疯癫</h3>
+<p>使用 GC 环境的语言一方面有追求简单好用的脚本语言，例如 Python，Ruby 等，另一方面有 Java（跑在虚拟机上）和 C#（跑在 CLR 上）等追求跨平台的系统语言。GC 可以说是一种非常重的 Runtime 环境。其优点很明显，开发者几乎完全不需要考虑内存管理问题，其缺点同样明显，GC 带来了性能上的下降以及不可预测性。</p>
+<p>GC 的实现机制主要有两种，一种是基于引用计数，一种是基于 Tracing。Python 使用的是基于引用计数的 GC，Java 和 C# 采用的是基于 Tracing 的 GC，并且还进入了分代 GC 等用于提升 GC 的性能。</p>
+<p>GC 本身也是一个很复杂的话题，本文不打算赘述。这里只提其中一点，基于 Tracing 的 GC 不仅解决了前面提到的智能指针，ARC 等技术所解决的问题，同时进一步地还解决了引用循环的问题。基于 Tracing 的 GC 中如果两个对象互相持有对方，但是都没有被 root 持有的话（即形成了所谓的“内存孤岛”），那么两个对象都会被释放掉。</p>
+<h4>Bonus</h4>
+<p>Java 和 C# 当中也提供了弱引用类型（WeakReference），不过前面提到 Java 和 C# 环境都不需要考虑引用循环问题，可能也是因为这个原因，Java 和 C# 代码中，WeakReference 使用的情况并不多。与之相比，在 iOS 开发中使用 weak 几乎是难以避免的。</p>
+<h3>Rust——蜀道难，难于上青天</h3>
+<p>Rust 是 Mozilla 出品的系统级编程语言，可以看做是一个内存安全加强版的 C++，其目标是代替 C/C++ 成为新一代的系统级编程语言。Rust 的主要特性几乎都是在对标 C++，其中主要有：</p>
+<ol>
+<li>编译型语言，无 GC，轻 Runtime</li>
+<li>跨平台，高可用性</li>
+<li>零成本的抽象</li>
+</ol>
+<p>同时，Rust 还引入了基于 borrow checker 的内存安全机制，力争在编译阶段解决 99% 的内存问题，补上 C++ 最大的一块儿短板。</p>
 <h3>总结</h3>
 <h4>参考资料</h4>
 <ul>
