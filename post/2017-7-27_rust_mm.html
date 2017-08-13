@@ -183,7 +183,7 @@ myController.completionHandler =  ^(NSInteger result) {
 <pre><code class="lang-rust">let s1 = String::from(&quot;hello&quot;);
 let s2 = s1;
 
-println!(&quot;{}&quot;, s1); // error[E0382]: use of moved value: `s1`
+println!(&quot;{}&quot;, s1); // error: use of moved value: `s1`
 </code></pre>
 <p>上面的代码编译会报错，因为 s1 已经把 Ownership 转交给了 s2，再试图使用 s1 是不合理的。</p>
 <p>与之对比，下面的 C++ 代码可以正常通过编译，但是运行起来会崩溃：</p>
@@ -207,9 +207,9 @@ std::cout &lt;&lt; *s1.get() &lt;&lt; std::endl;
 
 let r1 = &amp;mut s;
 let r2 = &amp;mut s; // error: cannot borrow `s` as mutable more than once at a time
-
-
-let mut s = String::from(&quot;hello&quot;);
+</code></pre>
+<p>另一个例子：</p>
+<pre><code class="lang-rust">let mut s = String::from(&quot;hello&quot;);
 
 let r1 = &amp;s; // immutable
 let r2 = &amp;s; // immutable 
