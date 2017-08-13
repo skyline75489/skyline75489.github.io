@@ -192,8 +192,8 @@ auto s2 = std::move(s1);
 
 std::cout &lt;&lt; *s1.get() &lt;&lt; std::endl;
 </code></pre>
-<hr>
 <p>可以看到 Rust 通过明确 Ownership 概念以及编译期间的 Ownership 检查，避免了 Ownership 不明确而导致的问题。</p>
+<hr>
 <p>在 Ownership 之上， Rust 对于引用的概念也很明确。引用在 Rust 当中表现为 borrowing，即不拥有 Ownership，只是借用。仍然用之前提到的 C++ 引用作为返回值的例子：</p>
 <pre><code class="lang-rust">fn dangle() -&gt; &amp;String {
     let s = String::from(&quot;hello&quot;);
