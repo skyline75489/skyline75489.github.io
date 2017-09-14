@@ -21,7 +21,7 @@
 <h1>Rust——内存管理的究极进化？</h1>
 <p><strong>注</strong>：因为内存管理这个话题实在过于庞大，本文没有打算对于这个话题进行多么深刻和全面的探讨，只是作者本身的一点思考，记录在此。</p>
 <h3>C++——江山代有才人出</h3>
-<p>在 C 语言的世界中，所以的内存管理都是手动的，甚至并没有引用这种东西存在，唯一存在的是指针（pointer）——一个威力和杀伤力都十分巨大的东西。</p>
+<p>在 C 语言的世界中，所有的内存管理都是手动的，甚至并没有引用这种东西存在，唯一存在的是指针（pointer）——一个威力和杀伤力都十分巨大的东西。</p>
 <pre><code class="lang-cpp">int *p = (int *)malloc(sizeof(int));
 *p = 10;
 free(p);
@@ -177,7 +177,7 @@ myController.completionHandler =  ^(NSInteger result) {
 <li>零成本的抽象</li>
 </ol>
 <p>同时，Rust 还引入了基于 borrow checker 的内存安全机制，力争在编译阶段解决 99% 的内存问题，补上 C++ 最大的一块儿短板。</p>
-<p>为了做到内存安全，Rust 在语言中明确引入了 Ownership，Borrow 和 Lifetime 等概念。程序员需要在编写代码的时候，就对程序内存上的可用性上有着足够的理解和重视，否则编译器通过自己的检查规则发现到错误，直接就报错，不允许编译。</p>
+<p>为了做到内存安全，Rust 在语言中明确引入了 Ownership，Borrow 和 Lifetime 等概念。程序员需要在编写代码的时候，就对程序内存上的可用性上有着足够的理解和重视，否则编译器通过自己的检查规则发现到错误，直接就报错，不允许通过编译。</p>
 <p>Rust 内存管理的具体规则内容很丰富，有兴趣的读者可用查阅官方文档，这里只举几个简单的例子。</p>
 <p>首先 Rust 内存管理的基础概念是 Ownership，每个对象都有明确的 Ownership，即拥有者。Ownership 的概念其实和 C++ 当中的智能指针很接近，不同的是 Rust 的规则更加严格：</p>
 <pre><code class="lang-rust">let s1 = String::from(&quot;hello&quot;);
@@ -232,7 +232,7 @@ let r3 = &amp;mut s; // error: cannot borrow `s` as mutable because it is also b
 </code></pre>
 <p>上面的代码中用 <code>'a</code> 和 <code>'b</code> 分别标示了 r 和 x 的 lifetime。这段代码不能通过编译，因为 r 的 lifetime 比 x 还要长。Rust 可以在编译期间就检查出 lifetime 不合理的错误，避免错误在运行时发生。</p>
 <hr>
-<p>最后，Rust 的变量实际上并不只是代表内存，也代表了有关的资源，结合 Rust 自己的 Ownership 体系，使用 Rust 时不需要手动关闭文件，socket 等非内存资源：</p>
+<p>最后，Rust 的变量实际上并不只是代表内存，也代表了和变量有关的非内存资源，结合 Rust 自己的 Ownership 体系，使用 Rust 时程序员不需要手动关闭文件，socket 等非内存资源：</p>
 <pre><code class="lang-rust">use tempdir::TempDir;
 
 let tmp_path;
@@ -248,7 +248,7 @@ let tmp_path;
 }
 </code></pre>
 <p>这里当整个函数执行完毕，tmp_dir 这个目录也会被删除掉！这种自动释放所有有关资源的特性，进一步减轻了程序员的负担。</p>
-<p><strong>Bonus</strong>：这种 Pattern 在 C++ 语言中被称为 RAII(Resource Acquisition Is Initialization)，也是 C++ 语言中被大力提倡使用的。不过 RAII 在一定程度上依赖于 unique_ptr 的使用，并不像 Rust 当中那么自然。</p>
+<p><strong>Bonus</strong>：这种 Pattern 在 C++ 语言中被称为 RAII(Resource Acquisition Is Initialization)，也是 C++ 语言中被大力提倡使用的。不过 RAII 在一定程度上依赖于 unique_ptr 的使用，并不像 Rust 中那么自然。</p>
 <p><strong>Bonus 2</strong>：GC 语言号称让程序员不需要关心内存，然而 GC 语言却并不喜欢代替程序员处理非内存资源。相反，GC 语言中往往会引入额外的资源释放机制，作为内存管理的补充。例如 Python 中的 <code>with</code>，Go 中的 <code>defer</code>，以及 C# 中的 <code>IDisposable</code> + <code>using</code> 等。</p>
 <h3>未来？</h3>
 <p>通过上面的内容，可以看到，Rust 在内存管理层面上吸取了前人的诸多经验，给出了一套极具特色和开创性的方案。同时 Rust 本身也还在快速发展之中，社区也提出了诸如 <a href="https://github.com/rust-lang/rfcs/pull/2094/files">Non-Lexical Lifetimes</a> 的设想，给 Rust 带来了更多的想象力。与此同时，Rust 改写的 Firefox 组件也开始逐渐走向前台，经受大众的考验。有理由相信 Rust 在未来的前途是十分广阔的。</p>
