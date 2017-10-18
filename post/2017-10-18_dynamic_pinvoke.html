@@ -1,0 +1,109 @@
+<!DOCTYPE html> 
+<html>
+<head>
+<title>Skyline75489</title>
+<meta charset='utf-8'>
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+<link rel="stylesheet" href="../static/styles/github.css">
+<link rel="stylesheet" href="../static/post.css">
+</head>
+<body>
+
+<div class="wrapper">
+<div class="header">
+	<span class="blog-name">Skyline75489</span>
+
+<a class="nav" href="../index.html">Home</a>
+<a class="nav" href="about.html">About</a>
+</div>
+<div class="content">
+
+<h1>P/Invoke 与 DLL 动态加载</h1>
+<p>熟悉 P/Invoke 技术的同学应该了解，由于 Attribute 使用的限制，P/Invoke 是不能指定去动态加载某个 DLL 的：</p>
+<pre><code class="lang-csharp">public unsafe class NativeApi
+{
+    public static string DllPath { get; set; }
+
+    //error CS0182: An attribute argument must be a constant expression, typeof expression or array creation expression of an attribute parameter type 
+    [DllImport(DllPath, CallingConvention = CallingConvention.Cdecl, EntryPoint = &quot;PrintNumber&quot;)]
+    internal static extern void PrintNumber(int number);
+}
+</code></pre>
+<p>也就是说，P/Invoke 的代码在编译期间就需要确实调用哪个 Native DLL，同时在运行期间不能更改。</p>
+<p>有些时候，我们需要根据运行环境，加载不同的 DLL。为了解决这个问题，有下面几种常见的解决方案。</p>
+<p>第一种办法，也是最容易想到的，就是为不同的 DLL 写两套不同的 P/Invoke 代码，这个办法在之前的<a href="https://skyline75489.github.io/post/2017-5-20_advanced_csharp_native_interop.html">文章</a>就提到过，可以解决不同架构上加载不同 Native DLL 的问题：</p>
+<pre><code class="lang-csharp">public unsafe class NativeApi32
+{
+    [DllImport(&quot;testdll32&quot;, CallingConvention = CallingConvention.Cdecl, EntryPoint = &quot;PrintNumber&quot;)]
+    internal static extern void PrintNumber(int number);
+}
+
+public unsafe class NativeApi64
+{
+    [DllImport(&quot;testdll64&quot;, CallingConvention = CallingConvention.Cdecl, EntryPoint = &quot;PrintNumber&quot;)]
+    internal static extern void PrintNumber(int number);
+}
+</code></pre>
+<p>这种办法，如果 P/Invoke 的接口比较多，那么编程实现上会显得比较复杂，也不够优雅。</p>
+<p>第二种办法，是放弃使用 P/Invoke，直接用更加底层的 Win32 API 去加载 DLL，这样的方式脱胎于 Win32 C++ 编程，只不过把 Win32 调用改成了 C# P/Invoke：</p>
+<pre><code class="lang-csharp">public class TestClass
+{
+    public static void Main(String[] args)
+    {
+        IntPtr user32 = LoadLibrary(&quot;user32.dll&quot;);
+        IntPtr procaddr = GetProcAddress(user32, &quot;MessageBoxW&quot;);
+        MyMessageBox mbx = (MyMessageBox)Marshal.GetDelegateForFunctionPointer(procaddr, typeof(MyMessageBox));
+        mbx(IntPtr.Zero, &quot;Hello, World&quot;, &quot;A Test Run&quot;, 0);
+    }
+
+    internal delegate int MyMessageBox(IntPtr hwnd, [MarshalAs(UnmanagedType.LPWStr)]String text, [MarshalAs(UnmanagedType.LPWStr)]String Caption, int type);
+
+    [DllImport(&quot;kernel32.dll&quot;)]
+    internal static extern IntPtr LoadLibrary(String dllname);
+
+    [DllImport(&quot;kernel32.dll&quot;)]
+    internal static extern IntPtr GetProcAddress(IntPtr hModule, String procname);
+}
+</code></pre>
+<p>这种方式的优点是非常灵活，同时不像第一种方法，需要写两套代码，只要替换掉 <code>LoadLibrary</code> 的参数就好了，缺点是编程实现上也是比较繁琐，同时代码量也比直接 P/Invoke 要多不少。</p>
+<p>第三种办法，也是本文想推荐的一种方法，是使用 <code>SetDllDirectory</code> 这个 Win32 API，动态更改 <code>DllImport</code> 的搜索路径，代码类似下面这样：</p>
+<pre><code class="lang-csharp">public unsafe class NativeApi
+{
+    private const string EngineDllName = &quot;testdll&quot;;
+
+    public static void LoadX86()
+    {
+        SetDllDirectory(Path.Combine(AssemblyUtil.ExecutablePath, &quot;x86&quot;));
+    }
+
+    public static void LoadX64()
+    {
+        SetDllDirectory(Path.Combine(AssemblyUtil.ExecutablePath, &quot;x64&quot;));
+    }
+
+    [DllImport(&quot;kernel32.dll&quot;, CharSet = CharSet.Auto, SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    internal static extern bool SetDllDirectory(string lpPathName);
+}
+</code></pre>
+<p>这样只需要调用 <code>LoadX86</code> 或者 <code>LoadX64</code> 方法，就可以动态切换两个不同的 Native DLL 了。这个办法有下面几个需要注意的点：</p>
+<ol>
+<li>对 <code>SetDllDirectory</code> 必须在调用 <code>DllImport</code> 修饰的方法之前，<code>SetDllDirectory</code> 的作用是指导 <code>DllImport</code> 去找对应的 DLL，因此需要首先调用。</li>
+<li><code>SetDllDirectory</code> 设置的路径，优先级仍然低于可执行文件所在目录，也就是说如果可执行文件当前目录有一个 <code>testdll.dll</code>，通过设置 <code>SetDllDirectory</code> 试图去加载其它目录下同名的 <code>testdll.dll</code> 是没有用处的。</li>
+<li>这个方法并不完全适用于 Win32 C++ 程序，因为 C++ 的 DLL 默认并不是 Delay-Loaded，因此 <code>SetDllDirectory</code> 只能影响那些采用 Delay-Loaded Linking 以及使用 <code>LoadLibrary</code> 加载的 DLL。而对于 C# 来说，默认 DLL 就是 Delay-Loaded，<code>DllImport</code> 也不例外，因此这个方法可以直接使用。</li>
+</ol>
+<h4>参考资料：</h4>
+<ul>
+<li><a href="https://blogs.msdn.microsoft.com/junfeng/2004/07/14/dynamic-pinvoke/">https://blogs.msdn.microsoft.com/junfeng/2004/07/14/dynamic-pinvoke/</a></li>
+<li><a href="https://stackoverflow.com/a/2864714/3562486">https://stackoverflow.com/a/2864714/3562486</a></li>
+<li><a href="https://msdn.microsoft.com/en-us/library/151kt790.aspx?f=255&amp;MSPPError=-2147217396">https://msdn.microsoft.com/en-us/library/151kt790.aspx?f=255&amp;MSPPError=-2147217396</a></li>
+</ul>
+
+
+</div>
+</div>
+<script src="../static/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+</body>
+
+</html>
