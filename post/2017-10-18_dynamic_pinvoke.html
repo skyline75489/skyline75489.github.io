@@ -31,7 +31,7 @@
 </code></pre>
 <p>也就是说，P/Invoke 的代码在编译期间就需要确实调用哪个 Native DLL，同时在运行期间不能更改。</p>
 <p>有些时候，我们需要根据运行环境，加载不同的 DLL。为了解决这个问题，有下面几种常见的解决方案。</p>
-<p>第一种办法，也是最容易想到的，就是为不同的 DLL 写两套不同的 P/Invoke 代码，这个办法在之前的<a href="https://skyline75489.github.io/post/2017-5-20_advanced_csharp_native_interop.html">文章</a>就提到过，可以解决不同架构上加载不同 Native DLL 的问题：</p>
+<p>第一种办法，也是最容易想到的，就是为不同的 DLL 写两套不同的 P/Invoke 代码，这个办法在之前的 <a href="https://skyline75489.github.io/post/2017-5-20_advanced_csharp_native_interop.html">文章</a> 就提到过，可以解决不同架构上加载不同 Native DLL 的问题：</p>
 <pre><code class="lang-csharp">public unsafe class NativeApi32
 {
     [DllImport(&quot;testdll32&quot;, CallingConvention = CallingConvention.Cdecl, EntryPoint = &quot;PrintNumber&quot;)]
@@ -45,7 +45,7 @@ public unsafe class NativeApi64
 }
 </code></pre>
 <p>这种办法，如果 P/Invoke 的接口比较多，那么编程实现上会显得比较复杂，也不够优雅。</p>
-<p>第二种办法，是放弃使用 P/Invoke，直接用更加底层的 Win32 API 去加载 DLL，这样的方式脱胎于 Win32 C++ 编程，只不过把 Win32 调用改成了 C# P/Invoke：</p>
+<p>第二种办法，是放弃使用 P/Invoke，直接用更加底层的 Win32 API 去加载 DLL 并调用其中的方法。这样的方式脱胎于 Win32 C++ 编程，只不过把 Win32 调用改成了 C# P/Invoke：</p>
 <pre><code class="lang-csharp">public class TestClass
 {
     public static void Main(String[] args)
@@ -90,8 +90,9 @@ public unsafe class NativeApi64
 <ol>
 <li>对 <code>SetDllDirectory</code> 必须在调用 <code>DllImport</code> 修饰的方法之前，<code>SetDllDirectory</code> 的作用是指导 <code>DllImport</code> 去找对应的 DLL，因此需要首先调用。</li>
 <li><code>SetDllDirectory</code> 设置的路径，优先级仍然低于可执行文件所在目录，也就是说如果可执行文件当前目录有一个 <code>testdll.dll</code>，通过设置 <code>SetDllDirectory</code> 试图去加载其它目录下同名的 <code>testdll.dll</code> 是没有用处的。</li>
-<li>这个方法并不完全适用于 Win32 C++ 程序，因为 C++ 的 DLL 默认并不是 Delay-Loaded，因此 <code>SetDllDirectory</code> 只能影响那些采用 Delay-Loaded Linking 以及使用 <code>LoadLibrary</code> 加载的 DLL。而对于 C# 来说，默认 DLL 就是 Delay-Loaded，<code>DllImport</code> 也不例外，因此这个方法可以直接使用。</li>
+<li>这个方法并不完全适用于 Win32 C++ 程序，因为 C++ 的 DLL 默认并不是 Delay-Loaded。<code>SetDllDirectory</code> 只能影响那些采用 Delay-Loaded Linking 以及使用 <code>LoadLibrary</code> 加载的 DLL。对于 C# 来说，默认 DLL 就是 Delay-Loaded，<code>DllImport</code> 也不例外，因此这个方法可以直接使用。</li>
 </ol>
+<p>有关 <code>SetDllDirectory</code> 的更多细节，可以查阅 <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/ms686203(v=vs.85">MSDN 文档</a>.aspx)。</p>
 <h4>参考资料：</h4>
 <ul>
 <li><a href="https://blogs.msdn.microsoft.com/junfeng/2004/07/14/dynamic-pinvoke/">https://blogs.msdn.microsoft.com/junfeng/2004/07/14/dynamic-pinvoke/</a></li>

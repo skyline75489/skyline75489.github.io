@@ -18,7 +18,7 @@ public unsafe class NativeApi
 
 有些时候，我们需要根据运行环境，加载不同的 DLL。为了解决这个问题，有下面几种常见的解决方案。
 
-第一种办法，也是最容易想到的，就是为不同的 DLL 写两套不同的 P/Invoke 代码，这个办法在之前的[文章](https://skyline75489.github.io/post/2017-5-20_advanced_csharp_native_interop.html)就提到过，可以解决不同架构上加载不同 Native DLL 的问题：
+第一种办法，也是最容易想到的，就是为不同的 DLL 写两套不同的 P/Invoke 代码，这个办法在之前的 [文章](https://skyline75489.github.io/post/2017-5-20_advanced_csharp_native_interop.html) 就提到过，可以解决不同架构上加载不同 Native DLL 的问题：
 
 ```csharp
 public unsafe class NativeApi32
@@ -36,7 +36,7 @@ public unsafe class NativeApi64
 
 这种办法，如果 P/Invoke 的接口比较多，那么编程实现上会显得比较复杂，也不够优雅。
 
-第二种办法，是放弃使用 P/Invoke，直接用更加底层的 Win32 API 去加载 DLL，这样的方式脱胎于 Win32 C++ 编程，只不过把 Win32 调用改成了 C# P/Invoke：
+第二种办法，是放弃使用 P/Invoke，直接用更加底层的 Win32 API 去加载 DLL 并调用其中的方法。这样的方式脱胎于 Win32 C++ 编程，只不过把 Win32 调用改成了 C# P/Invoke：
 
 ```csharp
 public class TestClass
@@ -88,7 +88,9 @@ public unsafe class NativeApi
 
 1. 对 `SetDllDirectory` 必须在调用 `DllImport` 修饰的方法之前，`SetDllDirectory` 的作用是指导 `DllImport` 去找对应的 DLL，因此需要首先调用。
 2. `SetDllDirectory` 设置的路径，优先级仍然低于可执行文件所在目录，也就是说如果可执行文件当前目录有一个 `testdll.dll`，通过设置 `SetDllDirectory` 试图去加载其它目录下同名的 `testdll.dll` 是没有用处的。
-3. 这个方法并不完全适用于 Win32 C++ 程序，因为 C++ 的 DLL 默认并不是 Delay-Loaded，因此 `SetDllDirectory` 只能影响那些采用 Delay-Loaded Linking 以及使用 `LoadLibrary` 加载的 DLL。而对于 C# 来说，默认 DLL 就是 Delay-Loaded，`DllImport` 也不例外，因此这个方法可以直接使用。
+3. 这个方法并不完全适用于 Win32 C++ 程序，因为 C++ 的 DLL 默认并不是 Delay-Loaded。`SetDllDirectory` 只能影响那些采用 Delay-Loaded Linking 以及使用 `LoadLibrary` 加载的 DLL。对于 C# 来说，默认 DLL 就是 Delay-Loaded，`DllImport` 也不例外，因此这个方法可以直接使用。
+
+有关 `SetDllDirectory` 的更多细节，可以查阅 [MSDN 文档](https://msdn.microsoft.com/en-us/library/windows/desktop/ms686203(v=vs.85).aspx)。
 
 #### 参考资料：
 
