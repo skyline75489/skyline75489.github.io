@@ -66,7 +66,7 @@ public class TestClass
 ```csharp
 public unsafe class NativeApi
 {
-    private const string EngineDllName = "testdll";
+    private const string DllName = "testdll";
 
     public static void LoadX86()
     {

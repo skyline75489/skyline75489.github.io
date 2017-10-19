@@ -69,7 +69,7 @@ public unsafe class NativeApi64
 <p>第三种办法，也是本文想推荐的一种方法，是使用 <code>SetDllDirectory</code> 这个 Win32 API，动态更改 <code>DllImport</code> 的搜索路径，代码类似下面这样：</p>
 <pre><code class="lang-csharp">public unsafe class NativeApi
 {
-    private const string EngineDllName = &quot;testdll&quot;;
+    private const string DllName = &quot;testdll&quot;;
 
     public static void LoadX86()
     {
