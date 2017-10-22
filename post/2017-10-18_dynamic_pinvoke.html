@@ -92,7 +92,7 @@ public unsafe class NativeApi64
 <li><code>SetDllDirectory</code> 设置的路径，优先级仍然低于可执行文件所在目录，也就是说如果可执行文件当前目录有一个 <code>testdll.dll</code>，通过设置 <code>SetDllDirectory</code> 试图去加载其它目录下同名的 <code>testdll.dll</code> 是没有用处的。</li>
 <li>这个方法并不完全适用于 Win32 C++ 程序，因为 C++ 的 DLL 默认并不是 Delay-Loaded。<code>SetDllDirectory</code> 只能影响那些采用 Delay-Loaded Linking 以及使用 <code>LoadLibrary</code> 加载的 DLL。对于 C# 来说，默认 DLL 就是 Delay-Loaded，<code>DllImport</code> 也不例外，因此这个方法可以直接使用。</li>
 </ol>
-<p>有关 <code>SetDllDirectory</code> 的更多细节，可以查阅 <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/ms686203(v=vs.85">MSDN 文档</a>.aspx)。</p>
+<p>有关 <code>SetDllDirectory</code> 的更多细节，可以查阅 <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/ms686203.aspx">MSDN 文档</a>。</p>
 <h4>参考资料：</h4>
 <ul>
 <li><a href="https://blogs.msdn.microsoft.com/junfeng/2004/07/14/dynamic-pinvoke/">https://blogs.msdn.microsoft.com/junfeng/2004/07/14/dynamic-pinvoke/</a></li>

@@ -90,7 +90,7 @@ public unsafe class NativeApi
 2. `SetDllDirectory` 设置的路径，优先级仍然低于可执行文件所在目录，也就是说如果可执行文件当前目录有一个 `testdll.dll`，通过设置 `SetDllDirectory` 试图去加载其它目录下同名的 `testdll.dll` 是没有用处的。
 3. 这个方法并不完全适用于 Win32 C++ 程序，因为 C++ 的 DLL 默认并不是 Delay-Loaded。`SetDllDirectory` 只能影响那些采用 Delay-Loaded Linking 以及使用 `LoadLibrary` 加载的 DLL。对于 C# 来说，默认 DLL 就是 Delay-Loaded，`DllImport` 也不例外，因此这个方法可以直接使用。
 
-有关 `SetDllDirectory` 的更多细节，可以查阅 [MSDN 文档](https://msdn.microsoft.com/en-us/library/windows/desktop/ms686203(v=vs.85).aspx)。
+有关 `SetDllDirectory` 的更多细节，可以查阅 [MSDN 文档](https://msdn.microsoft.com/en-us/library/windows/desktop/ms686203.aspx)。
 
 #### 参考资料：
 
