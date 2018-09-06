@@ -11,6 +11,6 @@ Docker 最核心的部分，是一个进程隔离化（沙箱化）工具，其�
 
 对于服务器程序来说，实现进程的沙盒化，在安全性上提升是非常明显的。服务器端程序在沙盒中只能访问到受限的资源，同时不同沙盒中的程序也不会互相影响。
 
-不过这只是大家使用 Docker 的理由之一。实际上进程沙盒化的工具有很多，例如专注于客户端程序沙盒化的 (Firejail)[https://github.com/netblue30/firejail] ，以及谷歌出品的轻量级沙盒化工具 (najail)[https://github.com/google/nsjail] 。甚至一个简单的 unshare 命令就能实现一定程度上的进程隔离。原理上他们都是利用了 Linux 的 namespace 和 cgroup 机制。
+不过这只是大家使用 Docker 的理由之一。实际上进程沙盒化的工具有很多，例如专注于客户端程序沙盒化的 [Firejail](https://github.com/netblue30/firejail) ，以及谷歌出品的轻量级沙盒化工具 [nsjail](https://github.com/google/nsjail) 。甚至一个简单的 unshare 命令就能实现一定程度上的进程隔离。原理上他们都是利用了 Linux 的 namespace 和 cgroup 机制。
 
 Docker 做的另一件非常重要的事情是做了 Docker 镜像和容器化支持。简单说，Docker 可以把一个做好的运行环境打包成镜像，分发给别人。使用方也可以直接拉镜像下来，在 Docker 容器中运行。这样子，Docker 就不仅仅做了进程隔离，而是提供了一个非常方便的部署运行环境的工具链。事实上 Docker 几乎已经成为了现在容器化技术的事实标准。
