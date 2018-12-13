@@ -2,9 +2,9 @@
 
 * Linux/Mac OS X/Windows
 
-* Python / iOS Dev 
+* iOS / WPF / Python Dev
 
-* 商业或盈利性转载本站文章请联系作者本人
+* 商业或盈利性用途转载本站文章请联系作者本人
 
 * 个人学习用途转载请附上原文作者和原文链接
 
