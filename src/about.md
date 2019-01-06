@@ -8,7 +8,10 @@
 
 * 个人学习用途转载请附上原文作者和原文链接
 
+* 这是我的 [DigitalOcean](https://www.digitalocean.com/?refcode=ab77d6daff97) 邀请链接，使用该链接注册，你我都将获得优惠
+
 * 通过下面的方式可以找到我：
+
 
 <p><center>
 <a href="https://github.com/skyline75489"><img src="../img/about/blacktocat-32.png" alt="Github"></a> &nbsp;
