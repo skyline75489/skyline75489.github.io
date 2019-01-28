@@ -33,3 +33,4 @@
   * [翻译：ReactiveX 官方互动式教程中文翻译](https://github.com/skyline75489/learnrx-zh-cn)
   * [文档：互联网公司笔试面试整理（3k+ Star）](https://github.com/HIT-Alibaba/interview)
   * [课程：基于 React + Flask 打造私人专属网盘](https://www.shiyanlou.com/courses/1212)
+  * [课程：走进以太坊：从入门到实战](https://www.shiyanlou.com/courses/1229)
