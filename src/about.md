@@ -29,6 +29,7 @@
 
 * 我的一些作品：
   * [项目：WI 输入法 iOS 版](https://itunes.apple.com/cn/app/id936600925)
+  * [翻译：NSHipster 系列文章](https://nshipster.cn/translators/chester-liu/)
   * [文档：Heart-First-JavaWeb 一个走心的 Java Web 入门开发教程](https://github.com/skyline75489/Heart-First-JavaWeb)
   * [翻译：ReactiveX 官方互动式教程中文翻译](https://github.com/skyline75489/learnrx-zh-cn)
   * [文档：互联网公司笔试面试整理（3k+ Star）](https://github.com/HIT-Alibaba/interview)

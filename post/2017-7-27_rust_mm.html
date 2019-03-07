@@ -166,7 +166,7 @@ myController.completionHandler =  ^(NSInteger result) {
 <p><strong>Bonus</strong>: ARC 相对于 MRC 而言，一个缺点是生成的代码会大一些，因为自动插入的内存管理代码，和开发者手工编写的相比，会有一定程度上的冗余。不过如今存储设备容量已经足够大，ARC 这个缺点也变得不明显了。</p>
 <h3>GC 环境——别人笑我太疯癫</h3>
 <p>使用 GC 环境的语言一方面有追求简单好用的脚本语言，例如 Python，Ruby 等，另一方面有 Java（跑在虚拟机上）和 C#（跑在 CLR 上）等追求跨平台的系统语言。GC 可以说是一种非常重的 Runtime 环境。其优点很明显，开发者几乎完全不需要考虑内存管理问题，其缺点同样明显，GC 带来了性能上的下降以及不可预测性。</p>
-<p>GC 的实现机制主要有两种，一种是基于引用计数，一种是基于 Tracing。Python 使用的是基于引用计数的 GC，Java 和 C# 采用的是基于 Tracing 的 GC，并且还引入了分代 GC 等技术用于提升 GC 的性能。</p>
+<p>GC 的实现机制主要有两种，一种是基于引用计数，一种是基于 Tracing。Python 使用的是基于引用计数的 GC，Java 和 C# 采用的是基于 Tracing （可达性分析）的 GC，并且还引入了分代 GC 等技术用于提升 GC 的性能。</p>
 <p>GC 本身也是一个很复杂的话题，本文不打算赘述。这里只提其中一点，基于 Tracing 的 GC 不仅解决了前面提到的智能指针，ARC 等技术所解决的问题，同时进一步地还解决了引用循环的问题。基于 Tracing 的 GC 中如果两个对象互相持有对方，但是都没有被 root 持有的话（即形成了所谓的“内存孤岛”），那么两个对象都会被 GC 释放掉。</p>
 <p><strong>Bonus</strong>: Java 和 C# 当中也提供了弱引用类型（WeakReference），不过前面提到 Java 和 C# 环境都不需要考虑引用循环问题，可能也是因为这个原因，Java 和 C# 代码中，WeakReference 使用的情况并不多。一般用到 WeakReference 大都是性能比较敏感的情况。与之相比，在 iOS 开发中使用 weak 几乎是难以避免的。</p>
 <p><strong>Bonus 2</strong>: Golang 是个有点神奇的存在，按理说 Golang 作为系统编程语言，是不应该使用 GC 这种不确定性因素比较强的环境的。然而 Golang 确实是一个使用 GC 环境的系统编程语言，不过 Golang 的 GC 性能非常优秀，有兴趣的同学可以查阅有关资料。</p>
