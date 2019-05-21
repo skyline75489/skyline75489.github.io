@@ -1,0 +1,106 @@
+<!DOCTYPE html> 
+<html>
+<head>
+<title>Skyline75489</title>
+<meta charset='utf-8'>
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+<link rel="stylesheet" href="../static/styles/github.css">
+<link rel="stylesheet" href="../static/post.css">
+</head>
+<body>
+
+<div class="wrapper">
+<div class="header">
+	<span class="blog-name">Skyline75489</span>
+
+<a class="nav" href="../index.html">Home</a>
+<a class="nav" href="about.html">About</a>
+</div>
+<div class="content">
+
+<h1>MongoDB 踩坑记录（可能会持续更新）</h1>
+<h3>数据校验</h3>
+<p>使用 Hibernate 的时候我们可以利用 <code>javax.validation</code> 包中提供的一系列 API 对传入数据库的数据进行校验。使用 MongoDB 时，需要显式的在配置当中打开，不然校验不会生效：</p>
+<pre><code class="lang-java">@Configuration
+public class DataSourceConfig {
+
+    @Bean
+    public ValidatingMongoEventListener validatingMongoEventListener() {
+        return new ValidatingMongoEventListener(validator());
+    }
+
+    @Bean
+    public LocalValidatorFactoryBean validator() {
+        return new LocalValidatorFactoryBean();
+    }
+}
+</code></pre>
+<h3>索引有关</h3>
+<h4>使用非 ObjectId 作为 Id</h4>
+<p>MongoDB 默认会使用生成的 ObjectId 作为主键 ID：</p>
+<pre><code class="lang-java">@Data
+@Document
+public class Book {
+    @Id
+    private String id;
+    // ...
+}
+</code></pre>
+<p>如果想使用自定义的 ID，也可以将 <code>@Id</code> 加在自定义字段上：</p>
+<pre><code class="lang-java">@Data
+@Document
+public class Book {
+    @Id
+    private String bookId;
+    // ...
+}
+</code></pre>
+<p>但注意，这时 <code>bookId</code> 一定要进行初始化操作，不然 MongoDB 仍然会生成一个 ObjectId 作为主键。</p>
+<p>同时，主键 <code>@Id</code> 一定是唯一的，因此不需要再使用 <code>@Indexed</code>。</p>
+<h4>联合索引</h4>
+<p>和 MySQL 类似，MongoDB 的联合索引（Compound Index）也是按照最左原则进行匹配的。例如下面一个索引：</p>
+<pre><code class="lang-java">@Data
+@Document
+@CompoundIndexes({
+        @CompoundIndex(name = &quot;code_and_owner_idx&quot;, unique = true, def = &quot;{&#39;code&#39;: 1, &#39;ownerId&#39;: 1}&quot;)
+})
+public class Book {
+    @Id
+    private String bookId;
+
+    @NotBlank
+    private String code;
+
+    @NotBlank
+    private String ownerId;
+}
+</code></pre>
+<p>使用 <code>code</code> 和 <code>ownerId</code> 进行查询会 hit 到索引，使用 <code>code</code> 查询会 hit 到索引，但使用 <code>ownerId</code> 进行查询则会进行 Document 扫描，当数据量大的时候性能会有非常大的下降。因此在建立联合索引的时候应该特别注意字段的顺序。</p>
+<h3>事务有关</h3>
+<p>MongoDB 3.X 并不支持多 Document 的事务。MongoDB 4.0 才开始支持多 Document 的事务。</p>
+<p>当在 Spring 使用时，单纯的加入 <code>@Transactional</code> 是不行的，需要显式的在配置当中打开：</p>
+<pre><code class="lang-java">@Configuration
+public class DataSourceConfig {
+
+    @Bean
+    MongoTransactionManager transactionManager(MongoDbFactory dbFactory) {
+        return new MongoTransactionManager(dbFactory);
+    }
+}
+</code></pre>
+<p>MongoDB 4.0 的事务支持并不支持单机（Standalone）部署，因此如果使用本地开发的单机 MongoDB，加上 <code>@Transactional</code> 进行操作，会直接导致崩溃（MongoDrive 3.8.2）。</p>
+<p>同时 MongoDB 4.0 不支持在分片（Sharding）部署上使用，对分片的支持计划 4.2 才推出。考虑到大部分公司使用的还是 3.X 的版本，因此 MongoDB 现在的事务支持基本是不可用的。设计 Mongo 文档格式的时候，应考虑尽量减少多文档事务的操作，</p>
+<h4>参考资料</h4>
+<ul>
+<li><a href="https://docs.mongodb.com/manual/core/index-compound/">https://docs.mongodb.com/manual/core/index-compound/</a></li>
+<li><a href="https://docs.mongodb.com/manual/core/write-operations-atomicity/">https://docs.mongodb.com/manual/core/write-operations-atomicity/</a></li>
+</ul>
+
+
+</div>
+</div>
+<script src="../static/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+</body>
+
+</html>
