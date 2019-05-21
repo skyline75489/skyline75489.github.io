@@ -103,7 +103,7 @@ public class RequestInterceptor implements HandlerInterceptor {
 }
 ```
 
-这些情况下，`postHandle` 并不会调用。这就导致了 ThreadLocal 变量不能被清理。
+这些情况下，`postHandle` 并不会调用（`afterCompletion` 也有这个问题）。这就导致了 ThreadLocal 变量不能被清理。
 
 在平常的 Java 环境中，ThreadLocal 变量随着 Thread 本身的销毁，是可以被销毁掉的。但 Spring 由于采用了线程池的设计，响应请求的线程可能会一直常驻，这就导致了变量一直不能被 GC 回收。更糟糕的是，这个没有被正确回收的变量，由于线程池对线程的复用，可能会串到别的 Request 当中，进而直接导致代码逻辑的错误。
 
