@@ -2,7 +2,7 @@
 
 * Linux/Mac OS X/Windows
 
-* iOS / WPF / Python Dev
+* iOS / WPF / Python / Java
 
 * 商业或盈利性用途转载本站文章请联系作者本人
 
