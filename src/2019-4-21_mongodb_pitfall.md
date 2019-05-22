@@ -3,6 +3,8 @@ MongoDB 踩坑记录（可能会持续更新）
 
 ### 数据校验
 
+#### 打开校验功能
+
 使用 Hibernate 的时候我们可以利用 `javax.validation` 包中提供的一系列 API 对传入数据库的数据进行校验。使用 MongoDB 时，需要显式的在配置当中打开，不然校验不会生效：
 
 ```java
@@ -18,6 +20,24 @@ public class DataSourceConfig {
     public LocalValidatorFactoryBean validator() {
         return new LocalValidatorFactoryBean();
     }
+}
+```
+
+#### Collection 类型校验
+
+对一个 Document 类型当中的 Collection property 做校验时，需要在 property 上显式加上 `@Valid`，不然不会进行校验。
+
+```java
+@Document
+@Data
+public class Library {
+
+    // ...
+    
+    // 必须加上这个注解
+    // 不然 Book 里面的校验全部都没有作用
+    @Valid
+    List<Book> books;
 }
 ```
 
