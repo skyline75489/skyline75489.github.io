@@ -20,6 +20,7 @@
 
 <h1>MongoDB 踩坑记录（可能会持续更新）</h1>
 <h3>数据校验</h3>
+<h4>打开校验功能</h4>
 <p>使用 Hibernate 的时候我们可以利用 <code>javax.validation</code> 包中提供的一系列 API 对传入数据库的数据进行校验。使用 MongoDB 时，需要显式的在配置当中打开，不然校验不会生效：</p>
 <pre><code class="lang-java">@Configuration
 public class DataSourceConfig {
@@ -33,6 +34,20 @@ public class DataSourceConfig {
     public LocalValidatorFactoryBean validator() {
         return new LocalValidatorFactoryBean();
     }
+}
+</code></pre>
+<h4>Collection 类型校验</h4>
+<p>对一个 Document 类型当中的 Collection property 做校验时，需要在 property 上显式加上 <code>@Valid</code>，不然不会进行校验。</p>
+<pre><code class="lang-java">@Document
+@Data
+public class Library {
+
+    // ...
+
+    // 必须加上这个注解
+    // 不然 Book 里面的校验全部都没有作用
+    @Valid
+    List&lt;Book&gt; books;
 }
 </code></pre>
 <h3>索引有关</h3>
