@@ -46,7 +46,7 @@ class Concrete<String> extends GenericBase<String> {
 
 那么这种方法就无法获取 `String` 这个类型了。
 
-#### Field 和 Method Parameter
+#### Field 和 Method 签名
 
 和前面的思路类似，Java 的字节码层面，类的 Field 和 Method Parameter & Return Type 也是有签名信息的，通过这些签名信息我们可以拿到具体的泛型类型：
 
@@ -105,7 +105,7 @@ public void testGenericInstance() {
 
 #### 总结
 
-JVM 的类型擦除机制对获取泛型类型上造成了一些限制，但 Java 的反射机制仍然提供了一些特定条件下获取泛型类型的可能性。通过这些工具，我们可以更好的利用 Java 的泛型功能。
+JVM 的类型擦除机制对获取泛型类型上造成了一些限制，但 Java 的反射机制仍然提供了一些特定条件下获取泛型类型的可能性。通过这些工具，我们可以更好的利用 Java 的泛型功能，实现我们想要达到的抽象。
 
 #### 参考资料
 
